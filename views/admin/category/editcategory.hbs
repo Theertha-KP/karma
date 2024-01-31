@@ -1,0 +1,23 @@
+<div class="bg-info-subtle   bg-opacity-10  d-flex justify-content-center ">
+  <div style="margin-top: 4%;" class="p-5 bg-light  bg-opacity-50 shadow-sm  col-md-6   ">
+    <div>
+      <h3 class="h3">Edit Category</h3>
+    </div>
+    <form method="post" action="/admin/editcategory/{{category._id}}">
+      <div class="row mb-3">
+        <div class="col-sm-10">
+          <input type="text" class="form-control shadow-none" name="name" placeholder="product Name"
+            value="{{category.categoryName}}">
+        </div>
+      </div>
+      <div class="row mb-3 ">
+        <div class="col-sm-3">
+          <input type="text" class="form-control shadow-none" name="description" placeholder="price"
+            value="{{category.description}}">
+        </div>
+       
+
+      <button type="submit" class="btn btn-primary">Add Category</button>
+    </form>
+  </div>
+</div>  

@@ -1,0 +1,76 @@
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+	<div class="container">
+		<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+			<div class="col-first">
+				<h1>Login/Register</h1>
+				<nav class="d-flex align-items-center">
+					<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+					<a href="category.html">Login/Register</a>
+				</nav>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- End Banner Area -->
+
+<!--================Login Box Area =================-->
+<section class="login_box_area section_gap">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="login_box_img">
+					<img class="img-fluid" src="img/login.jpg" alt="">
+					<div class="hover">
+						<h4>Already or customer?</h4>
+						<p>Wherever you go I am there</p>
+						<a class="primary-btn" href="/login">Already registered!</a>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<div class="login_form_inner ">
+					<h1>Register to enter</h3>
+
+						{{#if message}}
+						<p style="color: red;">{{message}}</p>
+						{{/if}}
+
+						<form class="row login_form d-flex" action="/registration" method="post" id="loginform"
+							novalidate="novalidate">
+							<div class="col-md-12 form-group">
+								<input type="text" name="name" id="form3Example1c" class="form-control" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2, 4}$ />
+								<label class="form-label" for="form3Example1c">Your Name</label>
+							</div>
+
+
+							<div class="col-md-12 form-group">
+								<input type="email" name="email" id="form3Example3c" class="form-control" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2, 4}$ />
+								<label class="form-label" for="form3Example3c">Your Email</label>
+							</div>
+
+
+							<div class="col-md-12 form-group">
+								<input type="password" id="form3Example4c" name="password" class="form-control" />
+								<label class="form-label" for="form3Example4c">Password</label>
+							</div>
+
+
+
+							<div class="col-md-12 form-group">
+								<input type="password" id="form3Example4cd" name="'confirm password"
+									class="form-control" />
+								<label class="form-label" for="form3Example4cd">Confirm your password</label>
+							</div>
+
+
+							<div class="col-md-12 form-group">
+								<button type="submit" value="submit" class="primary-btn">Register</button>
+							</div>
+						</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<!--================End Login Box Area =================-->

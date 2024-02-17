@@ -14,9 +14,7 @@
 		margin-bottom: 100px;
 	}
 }
-.hot_product_inner{
-	
-}
+
 .hot_p_item{
 	position: relative;
 	.product_text{
@@ -48,7 +46,7 @@
 	}
 }
 
-.feature_product_inner{}
+
 .feature_p_slider{
 	.owl-dots{
 		text-align: center;
@@ -132,10 +130,7 @@
 		padding-top: 100px;
 		padding-bottom: 100px;
 	}
-	.feature_product_inner{
-		
-	}
-}
+	
 .latest_product_inner{
 	margin-bottom: -35px;
 }
@@ -196,7 +191,7 @@
 		}
 	}
 }
-.left_sidebar_area{}
+
 .left_widgets{
 	margin-bottom: 30px;
 	background-color: rgb(255, 255, 255);
@@ -473,9 +468,7 @@
 	padding-top: 120px;
 	
 }
-.s_product_inner{
-	
-}
+
 .s_Product_carousel{
 	.owl-dots{
 		position: absolute;
@@ -764,9 +757,7 @@
 		}
 	}
 }
-.review_list{
-	
-}
+
 .review_item{
 	margin-bottom: 15px;
 	&:last-child{
@@ -807,7 +798,7 @@
 				position: absolute;
 				right: 0px;
 				top: 14px;
-				@icnlude transition;
+				
 				&:hover{
 					background: $primary-color;
 					border-color: $primary-color;
@@ -861,11 +852,6 @@
 	}
 }
 
-.comment_list{
-	.review_item{
-		
-	}
-}
 
 
 /* End Single Product Area css
@@ -1139,9 +1125,7 @@
 
 /* End Cart Area css
 ============================================================================================ */
-.checkout_area{
-	
-}
+
 .check_title{
 	h2{
 		font-size: 14px;
@@ -1578,6 +1562,7 @@
 	.login_box_img{
 		margin-right: -30px;
 		position: relative;
+		
 		img{
 			width: 100%;
 		}
@@ -1625,7 +1610,7 @@
 	box-shadow: 0px 10px 30px 0px rgba(0, 0, 0, 0.07);
 	height: 100%;
 	text-align: center;
-	padding-top: 115px;
+	
 	h3{
 		color: $title-color;
 		text-transform: uppercase;
@@ -1635,9 +1620,7 @@
 	.login_form{
 		max-width: 385px;
 		margin: auto;
-		.form-group{
-			
-		}
+		
 	}
 	&.reg_form{
 		padding-top: 60px;
@@ -1761,7 +1744,7 @@
     height: 14px;
     z-index: 9;
     cursor: pointer;
-    -webkit-transition: all 0.25s linear;
+   
     font-family: $primary-font;
 	font-weight: 500;
     color: $title-color;
@@ -1809,4 +1792,4 @@
 
 .radion_btn input[type=radio]:checked ~ label{
     color: #000;
-}
+}}

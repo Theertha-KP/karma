@@ -2,10 +2,17 @@ const adminModal = require("../models/adminModel");
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 const User = require("../models/userModel");
+const adminmiddle=require('../middleware/adminmiddle')
+
 const { ObjectId } = require('mongodb')
 const adminDashboard = async (req, res) => {
   try {
-    res.render('admin/adminDashboard')
+    if(req.session.admin){
+      console.log(req.session.admin);
+    return res.render('admin/adminDashboard')
+    }else{
+    return  res.render('admin/adminLogin',{message:'Please login'})
+    }
 
   } catch (error) {
     console.log(error.message)
@@ -18,8 +25,12 @@ const adminDashboard = async (req, res) => {
 //admin page
 const adminPageLoad = async (req, res) => {
   try {
+    if(req.session.admin){
+      res.redirect("/admin/dashboard");
+    }else{
     console.log("Log in with admin credentials");
     res.render("admin/adminLogin");
+    }
   } catch (error) {
     console.log(error.message);
   }
@@ -32,7 +43,11 @@ const verifyAdmin = async (req, res) => {
     console.log(adminData);
     if (adminData.name == req.body.name) {
       console.log("welcome admin");
+      req.session.admin=adminData
       res.redirect("/admin/dashboard");
+    }else{
+      req.session.adminError=true
+      res.redirect('/admin/')
     }
   } catch (error) {
     console.log(error.message);
@@ -42,7 +57,7 @@ const loadAddproduct = async (req, res) => {
   try {
     const catDoc = await Category.find({});
     console.log(catDoc);
-    res.render("admin/products/addproducts", { category: catDoc });
+    res.render("admin/products/addproducts", {admin:true, category: catDoc });
   } catch (error) {
     console.log("error at loading add products page");
     console.log(error.message);
@@ -65,7 +80,7 @@ const insertProductDb = async (req, res) => {
       cost: Number(req.body.cost),
       color: req.body.color,
       description: req.body.description,
-      isProductBlocked: req.body.isblocked,
+      isListed: req.body.islisted,
       quantity: req.body.quantity,
       categoryId: req.body.category,
       isCategoryBlocked: false,
@@ -85,27 +100,29 @@ const loadCategory = async (req, res) => {
   try {
     const categoryDoc = await Category.find({});
     console.log(categoryDoc);
-    res.render("admin/category/categoryDashboard", { category: categoryDoc });
+    res.render("admin/category/categoryDashboard", {admin:true,  category: categoryDoc });
   } catch (error) {
     console.log(error.message);
   }
 };
 const loadAddCategory = async (req, res) => {
   try {
-    res.render("admin/category/addcategory");
+    res.render("admin/category/addcategory",{admin:true });
   } catch (error) {
     console.log(error.message);
   }
 };
 const insertCategoryDb = async (req, res) => {
   try {
+    
     const category = new Category({
       categoryName: req.body.categoryname,
       description: req.body.description,
       isBlocked: req.body.isBlocked,
     });
 
-    const categoryData = await category.save();
+    if(category)
+    var categoryData = await category.save();
 
     res.redirect("/admin/categoryDashboard")
   } catch (error) {
@@ -117,7 +134,7 @@ const insertCategoryDb = async (req, res) => {
 const loadProductsDashboard = async (req, res) => {
   try {
     const productDoc = await Product.find({}).populate("categoryId");
-    res.render("admin/products/productdashboard", { products: productDoc });
+    res.render("admin/products/productdashboard", {admin:true,  products: productDoc });
   } catch (error) {
     console.log("error at loading add products page");
     console.log(error.message);
@@ -143,7 +160,7 @@ const editProduct = async (req, res) => {
     const _id = new ObjectId(req.params.id)
     const productData = await Product.findOne({ _id: _id });
     console.log(productData);
-    res.render("admin/products/editproducts", { product: productData });
+    res.render("admin/products/editproducts", {admin:true,  product: productData });
   } catch (error) {
     console.log("error at loading edit page");
     console.log(error.message);
@@ -198,7 +215,7 @@ const deleteProductImg = async (req, res) => {
 const loadUserDashboard = async (req, res) => {
   try {
     userData = await User.find({});
-    res.render("admin/users/userdashboard", { user: userData });
+    res.render("admin/users/userdashboard", {admin:true,  user: userData });
   } catch (error) {
     console.log("error at loading user dashboard");
     console.log(error.message);
@@ -249,11 +266,11 @@ const deleteCategory = async (req, res) => {
 };
 const editCategory = async (req, res) => {
   try {
-    // const productEditId = req.params.id;
+   
     const _id = new ObjectId(req.params.id)
     const categoryData = await Category.findOne({ _id: _id });
     console.log(categoryData);
-    res.render("admin/category/editcategory", { category: categoryData });
+    res.render("admin/category/editcategory", { admin:true, category: categoryData });
   } catch (error) {
     console.log("error at loading edit page");
     console.log(error.message);
@@ -283,6 +300,34 @@ const UpdateCategory = async (req, res) => {
     console.log(error.message);
   }
 };
+const listProduct =async (req,res,next)=>{
+  try {
+    const id = new ObjectId(req.params.id)
+    console.log(id);
+    const prdtData = await Product.findOne({_id:id})
+    if(prdtData.isListed ==true){
+      await Product.updateOne({_id:id},{$set:{isListed:false}})
+      res.redirect('/admin/productDashboard')
+    }    
+    else{
+     
+      await Product.updateOne({_id:id},{$set:{isListed:true}})
+      res.redirect('/admin/productDashboard')
+    }
+    console.log("Product list changed");
+  } catch (error) {
+    console.log(error);
+ 
+  }
+}
+
+//logout
+const adminlogout = async (req, res) => {
+  req.session.destroy(() => {
+      res.redirect('/admin')
+  })
+}
+
 
 module.exports = {
   adminPageLoad,
@@ -303,6 +348,8 @@ module.exports = {
   loadCategory,
   deleteCategory,
   deleteProductImg,
-  UpdateCategory
+  UpdateCategory,
+  listProduct,
+  adminlogout
 
 };

@@ -17,6 +17,10 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  quantity:{
+    type:Number,
+    required: true
+  },
   image: {
     type: Array,
     required: true,
@@ -30,7 +34,7 @@ const productSchema = new mongoose.Schema({
   },
   isProductBlocked: {
     type: Boolean,
-    required: true,
+   
   },
   categoryId: {
     type: Schema.ObjectId,
@@ -40,6 +44,10 @@ const productSchema = new mongoose.Schema({
   isCategoryBlocked: {
     type: Boolean,
     required: true,
+  },
+  isListed:{
+    type: Boolean,
+    required: true
   }
  
 });

@@ -5,8 +5,8 @@
 			<div class="col-first">
 				<h1>Login/Register</h1>
 				<nav class="d-flex align-items-center">
-					<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-					<a href="category.html">Login/Register</a>
+					<a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+					<a href="">Login/Register</a>
 				</nav>
 			</div>
 		</div>
@@ -33,20 +33,22 @@
 				</div>
 			</div>
 			<div class="col-lg-6">
-				<div class="login_form_inner">
+				<div class="login_form_inner pt-0">
 					<h3>Log in to enter</h3>
 
-					{{#if message}}
-					<p style="color: red;">{{message}}</p>
+					{{#if error}}
+					<p style="color: red;">{{error}}</p>
 					{{/if}}
-					<form class="row login_form" action="/login" method="post" id="loginform" novalidate="novalidate">
+					<form onsubmit="return validate()" class="row login_form" action="/login" method="post" id="loginform" novalidate="novalidate">
 						<div class="col-md-12 form-group">
-							<input type="text" class="form-control" id="name" name="email" placeholder="email"
-								onfocus="this.placeholder = ''" onblur="this.placeholder = 'email'" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2, 4}$">
+							<input type="text" class="form-control" id="Value" name="email" placeholder="email"
+								onfocus="this.placeholder = ''" onblur="this.placeholder = 'email'" >
+								 <p id="valueAlert" class="text-danger "></p>
 						</div>
 						<div class="col-md-12 form-group">
-							<input type="password" class="form-control" id="name" name="password" placeholder="Password"
+							<input type="password" class="form-control" id="Password" name="password" placeholder="Password"
 								onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+								<p id="passwordAlert" class="text-danger "></p>
 						</div>
 
 						<div class="col-md-12 form-group">
@@ -60,3 +62,38 @@
 	</div>
 </section>
 <!--================End Login Box Area =================-->
+
+<script>
+  const valueAlert = document.getElementById("valueAlert");
+  const passwordAlert = document.getElementById("passwordAlert");
+
+  function validate(){
+    console.log("This is validate")
+    
+    const value = document.getElementById("Value").value;
+    const password = document.getElementById("Password").value;
+    console.log(value)
+    valueAlert.innerText="";
+    passwordAlert.innerText="";
+
+    if(value.trim() === ""){
+        valueAlert.innerText = "Email can't be empty";
+        return false;
+    }else if(password.trim() === ""){
+        passwordAlert.innerText = "Password can't be empty";
+        return false;
+    }
+
+
+ 
+    let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+
+    if(value.match(emailRegex)){
+      console.log("Value is matching");
+      return true;
+    }
+
+    valueAlert.innerText = "Invalid email ";
+    return false    
+  }
+</script>

@@ -14,9 +14,12 @@
 <!--================Login Box Area =================-->
 <section class="login_box_area section_gap">
 	<div class="container">
-		<div class="col-lg-6">
+		<div class="col-lg-12">
 			<div class="login_form_inner">
 				<h3>Log in to enter</h3>
+				{{#if message}}
+						<p style="color: red;">{{message}}</p>
+						{{/if}}
 				<form class="row login_form" action="/admin" method="post" id="loginform" novalidate="novalidate">
 					<div class="col-md-12 form-group">
 						<input type="text" class="form-control" id="name" name="name" placeholder="name"

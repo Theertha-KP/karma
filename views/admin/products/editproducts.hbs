@@ -3,17 +3,18 @@
     <div>
       <h3 class="h3">Edit product</h3>
     </div>
-    <form method="post" action="/admin/editproduct/{{product._id}}"  enctype="multipart/form-data">
+    <form  onsubmit="return editProduct()" method="post" action="/admin/editproduct/{{product._id}}"  enctype="multipart/form-data">
       <div class="row mb-3">
         <div class="col-sm-10">
-          <input type="text" class="form-control shadow-none" name="productname" placeholder="product Name"
+          <input type="text"  id="productName" class="form-control shadow-none" name="productname" placeholder="product Name"
             value="{{product.productName}}">
+             <p id="alertProductName" class="text-danger "></p>
         </div>
       </div>
       <div class="row mb-3 ">
         <div class="col-sm-3">
-          <input type="text" class="form-control shadow-none" name="price" placeholder="price"
-            value="{{product.price}}">
+          <input type="number" class="form-control shadow-none" name="price" placeholder="price"
+            value="{{product.price}}" min="0">
         </div>
         <div class="col-sm-4">
           <input type="text" class="form-control shadow-none" name="cost" placeholder="cost" value="{{product.cost}}">
@@ -26,15 +27,16 @@
       </div>
       <div class="row mb-4">
         <div class=" row mb-3 col-sm-10 ms-1  ">
-          <textarea class="form-control shadow-none" name="description" rows="3" placeholder="product description"
+          <textarea class="form-control shadow-none" name="description"  id="about" rows="3" placeholder="product description"
             value="{{product.description}}"></textarea>
+             <p id="alertDescription" class="text-danger "></p>
         </div>
         <div class="col-md-4 mb-3 ">
           <select class="form-select shadow-none " aria-label="Default select example"
-            value="{{product.isProductBlocked}}" name="isblocked">
-            <option selected>isBlocked</option>
-            <option value="true">On</option>
-            <option value="false">Off</option>
+            value="{{product.isListed}}" name="islisted">
+            <option selected>islisted</option>
+            <option value="true">true</option>
+            <option value="false">false</option>
           </select>
         </div>
 
@@ -69,3 +71,33 @@
     </form>
   </div>
 </div>
+
+
+<script>
+
+    
+    const alertProductName = document.getElementById("alertProductName");
+    const alertDescription = document.getElementById("alertDescription");
+    
+
+    function editProduct() {        
+        console.log("add product  fucntion")
+        const productName= document.getElementById("productName").value;
+        const about= document.getElementById("about").value;
+              console.log(productName)
+        alertProductName.innerText = "";
+        alertDescription.innerText = "";
+
+        if(productName.trim()==""){
+            console.log("entered empty name")
+            alertProductName.innerText = "Product title can't be empty."
+            return false
+        }
+        else if(about.trim()==""){
+            alertDescription.innerText = "Product description can't be empty."
+            return false
+        }
+
+    }
+
+</script>

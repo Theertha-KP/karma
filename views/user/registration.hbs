@@ -5,8 +5,8 @@
 			<div class="col-first">
 				<h1>Login/Register</h1>
 				<nav class="d-flex align-items-center">
-					<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-					<a href="category.html">Login/Register</a>
+					<a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+					<a href="">Login/Register</a>
 				</nav>
 			</div>
 		</div>
@@ -19,7 +19,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-lg-6">
-				<div class="login_box_img">
+				<div class="login_box_img" style="height:100%">
 					<img class="img-fluid" src="img/login.jpg" alt="">
 					<div class="hover">
 						<h4>Already or customer?</h4>
@@ -36,30 +36,40 @@
 						<p style="color: red;">{{message}}</p>
 						{{/if}}
 
-						<form class="row login_form d-flex" action="/registration" method="post" id="loginform"
+						<form  onsubmit="return Validation()" class="row login_form d-flex" action="/registration" method="post" id="registerform"
 							novalidate="novalidate">
 							<div class="col-md-12 form-group">
-								<input type="text" name="name" id="form3Example1c" class="form-control" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2, 4}$ />
-								<label class="form-label" for="form3Example1c">Your Name</label>
+								<input type="text" name="fname" id="fName" class="form-control"  />
+								<p id="validation-alert" class="text-danger "></p>
+								<label class="form-label" for="form3Example1c">First Name</label>
+
+							</div>
+							<div class="col-md-12 form-group">
+								<input type="text" name="lname" id="lName" class="form-control"  />
+								<p id="validation-alert" class="text-danger "></p>
+								<label class="form-label" for="form3Example1c">Last Name</label>
+
 							</div>
 
 
 							<div class="col-md-12 form-group">
-								<input type="email" name="email" id="form3Example3c" class="form-control" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2, 4}$ />
+								<input type="email" name="email" id="email" class="form-control"/>
+								<p id="validation-alert1" class="text-danger "></p>
 								<label class="form-label" for="form3Example3c">Your Email</label>
 							</div>
 
 
 							<div class="col-md-12 form-group">
-								<input type="password" id="form3Example4c" name="password" class="form-control" />
+								<input type="password" id="password" name="password" class="form-control" />
+								<p id="validation-alert2" class="text-danger "></p>
 								<label class="form-label" for="form3Example4c">Password</label>
 							</div>
 
 
-
 							<div class="col-md-12 form-group">
-								<input type="password" id="form3Example4cd" name="'confirm password"
+								<input type="password" id="comfirm_password" name="'confirm password"
 									class="form-control" />
+									<p id="validation-alert3" class="text-danger "></p>
 								<label class="form-label" for="form3Example4cd">Confirm your password</label>
 							</div>
 
@@ -74,3 +84,59 @@
 	</div>
 </section>
 <!--================End Login Box Area =================-->
+
+<script>
+  const Alert=document.getElementById('validation-alert2')
+  const emailalert=document.getElementById('validation-alert1')
+  const nameAlert=document.getElementById('validation-alert')
+
+  function  Validation()
+{
+  
+
+  let password=document.getElementById("password").value
+  let confirmpassword=document.getElementById('comfirm_password').value
+  let email=document.getElementById('email').value
+  let name=document.getElementById('fName').value
+    let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  let nameRegex=/^[a-zA-Z]+(?: [a-zA-Z]+)?$/;
+  let mobileRegex= /^\d{10}$/
+    
+    Alert.innerText="";
+    emailalert.innerText="";
+	nameAlert.innerText="";
+
+    if(name.trim() === ""){
+        nameAlert.innerText = "name can't be empty";
+        return false;
+    }else if(password.trim() === ""){
+        Alert.innerText = "Password can't be empty";
+        return false;
+    }else if(email.trim() === ""){
+        emailalert.innerText = "email can't be empty";
+        return false;
+    }
+
+
+   if(password!=confirmpassword)
+  {
+    Alert.innerHTML="Password Not Matching"
+    return false
+  }else if(!email.match(emailRegex))
+  {
+     emailalert.innerHTML="Email Not Valid"
+    return false
+  }else if(!name.match(nameRegex))
+  {
+    nameAlert.innerHTML="Space Not Allowed"
+    return false
+  }else if(!mobile.match(mobileRegex))
+  {
+	return false
+  }else
+  {
+    return true
+}
+}
+</script>
+

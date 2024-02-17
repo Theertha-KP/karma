@@ -3,18 +3,21 @@
     <div>
       <h3 class="h3">Add product</h3>
     </div>
-    <form method="post" action="/admin/addproduct" enctype="multipart/form-data">
+    <form  onsubmit="return addProduct()" method="post" action="/admin/addproduct" enctype="multipart/form-data">
       <div class="row mb-3">
         <div class="col-sm-10">
-          <input type="text" class="form-control shadow-none" name="productname" placeholder="product Name">
+          <input type="text" id="productName" class="form-control shadow-none" name="productname" placeholder="product Name">
+          <p id="alertProductName" class="text-danger "></p>
         </div>
       </div>
       <div class="row mb-3 ">
         <div class="col-sm-3">
-          <input type="text" class="form-control shadow-none" name="price" placeholder="price">
+          <input type="number" class="form-control shadow-none" name="price" placeholder="price"  min="0">
+          
         </div>
         <div class="col-sm-4">
-          <input type="text" class="form-control shadow-none" name="cost" placeholder="cost">
+          <input type="number" class="form-control shadow-none" name="cost" placeholder="cost" min='0'>
+          
         </div>
         <div class="col-sm-3 d-flex align-items-center ">
           <label for="" class="pe-3 ">Color</label>
@@ -24,25 +27,26 @@
       </div>
       <div class="row mb-4">
         <div class=" row mb-3 col-sm-10 ms-1  ">
-          <textarea class="form-control shadow-none " name="description" rows="3"
+          <textarea class="form-control shadow-none " id="about" name="description" rows="3"
             placeholder="product description"></textarea>
+            <p id="alertDescription" class="text-danger "></p>
         </div>
         <div class="col-md-4 mb-3 ">
-          <select class="form-select shadow-none " aria-label="Default select example" value="isblocked"
-            name="isblocked">
-            <option selected>isBlocked</option>
-            <option value="true">On</option>
-            <option value="false">Off</option>
+          <select class="form-select shadow-none " aria-label="Default select example" id="islisted" value="isListed"
+            name="islisted">
+            <option selected>isListed</option>
+            <option value="true">True</option>
+            <option value="false">False</option>
           </select>
         </div>
 
         <div class="col-md-3 mb-3 ">
-          <input class="form-control shadow-none " name="quantity" placeholder="Quantity">
+          <input type="number"  class="form-control shadow-none " name="quantity" placeholder="Quantity" min='0'>
 
         </div>
         <div class="col-md-6 mb-3 ">
           <!-- <input class="form-control shadow-none "  name="category" placeholder="category"> -->
-          <select class="form-select shadow-none " name="category">
+          <select class="form-select shadow-none " aria-label="Default select example"  name="category" value="category">
            
               {{#each category}}
               <option value={{this._id}}>
@@ -70,4 +74,37 @@
     </form>
   </div>
 </div>
+
+
+//script Validation
+
+
+<script>
+
+    
+    const alertProductName = document.getElementById("alertProductName");
+    const alertDescription = document.getElementById("alertDescription");
+    
+
+    function addProduct() {        
+        console.log("add product  fucntion")
+        const productName= document.getElementById("productName").value;
+        const about= document.getElementById("about").value;
+              console.log(productName)
+        alertProductName.innerText = "";
+        alertDescription.innerText = "";
+
+        if(productName.trim()==""){
+            console.log("entered empty name")
+            alertProductName.innerText = "Product title can't be empty."
+            return false
+        }
+        else if(about.trim()==""){
+            alertDescription.innerText = "Product description can't be empty."
+            return false
+        }
+
+    }
+
+</script>
 

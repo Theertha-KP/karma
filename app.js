@@ -5,10 +5,15 @@ const app = express();
 const session = require("express-session");
 const cookie = require("cookie-parser");
 const dbConnect = require('./config/db');
-const flash = require('connect-flash');
+const flash = require('express-flash');
 //var hbs  = require('express-handlebars');
 dbConnect()
 var hbs=require('hbs')
+const nocache = require("nocache");
+
+// ...
+
+app.use(nocache());
 
 
 //bodyparser
@@ -23,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 app.set("views", path.join(__dirname, "views"));
 app.set('view engine', 'hbs');
 app.use(express.static(path.join(__dirname, 'public')));
-hbs.registerPartials(__dirname + '/views/admin', function (err) {});
+hbs.registerPartials(__dirname + '/views/partials', function (err) {});
 hbs.registerHelper('inc', (value) => {
   return parseInt(value) + 1;
 })

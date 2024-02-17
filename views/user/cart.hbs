@@ -1,0 +1,351 @@
+<!-- Start Header Area -->
+<header class="header_area sticky-header">
+    <div class="main_menu">
+        <nav class="navbar navbar-expand-lg navbar-light main_box">
+            <div class="container">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <a class="navbar-brand logo_h" href="index.html"><img src="img/logo.png" alt=""></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse"
+                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+                    <ul class="nav navbar-nav menu_nav ml-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item submenu dropdown active">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                                aria-haspopup="true" aria-expanded="false">Shop</a>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item"><a class="nav-link" href="/shop">Shop Category</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/singleproduct">Product Details</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/checkout">Product Checkout</a></li>
+                                <li class="nav-item active"><a class="nav-link" href="/cart">Shopping Cart</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/confirmation">Confirmation</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item submenu dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                                aria-haspopup="true" aria-expanded="false">Blog</a>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
+                                <li class="nav-item"><a class="nav-link" href="single-blog.html">Blog Details</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item submenu dropdown">
+                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                                aria-haspopup="true" aria-expanded="false">Pages</a>
+                            <ul class="dropdown-menu">
+                                <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/tracking">Tracking</a></li>
+                                <li class="nav-item"><a class="nav-link" href="/elements">Elements</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+                    </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
+                        <li class="nav-item">
+                            <button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="search_input" id="search_input_box">
+        <div class="container">
+            <form class="d-flex justify-content-between">
+                <input type="text" class="form-control" id="search_input" placeholder="Search Here">
+                <button type="submit" class="btn"></button>
+                <span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
+            </form>
+        </div>
+    </div>
+</header>
+<!-- End Header Area -->
+
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>Shopping Cart</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+                    <a href="/cart">Cart</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Banner Area -->
+
+<!--================Cart Area =================-->
+{{!-- {{#if (cartData.product.length)}} --}}
+{{!-- <section class="cart_area">
+    <div class="container">
+        <div class="cart_inner">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each cartData.product as data}}
+                        <tr>
+                            <td>
+                                <div class="media">
+                                    <a href="/singleProductpage/{{data.product._id}}"></a>
+                                    <div class="d-flex">
+                                        <img src="/images/{{product.image.[0].filename}}" alt="">
+                                    </div>
+                                    </a>
+                                    <div class="media-body">
+                                        <p>Minimalistic shop for multipurpose use</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <h5>$360.00</h5>
+                            </td>
+                            <td>
+                                <div class="product_count">
+                                    <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:"
+                                        class="input-text qty">
+                                    <button
+                                        onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
+                                        class="increase items-count" type="button"><i
+                                            class="lnr lnr-chevron-up"></i></button>
+                                    <button
+                                        onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
+                                        class="reduced items-count" type="button"><i
+                                            class="lnr lnr-chevron-down"></i></button>
+                                </div>
+                            </td>
+                            <td>
+                                <h5>$720.00</h5>
+                            </td>
+                        </tr>
+
+                        <tr class="bottom_button">
+                            <td>
+                                <a class="gray_btn" href="#">Update Cart</a>
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                <div class="cupon_text d-flex align-items-center">
+                                    <input type="text" placeholder="Coupon Code">
+                                    <a class="primary-btn" href="#">Apply</a>
+                                    <a class="gray_btn" href="#">Close Coupon</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                <h5>Subtotal</h5>
+                            </td>
+                            <td>
+                                <h5>$2160.00</h5>
+                            </td>
+                        </tr>
+                        <tr class="shipping_area">
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                <h5>Shipping</h5>
+                            </td>
+                            <td>
+                                <div class="shipping_box">
+                                    <ul class="list">
+                                        <li><a href="#">Flat Rate: $5.00</a></li>
+                                        <li><a href="#">Free Shipping</a></li>
+                                        <li><a href="#">Flat Rate: $10.00</a></li>
+                                        <li class="active"><a href="#">Local Delivery: $2.00</a></li>
+                                    </ul>
+                                    <h6>Calculate Shipping <i class="fa fa-caret-down" aria-hidden="true"></i></h6>
+                                    <select class="shipping_select">
+                                        <option value="1">Bangladesh</option>
+                                        <option value="2">India</option>
+                                        <option value="4">Pakistan</option>
+                                    </select>
+                                    <select class="shipping_select">
+                                        <option value="1">Select a State</option>
+                                        <option value="2">Select a State</option>
+                                        <option value="4">Select a State</option>
+                                    </select>
+                                    <input type="text" placeholder="Postcode/Zipcode">
+                                    <a class="gray_btn" href="#">Update Details</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="out_button_area">
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+
+                            </td>
+                            <td>
+                                <div class="checkout_btn_inner d-flex align-items-center">
+                                    <a class="gray_btn" href="/shop">Continue Shopping</a>
+                                    <a class="primary-btn" href="/checkout">Proceed to checkout</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section> --}}
+
+{{!--
+{{> head}}
+{{> header}} --}}
+{{!--
+{{#if (!cartData.product.length)}}
+
+{{else}} --}}
+{{#if cartData.length}}
+<section class="shopping-cart spad mt-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="shopping__cart__table">
+                    <table class="text-center">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Total Price</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            {{#each cartData}}
+                            <tr>
+                                <td class="product__cart__item">
+                                    <a href="/singleProductpage/{{this.product._id}}">
+                                        <div class="product__cart__item__pic" style="width: 4rem;">
+                                            <img src="multer/products/{{this.productDetails.image.[0]}}"
+                                                class="img-fluid" alt="">
+                                        </div>
+                                    </a>
+                                    <div class="product__cart__item__text">
+                                        <h6>{{this.productDetails.productName}}</h6>
+                                        <h5>₹{{this.productDetails.price}}</h5>
+                                    </div>
+                                </td>
+                                <td class="quantity__item">
+                                    <div class="quantity d-flex justify-content-center align align-items-center">
+                                        <button class="btn btn-primary btn-sm p-0 countButton" id="changecount"
+                                            data-item-id="{{this.product.product_id}}" data-to-do="minus"
+                                            style="width:1.5rem" onclick=" quantityChange('{{this.product.product_id}}',-1)">-</button>
+                                        <h5 class="mx-1 countOnScreen" id="product-{{data.product_id._id}}">
+                                            {{this.product.count}}</h5>
+                                        <button class="btn btn-primary btn-sm p-0 countButton"
+                                            data-item-id="{{this.product_id._id}}" data-to-do="plus"
+                                            style="width: 1.5rem;"  onclick=" quantityChange('{{this.product.product_id}}',1)">+</button>
+                                    </div>
+                                    <div>
+                                        <p id="warning-{{data.product_id._id}}"></p>
+                                    </div>
+                                </td>
+                                {{!-- <td class="cart__price" id="totalPrice-{{this.product_id._id}}">₹{{this.count *
+                                    this.price}}</td> --}}
+                                <td class="cart__close">
+                                    <a href="/cartDelete?productId={{this.product.product_id}}" data-toggle="modal"
+                                        data-target="#confirmationModal{{this.product.product_id}}">
+                                        <i class="fa fa-trash-o" style="font-size:24px"></i>
+                                    </a>
+                                </td>
+                                <!-- Modal -->
+                                <div class="modal fade" id="confirmationModal{{this.product.product_id}}" tabindex="-1"
+                                    role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+                                    <!-- Modal content here -->
+                                </div>
+                            </tr>
+                            {{/each}}
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="continue__btn">
+                            <a href="/shop" class="text-decoration-none">Continue Shopping</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <!-- Rest of your code for Coupon, Cart Total, and Proceed to Checkout section -->
+            </div>
+        </div>
+        {{else}}
+        <div
+            style="min-height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+            <div style="width: 20rem" class="container fluid mt-0 ">
+                <img src="img/download (1).png" alt="empty wishlist" class="img-fluid">
+            </div>
+            <div class="text-center">
+                <h4>OOOPS!!!!!!! your cart is empty</h4>
+                <a href="/shop" class="btn w-100 text-white fw-bold mt-2" style="background-color:#ff9e01;">GO TO
+                    SHOP</a>
+            </div>
+        </div>
+        {{/if}}
+    </div>
+</section>
+{{!-- {{/if}} --}}
+{{!--
+{{> footer}} --}}
+{{!--
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="/user/js/removeCoupon.js"></script>
+<script src="/user/js/couponApply.js"></script> --}}
+
+<!--================End Cart Area =================-->
+
+<script>
+
+
+    function quantityChange(id,count,) {
+
+        console.log("hbshjb")
+       
+        axios.patch(`/changecount/${id}/${count}`).then(() => {
+
+        })
+
+    }
+</script>

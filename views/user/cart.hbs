@@ -85,8 +85,8 @@
 <!-- End Banner Area -->
 
 <!--================Cart Area =================-->
-{{!-- {{#if (cartData.product.length)}} --}}
-{{!-- <section class="cart_area">
+{{#if cartData.length}}
+<section class="cart_area">
     <div class="container">
         <div class="cart_inner">
             <div class="table-responsive">
@@ -96,50 +96,59 @@
                             <th scope="col">Product</th>
                             <th scope="col">Price</th>
                             <th scope="col">Quantity</th>
-                            <th scope="col">Total</th>
+                            <th scope="col">Cost</th>
+
                         </tr>
                     </thead>
                     <tbody>
-                        {{#each cartData.product as data}}
+                        {{#each cartData}}
                         <tr>
                             <td>
                                 <div class="media">
-                                    <a href="/singleProductpage/{{data.product._id}}"></a>
-                                    <div class="d-flex">
-                                        <img src="/images/{{product.image.[0].filename}}" alt="">
-                                    </div>
+                                    <a href="/singleProductpage/{{this.product._id}}">
+                                        <div class="product__cart__item__pic" style="width: 4rem;">
+                                            <img src="multer/products/{{this.productDetails.image.[0]}}"
+                                                class="img-fluid" alt="">
+                                        </div>
                                     </a>
-                                    <div class="media-body">
-                                        <p>Minimalistic shop for multipurpose use</p>
+                                    <div class="product__cart__item__text">
+                                        <h6>{{this.productDetails.productName}}</h6>
+                                        <h5>₹{{this.productDetails.price}}</h5>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <h5>$360.00</h5>
+                                <h5>₹{{this.productDetails.price}}</h5>
                             </td>
-                            <td>
-                                <div class="product_count">
-                                    <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:"
-                                        class="input-text qty">
-                                    <button
-                                        onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-                                        class="increase items-count" type="button"><i
-                                            class="lnr lnr-chevron-up"></i></button>
-                                    <button
-                                        onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
-                                        class="reduced items-count" type="button"><i
-                                            class="lnr lnr-chevron-down"></i></button>
+                            <td class="quantity__item">
+                                <div class="quantity d-flex justify-content-center align align-items-center">
+                                    <button class="btn btn-primary btn-sm p-0 countButton" id="changecount"
+                                        data-item-id="{{this.product.product_id}}" data-to-do="minus"
+                                        style="width:1.5rem"
+                                        onclick=" quantityChange('{{this.product.product_id}}',-1)">-</button>
+                                    <h5 class="mx-1 countOnScreen" id="product-{{data.product_id._id}}">
+                                        {{this.product.count}}</h5>
+                                    <button class="btn btn-primary btn-sm p-0 countButton"
+                                        data-item-id="{{this.product_id._id}}" data-to-do="plus" style="width: 1.5rem;"
+                                        onclick=" quantityChange('{{this.product.product_id}}',1)">+</button>
+                                </div>
+                                <div>
+                                    <p id="warning-{{data.product_id._id}}"></p>
                                 </div>
                             </td>
                             <td>
-                                <h5>$720.00</h5>
+                                <h5>₹{{this.productDetails.cost}}</h5>
+                            </td>
+                            <td class="cart__close">
+                                <a href="/cartDelete?productId={{this.product.product_id}}" data-toggle="modal"
+                                    data-target="#confirmationModal{{this.product.product_id}}">
+                                    <i class="fa fa-trash-o" style="font-size:24px"></i>
+                                </a>
                             </td>
                         </tr>
+                        {{/each}}
 
                         <tr class="bottom_button">
-                            <td>
-                                <a class="gray_btn" href="#">Update Cart</a>
-                            </td>
                             <td>
 
                             </td>
@@ -150,8 +159,11 @@
                                 <div class="cupon_text d-flex align-items-center">
                                     <input type="text" placeholder="Coupon Code">
                                     <a class="primary-btn" href="#">Apply</a>
-                                    <a class="gray_btn" href="#">Close Coupon</a>
+
                                 </div>
+                            </td>
+                            <td>
+
                             </td>
                         </tr>
                         <tr>
@@ -165,7 +177,7 @@
                                 <h5>Subtotal</h5>
                             </td>
                             <td>
-                                <h5>$2160.00</h5>
+                                <h5>{{total}}</h5>
                             </td>
                         </tr>
                         <tr class="shipping_area">
@@ -190,12 +202,12 @@
                                     <select class="shipping_select">
                                         <option value="1">Bangladesh</option>
                                         <option value="2">India</option>
-                                        <option value="4">Pakistan</option>
+
                                     </select>
                                     <select class="shipping_select">
-                                        <option value="1">Select a State</option>
-                                        <option value="2">Select a State</option>
-                                        <option value="4">Select a State</option>
+                                        <option value="1">Kerala</option>
+                                        <option value="2">Tamil nadu</option>
+                                        <option value="4">Karnataka</option>
                                     </select>
                                     <input type="text" placeholder="Postcode/Zipcode">
                                     <a class="gray_btn" href="#">Update Details</a>
@@ -215,100 +227,13 @@
                             <td>
                                 <div class="checkout_btn_inner d-flex align-items-center">
                                     <a class="gray_btn" href="/shop">Continue Shopping</a>
-                                    <a class="primary-btn" href="/checkout">Proceed to checkout</a>
+                                    <a class="primary-btn" href="/checkout">Proceed </a>
                                 </div>
                             </td>
                         </tr>
+
                     </tbody>
                 </table>
-            </div>
-        </div>
-    </div>
-</section> --}}
-
-{{!--
-{{> head}}
-{{> header}} --}}
-{{!--
-{{#if (!cartData.product.length)}}
-
-{{else}} --}}
-{{#if cartData.length}}
-<section class="shopping-cart spad mt-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="shopping__cart__table">
-                    <table class="text-center">
-                        <thead>
-                            <tr>
-                                <th>Product</th>
-                                <th>Quantity</th>
-                                <th>Total Price</th>
-                                <th></th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-
-                            {{#each cartData}}
-                            <tr>
-                                <td class="product__cart__item">
-                                    <a href="/singleProductpage/{{this.product._id}}">
-                                        <div class="product__cart__item__pic" style="width: 4rem;">
-                                            <img src="multer/products/{{this.productDetails.image.[0]}}"
-                                                class="img-fluid" alt="">
-                                        </div>
-                                    </a>
-                                    <div class="product__cart__item__text">
-                                        <h6>{{this.productDetails.productName}}</h6>
-                                        <h5>₹{{this.productDetails.price}}</h5>
-                                    </div>
-                                </td>
-                                <td class="quantity__item">
-                                    <div class="quantity d-flex justify-content-center align align-items-center">
-                                        <button class="btn btn-primary btn-sm p-0 countButton" id="changecount"
-                                            data-item-id="{{this.product.product_id}}" data-to-do="minus"
-                                            style="width:1.5rem" onclick=" quantityChange('{{this.product.product_id}}',-1)">-</button>
-                                        <h5 class="mx-1 countOnScreen" id="product-{{data.product_id._id}}">
-                                            {{this.product.count}}</h5>
-                                        <button class="btn btn-primary btn-sm p-0 countButton"
-                                            data-item-id="{{this.product_id._id}}" data-to-do="plus"
-                                            style="width: 1.5rem;"  onclick=" quantityChange('{{this.product.product_id}}',1)">+</button>
-                                    </div>
-                                    <div>
-                                        <p id="warning-{{data.product_id._id}}"></p>
-                                    </div>
-                                </td>
-                                {{!-- <td class="cart__price" id="totalPrice-{{this.product_id._id}}">₹{{this.count *
-                                    this.price}}</td> --}}
-                                <td class="cart__close">
-                                    <a href="/cartDelete?productId={{this.product.product_id}}" data-toggle="modal"
-                                        data-target="#confirmationModal{{this.product.product_id}}">
-                                        <i class="fa fa-trash-o" style="font-size:24px"></i>
-                                    </a>
-                                </td>
-                                <!-- Modal -->
-                                <div class="modal fade" id="confirmationModal{{this.product.product_id}}" tabindex="-1"
-                                    role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
-                                    <!-- Modal content here -->
-                                </div>
-                            </tr>
-                            {{/each}}
-
-                        </tbody>
-                    </table>
-                </div>
-                <div class="row">
-                    <div class="col-lg-6 col-md-6 col-sm-6">
-                        <div class="continue__btn">
-                            <a href="/shop" class="text-decoration-none">Continue Shopping</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <!-- Rest of your code for Coupon, Cart Total, and Proceed to Checkout section -->
             </div>
         </div>
         {{else}}
@@ -326,23 +251,14 @@
         {{/if}}
     </div>
 </section>
-{{!-- {{/if}} --}}
-{{!--
-{{> footer}} --}}
-{{!--
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="/user/js/removeCoupon.js"></script>
-<script src="/user/js/couponApply.js"></script> --}}
-
-<!--================End Cart Area =================-->
 
 <script>
 
 
-    function quantityChange(id,count,) {
+    function quantityChange(id, count,) {
 
         console.log("hbshjb")
-       
+
         axios.patch(`/changecount/${id}/${count}`).then(() => {
 
         })

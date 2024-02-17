@@ -373,10 +373,21 @@ const cart = async function (req, res, next) {
             },
             {
                 $unwind: "$productDetails"
-            },
+            },{
+                $project:{
+                    _id:1,
+                    user:1,
+                    product:1,
+                    productDetails:1,
+                    total:{$multiply:['$product.count','$productDetails.price']}
+                }
+            }
         ]).exec()
         console.log(cartData);
-        res.render('user/cart', { cartData })
+        const total=cartData.reduce((acc,val)=>{
+            return acc+val.total
+        },0)
+        res.render('user/cart', { cartData,total })
     }
     catch (error) {
         console.log('Error sending OTP', error);
@@ -462,6 +473,46 @@ const addToCart = async (req, res) => {
 }
 
 //change items count in the cart
+// const changeCount = async (req, res) => {
+//     try {
+//         console.log("changecount");
+//         const user = new ObjectId(req.session.userData._id)
+//         const productId = new ObjectId(req.params.id)
+//         const count=Number(req.params.count)
+//         const cart = await Cart.aggregate([
+//             { $match: { user: user } },
+//             { $unwind: "$product" },
+//             { $match: { 'product.product_id': productId } },
+
+//             {
+//                 $lookup: {
+//                     from: "products",
+//                     localField: "product.product_id",
+//                     foreignField: "_id",
+//                     as: "productDetails"
+//                 }
+//             },
+
+//             { $unwind: "$productDetails" },
+
+           
+//         ]).exec()
+//         // console.log(cart);
+//         console.log(cart[0].product.count+count);
+//         if((cart[0].product.count+count>cart[0].productDetails.quantity&&count>0)||cart[0].product.count+count>5||cart[0].product.count+count<1){
+//             return false
+//         }
+//         const res= await Cart.updateOne({user:user},{
+//             $inc:{'product.$[elem].count':count}},{ arrayFilters: [{ "elem.product_id": productId }] })
+
+        
+//         console.log(res);
+
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
 const changeCount = async (req, res) => {
     try {
         console.log("changecount");
@@ -524,6 +575,28 @@ const cartDelete = async (req, res, next) => {
         
     }
 }
+
+
+
+
+//deleting items in the cart
+// const cartDelete = async (req, res, next) => {
+//     try {
+
+//         const id = new ObjectId(req.query.productId)
+//         console.log(id)
+//         // const product = await Product.findOne({ _id: id })
+//         // console.log(product);
+//         const deleteItem = await Cart.findOneAndUpdate({ user: new ObjectId(req.session.userData._id) }, {
+//             $pull: { product: { product_id: id } }
+//         })
+//         console.log(deleteItem);
+//         res.redirect('/cart')
+//     } catch (error) {
+//         console.log(error)
+        
+//     }
+// }
 
 //adding cart items from wishlist
 exports.addToCartWishlist = async (req, res, next) => {

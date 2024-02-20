@@ -1,4 +1,5 @@
 <!-- Start Banner Area -->
+<section class="whole">
 <section class="banner-area organic-breadcrumb">
     <div class="container">
         <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
@@ -15,11 +16,141 @@
 <!-- End Banner Area -->
 <!--user profile-->
 
-<div class=" d-flex">
-    <div class="side" style="width:25%; height: 550px;; background-color:rgb(221, 138, 4) !important;">
-   
+<section>
+     <div class="container-fluid profile">
+        <div class="row my-4">
+            <div class="col-md-4">
+                <div class="left-top m-auto mb-4 row p-4">
+                    <div class="dp"
+                        style="background-image: url(&quot;/src/assets/man.png&quot;); background-size: cover;"><input
+                            type="file" name="image" title=" " style="opacity: 0;"></div>
+                    <div class="col-6 nameContainer ms-4">
+                        {{#if user}}
+                        <p>Hello</p>
+                        <b class="fs-3">{{user.fname}}</b>
+                         {{else}}
+                          <b class="fs-3">User</b>
+                          {{/if}}
+                    </div>
+                </div>
+                <div class="left-sidebar m-auto mb-5 px-5 py-5 ">
+                    <div class=" pt-3"><i class="fa-solid fa-user me-4"
+                            style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
+                            href="/userprofile">  Profile Information</a></div>
+                    <div class=" pt-3"><i class="fa-solid fa-location-arrow me-4"
+                            style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
+                            href="/manageaddress">  Manage Address</a></div>
+                    <div class=" pt-3"><i class="fa-solid fa-ticket me-4"
+                            style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
+                            href="/profile/coupons">  My coupons</a></div>
+                    <div class=" pt-3"><i class="fa-solid fa-box-open me-4"
+                            style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
+                            href="/profile/orders">  My Orders</a></div>
+                    <div class=" pt-3"><i class="fa-solid fa-heart me-4"
+                            style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
+                            href="/profile/wishlist">  My Wishlist</a></div>
+                    <div class=" pt-3"><i class="fa-solid fa-arrow-right-from-bracket me-1"
+                            style="color: rgb(21, 22, 29); font-size: 19px;"></i><a
+                            class="fw-bold" href="/logout">  Logout</a></div>
+                </div>
+            </div>
+            <div class="col-md-7 p-3 right">
+                <div style="height: 30px; "></div>
+                <form class="col-md-10">
+                    <div class="row">
+                        <div class="form-group col-md-6"><label for="inputEmail4">First Name</label><input type="text"
+                                class="form-control" id="" placeholder="First Name" ></div>
+                        <div class="form-group col-md-6"><label for="inputPassword4">Last Name</label><input type="text"
+                                class="form-control" id="" placeholder="Last Name" value="Doe"></div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6"><label for="inputEmail4">Age</label><input type="number"
+                                class="form-control" id="" placeholder="Age" ></div>
+                        <div class="form-group col-md-6 px-5">
+                            <label for="inputPassword4">Gender</label>
+                            <div class="row ">
+                                <div class="form-check col-md-6"><input class="form-check-input" type="radio"
+                                        name="gender" id="gender" checked=""><label
+                                        class="form-check-label" for="flexRadioDefault1">Male</label></div>
+                                <div class="form-check col-md-6"><input class="form-check-input" type="radio"
+                                        name="gender" id="gender" ><label class="form-check-label"
+                                        for="flexRadioDefault2">Female</label></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-md-6"><label for="">Phone</label><input type="number"
+                                class="form-control" id=""></div>
+                    </div>
+                    <button type="button" class="btn btn-warning">Save</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <div>
+</section>
+</section>
+<style>
+    .left-top {
+        background-color: white;
+        height: 90px;
+        width: 90%;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .08);
+    }
 
-    </div>
-</div>
+    .left-sidebar {
+        background-color: white;
+
+        width: 90%;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .08);
+    }
+
+    .right {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .08);
+
+    }
+
+    .profile {
+        background-color: #F1F3F6;
+        min-height: 100vh;
+    }
+
+    .profile .form-control {
+        height: 50px;
+
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    .left-top .dp {
+        /* background-color: green; */
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        display: flex;
+    }
+
+    .nameContainer {
+        line-height: 9px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .address {
+        background-color: white;
+        border-radius: 10px;
+
+    }
+     .whole{
+         background-color: #F1F3F6;
+    }
+</style>

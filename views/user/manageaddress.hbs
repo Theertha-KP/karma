@@ -1,0 +1,168 @@
+<!-- Start Banner Area -->
+<section class="whole">
+    <section class="banner-area organic-breadcrumb">
+        <div class="container">
+            <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+                <div class="col-first">
+                    <h1>Manage Address</h1>
+                    <nav class="d-flex align-items-center">
+                        <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="/userprofile">Userprofile<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="#">Manage address</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Banner Area -->
+
+    <!--address page -->
+    <section>
+        <div class="container-fluid profile">
+            <div class="row my-4">
+                <div class="col-md-4">
+                    <div class="left-top m-auto mb-4 row p-4">
+                        <div class="dp"
+                            style="background-image: url(&quot;/src/assets/man.png&quot;); background-size: cover;">
+                            <input type="file" name="image" title=" " style="opacity: 0;">
+                        </div>
+                        <div class="col-6 nameContainer ms-4 ">
+                            {{#if user}}
+                        <p>Hello</p>
+                        <b class="fs-3">{{user.fname}}</b>
+                         {{else}}
+                          <b class="fs-3">User</b>
+                          {{/if}}
+                        </div>
+                    </div>
+                    <div class="left-sidebar m-auto mb-5 px-5 py-5 ">
+                        <div class=" pt-3"><i class="fa-solid fa-user me-4"
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
+                                href="/userprofile">  Profile Information</a></div>
+                        <div class=" pt-3"><i class="fa-solid fa-location-arrow me-4"
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
+                                href="/manageaddress">  Manage Address</a></div>
+                        <div class=" pt-3"><i class="fa-solid fa-ticket me-4"
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
+                                href="/profile/coupons">  My coupons</a></div>
+                        <div class=" pt-3"><i class="fa-solid fa-box-open me-4"
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
+                                href="/profile/orders">  My Orders</a></div>
+                        <div class=" pt-3"><i class="fa-solid fa-heart me-4"
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
+                                href="/profile/wishlist">  My Wishlist</a></div>
+                        <div class=" pt-3"><i class="fa-solid fa-arrow-right-from-bracket me-1"
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
+                                href="/logout">  Logout</a></div>
+                    </div>
+                </div>
+                <div class="col-md-7 p-5  right">
+                    <div style="height: 40px;"></div>
+                    <div class="card ">
+                        <h5 class="card-header">Manage Address</h5>
+                        <div class="col-md-6 mt-4">
+                            <a href="/addresspage" class="btn btn-warning">Add Address</a>
+                        </div>
+                        {{#if address }}
+                        <div class="card-body border mt-2">
+                            {{#each address.address}}
+                            <div class="mb-5">
+                                <div class="col-12 row justify-content-between  ">
+                                    <div class="col-1 d-flex justify-content-center"
+                                        style="background-color: darkgray; height:35px; ; border-radius: 5px;">
+                                        <p class="type">{{this.addresstype}}</p>
+                                    </div>
+                                     <div class=" row col-3 justify-content-between ">
+                                        <a href="/editAddress/{{this._id}}" type="button" class="btn btn-outline-primary">Edit</a>
+                                        <a  href="/deleteaddress/{{this._id}}" type="button" class="btn btn-outline-danger">Delete</a>
+                                    </div>
+                                
+                                   
+                                </div>
+                                <div class="address " style="line-height: 10px; margin-top: 12px;">
+                                    <p class="card-text">{{this.fname}}<span class="">  {{this.lname}}</span></p>
+                                    <p class="card-text">{{this.phone}}</p>
+                                    <p class="card-text">{{this.email}}</p>
+                                    <p class="card-text">{{this.address}} ,</p>
+                                    <p class="card-text">{{this.place}}<span class=""> , {{this.pincode}}</span></p>
+                                    <p class="card-text">{{this.additionalinfo}}</p>
+                                </div>
+                                <hr>
+                            </div>
+                            {{/each}}
+                        </div>
+
+                        {{/if}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</section>
+<style>
+    .whole {
+        background-color: #F1F3F6;
+    }
+
+    .left-top {
+        background-color: white;
+        height: 90px;
+        width: 90%;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .08);
+    }
+
+    .left-sidebar {
+        background-color: white;
+
+        width: 90%;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .08);
+    }
+
+    .right {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .08);
+
+    }
+
+    .profile {
+        margin-top: 50px;
+        background-color: #F1F3F6;
+        min-height: 100vh;
+    }
+
+    .profile .form-control {
+        height: 50px;
+
+    }
+
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    .left-top .dp {
+        /* background-color: green; */
+        width: 60px;
+        height: 60px;
+        border-radius: 30px;
+        display: flex;
+    }
+
+    .nameContainer {
+        line-height: 9px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .address {
+        background-color: white;
+        border-radius: 10px;
+
+    }
+</style>

@@ -2,7 +2,7 @@ const adminModal = require("../models/adminModel");
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 const User = require("../models/userModel");
-const adminmiddle=require('../middleware/adminmiddle')
+// const adminmiddle=require('../middleware/adminmiddle')
 
 const { ObjectId } = require('mongodb')
 const adminDashboard = async (req, res) => {
@@ -280,8 +280,6 @@ const UpdateCategory = async (req, res) => {
 
   try {
     const UpdateCategoryId = new ObjectId(req.params.id)
-    console.log(UpdateCategoryId);
-    console.log(req.body);
     const categoryData = await Category.updateOne(
       { _id: UpdateCategoryId },
       {

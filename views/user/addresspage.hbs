@@ -1,0 +1,112 @@
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+    <div class="container">
+        <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+            <div class="col-first">
+                <h1>Manage Address</h1>
+                <nav class="d-flex align-items-center">
+                    <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+                    <a href="/userprofile">Userprofile<span class="lnr lnr-arrow-right"></span></a>
+                    <a href="#">Manage address</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Banner Area -->
+<!--adress area-->
+<section>
+<div class="container-fluid d-flex justify-content-center mt-4  ">
+    <div class="col-md-6 mb-4">
+        <div class="card mb-4">
+            <div class="card-header py-3">
+                <h5 class="mb-0">User Address </h5>
+            </div>
+            <div class="card-body">
+                <form method="post" action="/addresssave">
+                    <!-- 2 column grid layout with text inputs for the first and last names -->
+                    <div class="row mb-4">
+                        <div class="col">
+                            <div class="form-outline">
+                                <input type="text" name="fname" id="form7Example1" class="form-control" />
+                                <label class="form-label" for="form7Example1">First name</label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-outline">
+                                <input type="text" name="lname" id="form7Example2" class="form-control" />
+                                <label class="form-label" for="form7Example2">Last name</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Text input -->
+                   
+
+                    <!-- Text input -->
+                    <div class="form-outline mb-4">
+                        <input type="text" name="address" id="form7Example4" class="form-control" />
+                        <label class="form-label" for="form7Example4">Address</label>
+                    </div>
+                     <div class="row mb-4">
+                        <div class="col">
+                        <div class="form-outline">
+                                <input type="text" name="place" id="form7Example1" class="form-control" />
+                                <label class="form-label" for="form7Example1">Place</label>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-outline">
+                                <input type="number" name="pincode" id="form7Example2" class="form-control" />
+                                <label class="form-label" for="form7Example6">Pincode</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Email input -->
+                    <div class="form-outline mb-4">
+                        <input type="email" name="email" id="form7Example5" class="form-control" />
+                        <label class="form-label" for="form7Example5">Email</label>
+                    </div>
+
+                    <!-- Number input -->
+                    <div class="form-outline mb-4">
+                        <input type="number" name="phone" id="form7Example6" class="form-control" />
+                        <label class="form-label" for="form7Example6">Phone</label>
+                    </div>
+                    <!--addresstype-->
+                    <div class="form-group col-md-6 px-2">
+                        <p class="">Address Type</p>
+                       <div class="row ">
+                                <div class="form-check col-md-5"><input class="form-check-input" type="radio"
+                                        name="addresstype" value="Home" id="adtype" checked=""><label
+                                        class="form-check-label" for="flexRadioDefault1">Home</label></div>
+                                <div class="form-check col-md-6"><input class="form-check-input" type="radio"
+                                        name="addresstype" id="adtype"  value="Work"><label class="form-check-label"
+                                        for="flexRadioDefault2">Work</label></div>
+                            </div>
+                    </div>
+
+                    <!-- Message input -->
+                    <div class="form-outline mb-4">
+                        <textarea class="form-control" name="additionalinfo" id="form7Example7" rows="4"></textarea>
+                        <label class="form-label" for="form7Example7">Additional information</label>
+                    </div>
+
+                    <!-- Checkbox -->
+                    <div class="col-md-3 d-flex justify-content-center mb-2">
+                        <button type="submit"  class="btn btn-warning btn-lg btn-block">
+                            Save
+                        </button>
+
+                        </label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+   
+</div>
+</section>
+<!--end adress area-->

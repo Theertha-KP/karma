@@ -276,7 +276,7 @@ const userprofile = async (req, res, next) => {
     try {
         //   const_id=new ObjectId(req.params.id)
         //   const userDoc=await User.findOne({_id:_id})
-        res.render("user/userprofile")
+        res.render("user/userprofile", { user: req.session.userData })
     } catch (error) {
         console.log("error at loading add products page");
         console.log(error.message);
@@ -345,14 +345,6 @@ const cart = async function (req, res, next) {
 
         //getting cart product count
         let cartCount = 0
-        if (user) {
-            // const cart = await Cart.findOne({ _id:user });
-            // // Assuming you want to calculate cartCount based on the user's cart items
-            // if (cart) {
-            //     cartCount = cart.product.length;
-            //     console.log(cartCount + '0000');
-            // }
-        }
 
         const cartData = await Cart.aggregate([
             {
@@ -373,21 +365,21 @@ const cart = async function (req, res, next) {
             },
             {
                 $unwind: "$productDetails"
-            },{
-                $project:{
-                    _id:1,
-                    user:1,
-                    product:1,
-                    productDetails:1,
-                    total:{$multiply:['$product.count','$productDetails.price']}
+            }, {
+                $project: {
+                    _id: 1,
+                    user: 1,
+                    product: 1,
+                    productDetails: 1,
+                    total: { $multiply: ['$product.count', '$productDetails.price'] }
                 }
             }
         ]).exec()
         console.log(cartData);
-        const total=cartData.reduce((acc,val)=>{
-            return acc+val.total
-        },0)
-        res.render('user/cart', { cartData,total })
+        const total = cartData.reduce((acc, val) => {
+            return acc + val.total
+        }, 0)
+        res.render('user/cart', { cartData, total })
     }
     catch (error) {
         console.log('Error sending OTP', error);
@@ -430,13 +422,9 @@ const addToCart = async (req, res) => {
             return res.redirect('/login')
         }
         const user = req.session.userData._id;
-        console.log(user);
         //get the id by the params in a tag
         const productId = new ObjectId(req.params.id)
-        //finding the product by the product id
-        // const product = await Product.findById(productId)
         // //find the user already exist in the cart
-        // console.log(product);
         let userFound = await Cart.findOne({ user })
         console.log(userFound);
         if (!userFound) {
@@ -448,10 +436,9 @@ const addToCart = async (req, res) => {
                     count: 1
                 }]
             })
-
             await newCart.save();
         } else {
-            if(userFound.product.find(product=>productId.equals(product.product_id))){
+            if (userFound.product.find(product => productId.equals(product.product_id))) {
                 return false
             }
             //checking for already existing products in the cart
@@ -472,53 +459,13 @@ const addToCart = async (req, res) => {
     }
 }
 
-//change items count in the cart
-// const changeCount = async (req, res) => {
-//     try {
-//         console.log("changecount");
-//         const user = new ObjectId(req.session.userData._id)
-//         const productId = new ObjectId(req.params.id)
-//         const count=Number(req.params.count)
-//         const cart = await Cart.aggregate([
-//             { $match: { user: user } },
-//             { $unwind: "$product" },
-//             { $match: { 'product.product_id': productId } },
-
-//             {
-//                 $lookup: {
-//                     from: "products",
-//                     localField: "product.product_id",
-//                     foreignField: "_id",
-//                     as: "productDetails"
-//                 }
-//             },
-
-//             { $unwind: "$productDetails" },
-
-           
-//         ]).exec()
-//         // console.log(cart);
-//         console.log(cart[0].product.count+count);
-//         if((cart[0].product.count+count>cart[0].productDetails.quantity&&count>0)||cart[0].product.count+count>5||cart[0].product.count+count<1){
-//             return false
-//         }
-//         const res= await Cart.updateOne({user:user},{
-//             $inc:{'product.$[elem].count':count}},{ arrayFilters: [{ "elem.product_id": productId }] })
-
-        
-//         console.log(res);
-
-//     } catch (error) {
-//         console.log(error);
-//     }
-// }
 
 const changeCount = async (req, res) => {
     try {
         console.log("changecount");
         const user = new ObjectId(req.session.userData._id)
         const productId = new ObjectId(req.params.id)
-        const count=Number(req.params.count)
+        const count = Number(req.params.count)
         const cart = await Cart.aggregate([
             { $match: { user: user } },
             { $unwind: "$product" },
@@ -535,17 +482,18 @@ const changeCount = async (req, res) => {
 
             { $unwind: "$productDetails" },
 
-           
+
         ]).exec()
         // console.log(cart);
-        console.log(cart[0].product.count+count);
-        if((cart[0].product.count+count>cart[0].productDetails.quantity&&count>0)||cart[0].product.count+count>5||cart[0].product.count+count<1){
+        console.log(cart[0].product.count + count);
+        if ((cart[0].product.count + count > cart[0].productDetails.quantity && count > 0) || cart[0].product.count + count > 5 || cart[0].product.count + count < 1) {
             return false
         }
-        const res= await Cart.updateOne({user:user},{
-            $inc:{'product.$[elem].count':count}},{ arrayFilters: [{ "elem.product_id": productId }] })
+        const res = await Cart.updateOne({ user: user }, {
+            $inc: { 'product.$[elem].count': count }
+        }, { arrayFilters: [{ "elem.product_id": productId }] })
 
-        
+
         console.log(res);
 
     } catch (error) {
@@ -572,129 +520,57 @@ const cartDelete = async (req, res, next) => {
         res.redirect('/cart')
     } catch (error) {
         console.log(error)
-        
+
     }
 }
 
 
-
-
-//deleting items in the cart
-// const cartDelete = async (req, res, next) => {
-//     try {
-
-//         const id = new ObjectId(req.query.productId)
-//         console.log(id)
-//         // const product = await Product.findOne({ _id: id })
-//         // console.log(product);
-//         const deleteItem = await Cart.findOneAndUpdate({ user: new ObjectId(req.session.userData._id) }, {
-//             $pull: { product: { product_id: id } }
-//         })
-//         console.log(deleteItem);
-//         res.redirect('/cart')
-//     } catch (error) {
-//         console.log(error)
-        
-//     }
-// }
-
-//adding cart items from wishlist
-exports.addToCartWishlist = async (req, res, next) => {
-    try {
-        const user = req.session.userData;
-        if (!user) {
-            req.app.locals.specialContext = "Please Login"
-            return res.redirect('/login')
-        }
-        //get the id by the query in a tag
-        const productId = req.query.productId;
-
-        //finding the product by the product
-        const product = await Product.findById(productId)
-
-        //find the user already exist in the cart
-        let userFound = await Cart.findOne({ user })
-        if (!userFound) {
-            //creating a new cart
-            const newCart = new Cart({
-                user,
-                product: [{
-                    product_id: productId,
-                    count: 1,
-                    price: product.sellingPrice
-                }]
-            })
-            await newCart.save();
-        } else {
-            //checking for already existing products in the cart
-            await Cart.updateOne({ user }, {
-                $push: { product: { product_id: productId, count: 1, price: product.sellingPrice } }
-            })
-            console.log("pulled from wishlist");
-        }
-
-
-        // Now, remove the product from the wishlist
-        //  await Wishlist.updateOne({ _id: user }, {
-        //     $pull: { product: { product_id: productId } }
-        // });
-        await Wishlist.findOneAndUpdate({ user: req.session.userId }, {
-            $pull: { product: { product_id: productId } }
-        })
-        console.log("Item removed");
-        res.redirect('/wishlist');
-
-    } catch (error) {
-        console.log(error.message);
-        error(next)
-    }
-}
 // add address
 const addressload = async (req, res, next) => {
     try {
-        const user = req.session.userId
-        const address = req.session.addresId
+         const user = req.session.userData
+        // const address = req.session.addressId
         const addressData = await Address.findOne({ user })
-        //   console.log(addressData);
-
-
-
-
-        //getting cart product count - badge
-        let cartCount = 0
-        if (user) {
-            const cart = await Cart.findOne({ user });
-            // Assuming you want to calculate cartCount based on the user's cart items
-            if (cart) {
-                cartCount = cart.product.length;
-            }
-        }
-        res.render('addresspage', { addressData, cartCount })
+        console.log(addressData);
+        res.render('user/manageaddress',{address:addressData, user: req.session.userData })
     } catch (error) {
         console.log(error);
         next(error)
     }
 }
+const newaddress = async (req, res) => {
+    try {
+        res.render('user/addresspage')
 
-const addAddressProfile = async (req, res) => {
+    } catch (error) {
+        console.log(error);
+
+    }
+}
+
+const addAddress = async (req, res) => {
     try {
         const user = req.session.userData
         // console.log(user);
         const userFound = await Address.findOne({ user })
         //console.log(userFound)
-        const { name, phone, address, locality, pincode, city, state } = req.body;
+        const { fname, lname, phone, address, place, pincode, city, state, email, additionalinfo,addresstype } = req.body;
         if (!userFound) {
             console.log("user not found");
             const newAddress = await new Address({
                 user,
                 address: [{
-                    name,
+                    fname,
+                    lname,
                     phone,
+                    email,
+                    additionalinfo,
                     address,
-                    locality,
+                    place,
                     pincode,
                     city,
-                    state
+                    state,
+                    addresstype
                 }]
             })
             await newAddress.save()
@@ -703,11 +579,11 @@ const addAddressProfile = async (req, res) => {
         else {
             console.log("userfound");
             await Address.updateOne({ user }, {
-                $push: { address: { name, phone, address, locality, pincode, city, state } }
+                $push: { address: { fname, lname, phone, address, place, pincode, city, state, email, additionalinfo,addresstype } }
             })
             console.log("data pushed");
         }
-        res.redirect('/addresspage')
+        res.redirect('/manageaddress')
 
     } catch (error) {
         console.log(error);
@@ -719,197 +595,57 @@ const addAddressProfile = async (req, res) => {
 const deleteAddress = async (req, res, next) => {
     try {
         const user = req.session.userData
-        const id = req.query._id;
+        
+        const id = new ObjectId(req.params.id);
         console.log(id);
         await Address.findOneAndUpdate({ user, 'address._id': id }, { $pull: { address: { _id: id } } })
-        res.redirect('/addresspage')
+        // res.redirect('/manageaddress')
         console.log("pulled");
     } catch (error) {
         console.log(error);
         next(error)
     }
 }
+const editAddress=async(req,res,next)=>{
+    try{
+        const user=req.session.userData
+        const id=new ObjectId(req.params.id)
+        const address=await Address.findOne({ user, 'address._id': id })
+       
+        res.render('user/editAddress',{address:address})
 
-//cvbjtudfyklkignkgjyjkb
-
-//shipping address - get in cart side
-exports.shippingAddress = async (req, res, next) => {
-    try {
-
-        const user = req.session.userData;
-        //console.log(user);
-
-
-        //getting cart product count - badge
-        let cartCount = 0
-        if (user) {
-            const cart = await Cart.findOne({ user });
-            // Assuming you want to calculate cartCount based on the user's cart items
-            if (cart) {
-                cartCount = cart.product.length;
-            }
-        }
-        const addressData = await Address.findOne({ user })
-        // console.log(addressData);
-        const cartData = await Cart.findOne({ user }).populate('product.product_id')
-        // console.log(cartData);
-        let subTotal = cartData?.product.reduce((acc, item) => {
-            const totalItem = item.price * item.count;
-            return acc + totalItem
-        }, 0)
-
-        //coupon
-        //  const coupons = await Coupon.find({})
-        // console.log('coupons',coupons);
-        let total;
-        let discount = 0
-        const couponFound = await Coupon.findOne({ couponName: cartData?.isCouponApplied })
-        console.log('couponFound', couponFound);
-        if (couponFound) {
-            discount = couponFound.maximumDiscount;
-            total = subTotal - couponFound.maximumDiscount
-        } else {
-            total = subTotal
-        }
-
-        res.render('shippingAddress', { addressData, subTotal, cartCount, total, discount })
-
-    } catch (error) {
+    }catch (error) {
         console.log(error);
         next(error)
     }
 }
-
-
-
-
-
-
-//edit adress post - cart side
-const editAddress = async (req, res) => {
-    try {
-        const id = req.body.id;
-        const user = req.session.userData
-        const { name, phone, address, locality, pincode, city, state } = req.body;
-        // console.log(name,phone,address,locality,pincode,city,state);
-        await Address.findOneAndUpdate({ user, 'address._id': id }, {
-            $set: {
-                'address.$.name': name,
-                'address.$.phone': phone,
-                'address.$.address': address,
-                'address.$.locality': locality,
-                'address.$.pincode': pincode,
-                'address.$.city': city,
-                'address.$.state': state,
-            }
-        })
-        res.redirect('/shippingAddress')
-        console.log("edited");
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-
-
-//selecting address
-const addressSelector = async (req, res) => {
-    try {
-        const user = req.session.userData
-        // console.log(user)
-        const address = req.body.address;
-        req.session.addressId = address
-        console.log(req.session.addressId);
-        return res.redirect('/checkout')
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-
-//payment
-const payment = async (req, res) => {
-    try {
-        const user = req.session.userData
-        const payment = req.body.payment
-        console.log(payment + "-payment");
-        req.session.paymentId = payment
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-
-
-
-//editAddress profile
-const editAddressProfileLoad = async (req, res, next) => {
-    try {
-        const user = req.session.userData
-        const id = req.query._id;
-        console.log(id);
-        const address = await Address.findOne({ user }, { address: { $elemMatch: { _id: id } } });
-        //   console.log(address);
-        res.render('editAddressProfile', { address: address.address[0] })
-    } catch (error) {
-        console.log(error);
-        next(error)
-    }
-}
-
-
-
-//edit address post
-const editAddressProfile = async (req, res) => {
-    try {
-        const id = req.body.id;
-        const user = req.session.userData
-        const { name, phone, address, locality, pincode, city, state } = req.body;
-        // console.log(name,phone,address,locality,pincode,city,state);
-        await Address.findOneAndUpdate({ user, 'address._id': id }, {
-            $set: {
-                'address.$.name': name,
-                'address.$.phone': phone,
-                'address.$.address': address,
-                'address.$.locality': locality,
-                'address.$.pincode': pincode,
-                'address.$.city': city,
-                'address.$.state': state,
-            }
-        })
-        res.redirect('/addresspage')
-
-    } catch (error) {
-        console.log(error);
-
-    }
-}
-
-
-
-
-
-
-
-//Address in profile
-const addAddressProfileLoad = async (req, res, next) => {
-    try {
-        const user = req.session.userData;
-
-        //getting cart product count
-        let cartCount = 0;
-        if (user) {
-            const cart = await Cart.findOne({ user });
-            // Assuming you want to calculate cartCount based on the user's cart items
-            if (cart) {
-                cartCount = cart.product.length;
-            }
-        }
-        res.render('addAddressProfile', { cartCount })
-    } catch (error) {
+const updateAddress=async(req,res,next)=>{
+    try{
+        const user_id=new ObjectId(req.params.user_id)
+        const address_id= new ObjectId(req.params.address_id)
+        console.log(address_id);
+        console.log(req.body)
+        const address = await Address.updateOne(
+            {user:user_id },
+            {
+              $set: {
+                 "address.$[elem].fname":req.body.fname,
+                "address.$[elem].lname":req.body.lname,
+                "address.$[elem].phone":req.body.phone,
+                "address.$[elem].email":req.body.email,
+                "address.$[elem].additionalinfo":req.body.additionalinfo,
+                "address.$[elem].address":req.body.address,
+                "address.$[elem].place":req.body.place,
+               "address.$[elem].pincode":req.body.pincode,
+               "address.$[elem].addresstype":req.body.addresstype
+              }},
+             {
+                arrayFilters:[{"elem._id":address_id}]
+             }
+            )
+            console.log(address);
+            res.redirect('/manageaddress')
+    }catch (error) {
         console.log(error);
         next(error)
     }
@@ -937,11 +673,13 @@ module.exports = {
     addToCart,
     checkproduct,
     addressload,
-    addAddressProfile,
+    addAddress,
     deleteAddress,
-    editAddress,
+    newaddress,
     cartDelete,
-    changeCount
+    changeCount,
+    editAddress,
+    updateAddress
 
 
-};
+}

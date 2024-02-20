@@ -2,7 +2,6 @@ var express = require('express');
 var admin_route = express.Router();
 const multer = require("../middleware/multer");
 admin_route.use("/node_modules", express.static("./node_modules"));
-
 const adminController = require("../controllers/adminController");
 const adminmiddle=require('../middleware/adminmiddle')
 admin_route.get("/",adminController.adminPageLoad);

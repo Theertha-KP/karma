@@ -5,7 +5,10 @@ addressSchema = new mongoose.Schema({
         ref : 'User'
     },
     address:[{
-        name : {
+        fname : {
+            type:String
+        },
+        lname : {
             type:String
         },
         phone:{
@@ -14,7 +17,7 @@ addressSchema = new mongoose.Schema({
         address:{
             type : String
         },
-        locality:{
+        place:{
             type:String
         },
         pincode : {
@@ -25,7 +28,17 @@ addressSchema = new mongoose.Schema({
         },
         state:{
             type : String
+        },
+        additionalinfo:{
+            type:String
+        },
+        email:{
+            type:String        
+        },
+        addresstype:{
+            type:String
         }
+
     }]
 })
 

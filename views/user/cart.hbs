@@ -227,7 +227,7 @@
                             <td>
                                 <div class="checkout_btn_inner d-flex align-items-center">
                                     <a class="gray_btn" href="/shop">Continue Shopping</a>
-                                    <a class="primary-btn" href="/checkout">Proceed </a>
+                                    <a class="primary-btn" href="/checkout/:{{this.user}}">Proceed </a>
                                 </div>
                             </td>
                         </tr>
@@ -257,7 +257,7 @@
 
     function quantityChange(id, count,) {
 
-        console.log("hbshjb")
+    
 
         axios.patch(`/changecount/${id}/${count}`).then(() => {
 

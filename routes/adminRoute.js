@@ -17,7 +17,7 @@ admin_route.get("/productdashboard",adminmiddle.checkAdmin, adminController.load
 admin_route.get("/addproduct",adminmiddle.checkAdmin, adminController.loadAddproduct);
 admin_route.post( "/addproduct",adminmiddle.checkAdmin,upload.array("files", 5),adminController.insertProductDb);
 admin_route.get("/editproduct/:id", adminmiddle.checkAdmin,adminController.editProduct);
-admin_route.post("/editproduct/:id",adminmiddle.checkAdmin,upload.array("newImages", 5), adminController.editUpdateDb);
+admin_route.post("/editproduct/:id",adminmiddle.checkAdmin,upload.array("newImages", 3), adminController.editUpdateDb);
 admin_route.get('/deleteImg',adminmiddle.checkAdmin,adminController.deleteProductImg)
 admin_route.get("/deleteproduct/:id",adminmiddle.checkAdmin, adminController.deleteProduct);
 admin_route.get("/userdashboard",adminmiddle.checkAdmin, adminController.loadUserDashboard);
@@ -25,5 +25,5 @@ admin_route.get("/blockuser/:id",adminmiddle.checkAdmin, adminController.blockUs
 admin_route.get("/unblockuser/:id",adminmiddle.checkAdmin, adminController.unblockUser);
 admin_route.get('/listproduct/:id',adminmiddle.checkAdmin,adminController.listProduct)
 admin_route.get('/adminlogout',adminController.adminlogout)
-// admin_route.post('/adminlogout',adminController.adminlogout)
+
 module.exports = admin_route;

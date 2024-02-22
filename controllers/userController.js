@@ -418,10 +418,7 @@ const checkproduct = async (req, res) => {
 const addToCart = async (req, res) => {
     try {
         //searching for the user
-        if (!req.session.userData) {
-            req.app.locals.specialContext = "Please Login"
-            return res.redirect('/login')
-        }
+     
         const user = req.session.userData._id;
         //get the id by the params in a tag
         const productId = new ObjectId(req.params.id)
@@ -717,9 +714,7 @@ const cashOnDelivery = async (req, res, next) => {
     try {
         console.log('hiiorder');
         const user = req.session.userData._id
-        const userFound = await Order.findOne({ user })
         const { address, payment, orderDate, product_id, quantity, price, orderStatus } = req.body;
-        if (!userFound) {
             console.log("user not found");
             const newOrder = await new Order({
                 user,
@@ -738,14 +733,8 @@ const cashOnDelivery = async (req, res, next) => {
             })
             await newOrder.save()
             console.log("data saved");
-        }
-        else {
-            console.log("userfound");
-            await Order.updateOne({ user }, {
-                $push: { address, payment, orderDate, items:{type: { product_id, quantity, price, orderStatus }} }
-            })
-            console.log("data pushed");
-        }
+        await Cart.deleteOne({user})
+       
         res.redirect('/orderstatus')
 
     } catch (error) {

@@ -14,7 +14,7 @@ user_route.get('/resendotp',userController.resendOTP)
 user_route.get('/shop',userController.productlist)
 user_route.get('/singleproduct/:id',userController.singleproduct)
 user_route.get('/cart',userController.cart)
-user_route.get('/addtocart/:id',userController.addToCart)
+user_route.get('/addtocart/:id',userMiddleware.checkUser,userController.addToCart)
 
 user_route.get('/checkproduct/:id',userController.checkproduct)
 user_route.get('/cartDelete',userController.cartDelete)

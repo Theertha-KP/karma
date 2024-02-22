@@ -32,6 +32,9 @@ hbs.registerPartials(__dirname + '/views/partials', function (err) {});
 hbs.registerHelper('inc', (value) => {
   return parseInt(value) + 1;
 })
+hbs.registerHelper('eq', (a,b) => {
+  return a===b
+})
 //morgan
 var logger = require('morgan');
 app.use(logger("dev"))

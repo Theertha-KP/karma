@@ -32,7 +32,8 @@ user_route.get('/deleteaddress/:id',userMiddleware.checkUser,userController.dele
 user_route.get('/editaddress/:id',userMiddleware.checkUser,userController.editAddress)
 user_route.post('/updateaddress/:address_id/:user_id',userMiddleware.checkUser,userController.updateAddress)
 
-user_route.get('/userprofile',userController.userprofile)
+user_route.get('/userprofile',userMiddleware.checkUser,userController.userprofile)
+user_route.post('/saveuser',userMiddleware.checkUser,userController.updateUser)
 user_route.get('/logout',userController.logout)
-user_route.post('/logout',userController.logout)
+
 module.exports=user_route;

@@ -183,17 +183,7 @@ const otpGenerator = async (req, res, next) => {
     });
     console.log(`req body in otp generator`);
     console.log(req.body);
-
-    // const otpDB = new otpModal({
-    //     userId: req.session.userData._id,
-    //     otp: otp,
-    // });
-    // console.log("Otp database is created");
-    // await otpDB.save();
     await otpModal.updateOne({ userId: req.session.userData._id }, { $set: { otp: otp } }, { upsert: true })
-
-    // console.log(otpDB);
-    // console.log("otp from otpdb" + otpDB.otp);
     const mailOptions = {
         from: "theerthatkp28@gmail.com",
         to: email,
@@ -275,9 +265,9 @@ const singleproduct = async (req, res, next) => {
 }
 const userprofile = async (req, res, next) => {
     try {
-        //   const_id=new ObjectId(req.params.id)
-        //   const userDoc=await User.findOne({_id:_id})
-        res.render("user/userprofile", { user: req.session.userData })
+          const user= req.session.userData._id
+      const userDoc=await User.findOne({_id:user})
+        res.render("user/userprofile", { userDoc })
     } catch (error) {
         console.log("error at loading add products page");
         console.log(error.message);
@@ -605,10 +595,17 @@ const deleteAddress = async (req, res, next) => {
 }
 const editAddress = async (req, res, next) => {
     try {
-        const user = req.session.userData
+        const user = new ObjectId(req.session.userData._id)
         const id = new ObjectId(req.params.id)
-        const address = await Address.findOne({ user, 'address._id': id })
-
+        console.log(id);
+        // const address = await Address.findOne({ user, 'address._id': id })
+        // console.log(address);
+        const address= await Address.aggregate([
+            {$match:{user:user}},
+            {$unwind:"$address"},
+            {$match:{"address._id":id}}
+        ])
+        console.log(address);
         res.render('user/editAddress', { address: address })
 
     } catch (error) {
@@ -742,6 +739,27 @@ const cashOnDelivery = async (req, res, next) => {
     }
 
 }
+const updateUser=async(req,res,next)=>{
+    try{
+    const user = req.session.userData._id
+console.log(req.body);
+const updatedUser=await User.updateOne({_id:user},{
+    $set:{
+    fname:req.body.fname,
+    lname:req.body.lname,
+    email:req.body.email,
+    gender:req.body.gender,
+    mobilenumber:req.body.mobilenumber
+
+    }
+
+})
+console.log(updatedUser);
+res.redirect('/userprofile')
+}catch (error) {
+    console.log(error);
+}
+}
 
 
 
@@ -776,7 +794,8 @@ module.exports = {
     updateAddress,
     checkoutPage,
     cashOnDelivery,
-    orderPage
+    orderPage,
+    updateUser
 
 
 }

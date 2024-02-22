@@ -17,97 +17,118 @@
 <!-- End Banner Area -->
 <!--adress area-->
 <section>
-<div class="container-fluid d-flex justify-content-center mt-4  ">
-    <div class="col-md-6 mb-4">
-        <div class="card mb-4">
-            <div class="card-header py-3">
-                <h5 class="mb-0">User Address </h5>
-            </div>
-            <div class="card-body">
-                <form method="post" action="/updateaddress/{{address.address.[0]._id}}/{{address.user}}">
-                    <!-- 2 column grid layout with text inputs for the first and last names -->
-                    <div class="row mb-4">
-                        <div class="col">
-                            <div class="form-outline">
-                                <input type="text" name="fname" id="form7Example1" value='{{address.address.[0].fname}}'class="form-control" />
-                                <label class="form-label" for="form7Example1">First name</label>
+    <div class="container-fluid d-flex justify-content-center mt-4  ">
+        <div class="col-md-6 mb-4">
+            <div class="card mb-4">
+                <div class="card-header py-3">
+                    <h5 class="mb-0">User Address </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="/updateaddress/{{address.[0].address._id}}/{{address.[0].user}}">
+                        <!-- 2 column grid layout with text inputs for the first and last names -->
+                        <div class="row mb-4">
+                            <div class="col">
+                                <div class="form-outline">
+                                    <input type="text" name="fname" id="form7Example1"
+                                        value='{{address.[0].address.fname}}' class="form-control" />
+                                    <label class="form-label" for="form7Example1">First name</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-outline">
+                                    <input type="text" name="lname" value='{{address.[0].address.lname}}'
+                                        id="form7Example2" class="form-control" />
+                                    <label class="form-label" for="form7Example2">Last name</label>
+                                </div>
                             </div>
                         </div>
-                        <div class="col">
-                            <div class="form-outline">
-                                <input type="text" name="lname" value='{{address.address.[0].lname}}' id="form7Example2" class="form-control" />
-                                <label class="form-label" for="form7Example2">Last name</label>
+
+                        <!-- Text input -->
+
+
+                        <!-- Text input -->
+                        <div class="form-outline mb-4">
+                            <input type="text" name="address" value='{{address.[0].address.address}}' id="form7Example4"
+                                class="form-control" />
+                            <label class="form-label" for="form7Example4">Address</label>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col">
+                                <div class="form-outline">
+                                    <input type="text" name="place" id="form7Example1"
+                                        value='{{address.[0].address.place}}' class="form-control" />
+                                    <label class="form-label" for="form7Example1">Place</label>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="form-outline">
+                                    <input type="number" name="pincode" id="form7Example2"
+                                        value='{{address.[0].address.pincode}}' class="form-control" />
+                                    <label class="form-label" for="form7Example6">Pincode</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Text input -->
-                   
-
-                    <!-- Text input -->
-                    <div class="form-outline mb-4">
-                        <input type="text" name="address" value='{{address.address.[0].address}}' id="form7Example4" class="form-control" />
-                        <label class="form-label" for="form7Example4">Address</label>
-                    </div>
-                     <div class="row mb-4">
-                        <div class="col">
-                        <div class="form-outline">
-                                <input type="text" name="place" id="form7Example1" value='{{address.address.[0].place}}' class="form-control" />
-                                <label class="form-label" for="form7Example1">Place</label>
-                            </div>
+                        <!-- Email input -->
+                        <div class="form-outline mb-4">
+                            <input type="email" name="email" id="form7Example5" value='{{address.[0].address.email}}'
+                                class="form-control" />
+                            <label class="form-label" for="form7Example5">Email</label>
                         </div>
-                        <div class="col">
-                            <div class="form-outline">
-                                <input type="number" name="pincode" id="form7Example2"value='{{address.address.[0].pincode}}' class="form-control" />
-                                <label class="form-label" for="form7Example6">Pincode</label>
-                            </div>
+
+                        <!-- Number input -->
+                        <div class="form-outline mb-4">
+                            <input type="number" name="phone" id="form7Example6" value='{{address.[0].address.phone}}'
+                                class="form-control" />
+                            <label class="form-label" for="form7Example6">Phone</label>
                         </div>
-                    </div>
-
-                    <!-- Email input -->
-                    <div class="form-outline mb-4">
-                        <input type="email" name="email" id="form7Example5" value='{{address.address.[0].email}}' class="form-control" />
-                        <label class="form-label" for="form7Example5">Email</label>
-                    </div>
-
-                    <!-- Number input -->
-                    <div class="form-outline mb-4">
-                        <input type="number" name="phone" id="form7Example6" value='{{address.address.[0].phone}}' class="form-control" />
-                        <label class="form-label" for="form7Example6">Phone</label>
-                    </div>
-                    <!--addresstype-->
-                    <div class="form-group col-md-6 px-2">
-                        <p class="">Address Type</p>
-                       <div class="row ">
-                                <div class="form-check col-md-5"><input class="form-check-input" type="radio"
-                                        name="addresstype" value="Home" id="adtype" checked=""><label
-                                        class="form-check-label" for="flexRadioDefault1">Home</label></div>
-                                <div class="form-check col-md-6"><input class="form-check-input" type="radio"
-                                        name="addresstype" id="adtype"  value="Work"><label class="form-check-label"
+                        <!--addresstype-->
+                        <div class="form-group col-md-6 px-2">
+                            <p class="">Address Type</p>
+                            <div class="row ">
+                                <div class="form-check col-md-5">
+                                  
+                                         {{#if (eq address.[0].address.addresstype 'Home')}}
+                                        <input  class="form-check-input" type="radio" name="addresstype" value="Home"
+                                        id="adtype"  checked>
+                                            {{else}}
+                                             <input class="form-check-input" type="radio" name="addresstype" value="Home"
+                                        id="adtype" >
+                                            {{/if}}
+                                    <label class="form-check-label" for="flexRadioDefault1">Home</label>
+                                </div>
+                                <div class="form-check col-md-6"> {{#if (eq address.[0].address.addresstype 'Work')}}
+                                        <input  class="form-check-input" type="radio" name="addresstype" value="Work"
+                                        id="adtype"  checked>
+                                            {{else}}
+                                             <input class="form-check-input" type="radio" name="addresstype" value="Work"
+                                        id="adtype" >
+                                            {{/if}}
+                                            <label class="form-check-label"
                                         for="flexRadioDefault2">Work</label></div>
                             </div>
-                    </div>
+                        </div>
 
-                    <!-- Message input -->
-                    <div class="form-outline mb-4">
-                        <textarea class="form-control" name="additionalinfo" id="form7Example7" rows="4"></textarea>
-                        <label class="form-label" for="form7Example7">Additional information</label>
-                    </div>
+                        <!-- Message input -->
+                        <div class="form-outline mb-4">
+                            <textarea class="form-control" name="additionalinfo" id="form7Example7" rows="4"></textarea>
+                            <label class="form-label" for="form7Example7">Additional information</label>
+                        </div>
 
-                    <!-- Checkbox -->
-                    <div class="col-md-3 d-flex justify-content-center mb-2">
-                        <button type="submit"  class="btn btn-warning btn-lg btn-block">
-                            Update
-                        </button>
+                        <!-- Checkbox -->
+                        <div class="col-md-3 d-flex justify-content-center mb-2">
+                            <button type="submit" class="btn btn-warning btn-lg btn-block">
+                                Update
+                            </button>
 
-                        </label>
-                    </div>
-                </form>
+                            </label>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
 
-   
-</div>
+
+    </div>
 </section>
 <!--end adress area-->

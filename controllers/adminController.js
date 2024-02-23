@@ -337,18 +337,14 @@ try{
   const orderstatus = await Order.updateOne({ _id:orderId  }, {
     $set: { 'items.$[elem].orderStatus': newStatus }
 }, { arrayFilters: [{ "elem.product_id": productId }] })
-
-
-  
-   console.log(orderstatus);
+ console.log(orderstatus);
 res.json({success:true})
-
-
 }catch (error) {
     console.log(error);
  
   }
 }
+
 
 //logout
 const adminlogout = async (req, res) => {

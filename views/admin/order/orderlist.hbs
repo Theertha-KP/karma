@@ -399,7 +399,6 @@
 
                                                         <th>Order Id</th>
                                                         <th>Date</th>
-
                                                         <th>Payment method</th>
                                                         <th>Amount</th>
                                                         <th>Status</th>
@@ -449,8 +448,8 @@
                                                                 </div>
                                                                 <button class="btn btn-sm btn-outline-danger  border"
                                                                     style="border-color:red!important"
-                                                                    href="/cancelorder">
-                                                                    Cancel
+                                                                     type="button" onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Cancelled')">
+                                                                    Cancel 
                                                                 </button>
 
                                                             </div>

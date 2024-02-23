@@ -118,8 +118,11 @@
 					<h3>{{product.productName}}</h3>
 					<h2>Discount price Rs. {{product.price}}</h2>
 					<ul class="list">
-
-						<li><a href="#"><span>Availibility</span> : In Stock</a></li>
+{{#if (eq countExist=true)}}
+						<li><a href="#"><span>Availability:</span>In stock </a></li>
+						{{else}}
+						<li><a href="#" class="rrr font-danger"><span>Availability:</span>Out of stock </a></li>
+						{{/if}}
 					</ul>
 					<p>Mill Oil is an innovative oil filled radiator with the most modern technology. If you are
 						looking for
@@ -132,11 +135,12 @@
 							<input id="productid" value="{{product._id}} " hidden >
 							{{!-- for add to cart --}}
 							
-							
+							{{#if (eq countExist=true)}}
 							<a href="/addtocart/{{product._id}}" class="btn text-white fw-bold" id="addtocart"
 								style="background-color: #ff9900;height:3rem; width:10rem margin-top:-53px!important;">
 								<i class="fa fa-shopping-cart text-light py-2" style="font-size:1rem; "></i>ADD TO CART
 							</a>
+							{{/if}}
 						
 						</div>
 
@@ -259,7 +263,7 @@
 		}).catch((err)=>{
 			console.log(error)
 		})
-
+		
 
 		
 	})

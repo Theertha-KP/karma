@@ -235,7 +235,7 @@ const verifyOtp = async (req, res, next) => {
 const productlist = async (req, res, next) => {
     try {
 
-        const productDoc = await Product.find({ isListed: false }).populate("categoryId");
+        const productDoc = await Product.find({ isListed: true }).populate("categoryId");
         res.render("user/productlist", { products: productDoc });
     } catch (error) {
         console.log("error at loading add products page");
@@ -257,7 +257,12 @@ const singleproduct = async (req, res, next) => {
         console.log(_id);
         const productDoc = await Product.findOne({ _id: _id })
         console.log(productDoc);
-        res.render("user/singleproduct", { product: productDoc });
+        if (productDoc.quantity === 0) {
+            var countExist = false
+        } else {
+            var countExist = true
+        }
+        res.render("user/singleproduct", { product: productDoc, countExist });
     } catch (error) {
         console.log("error at loading add products page");
         console.log(error.message);
@@ -423,7 +428,7 @@ const addToCart = async (req, res) => {
                     product_id: productId,
                     count: 1
                 }]
-                
+
             })
             await newCart.save();
         } else {
@@ -700,9 +705,9 @@ const checkoutPage = async (req, res, next) => {
 const orderPage = async (req, res, next) => {
     try {
         const user = req.session.userData
-        const orderdetails=await Order.find({user:user})
+        const orderdetails = await Order.find({ user: user })
         console.log(orderdetails);
-        res.render('user/orderstatus', { user,orderdetails })
+        res.render('user/orderstatus', { user, orderdetails })
 
     } catch (error) {
         console.log(error);
@@ -713,7 +718,7 @@ const orderPage = async (req, res, next) => {
 //place order
 const cashOnDelivery = async (req, res, next) => {
     try {
-        console.log('hiiorder');
+
         const user_id = new ObjectId(req.session.userData._id)
         console.log(user_id);
         const cart = await Cart.findOne({ user: user_id })
@@ -723,20 +728,27 @@ const cashOnDelivery = async (req, res, next) => {
         const newOrder = await new Order({
             user: user_id,
             address: req.body.address,
-             payment:req.body.payment,
+            payment: req.body.payment,
             orderDate: new Date().toLocaleDateString(),
-            totalAmount:req.body.totalAmount,
+            totalAmount: req.body.totalAmount,
 
-            items:cart.product
+            items: cart.product
         })
 
 
         await newOrder.save()
         console.log(newOrder);
         // console.log("data saved");
-        await Cart.deleteOne({ user:user_id })
 
-        res.json({success:true})
+        Promise.all(newOrder.items.map(async (items) => {
+            const product = await Product.findOne({ _id: items.product_id })
+            console.log(product + "this is product quantity");
+            product.quantity = product.quantity - items.count
+            await product.save()
+        }))
+        await Cart.deleteOne({ user: user_id })
+
+        res.json({ success: true })
 
     } catch (error) {
         console.log(error);
@@ -771,6 +783,7 @@ const orders = async (req, res, next) => {
         // const address = req.session.addressId
         const orderData = await Order.findOne({ user })
 
+
         console.log(orderData);
         res.render('user/orderpage', { orderData: orderData, user: req.session.userData })
 
@@ -780,60 +793,60 @@ const orders = async (req, res, next) => {
 }
 
 //forgetpassword
-const forgetpw=async(req,res,next)=>{
-   try{
-       res.render('user/forgetpassword')
-   }catch (error) {
+const forgetpw = async (req, res, next) => {
+    try {
+        res.render('user/forgetpassword')
+    } catch (error) {
         console.log(error);
     }
 }
 
-const emailVerify=async(req,res,next)=>{
-    try{
+const emailVerify = async (req, res, next) => {
+    try {
 
-        const email=req.body.email
+        const email = req.body.email
         console.log(email);
-        const userAc=await User.findOne({email:email})
+        const userAc = await User.findOne({ email: email })
         console.log(userAc);
-        if (userAc){
+        if (userAc) {
             const otp = speakeasy.totp({
                 secret: secret.base32,
                 encoding: "base32",
             });
             console.log(`req body in otp generator`);
             console.log(req.body);
-            await otpModal.updateOne({userId:userAc._id}, { $set: { otp: otp } }, { upsert: true })
+            await otpModal.updateOne({ userId: userAc._id }, { $set: { otp: otp } }, { upsert: true })
             const mailOptions = {
                 from: "theerthatkp28@gmail.com",
                 to: email,
                 subject: "OTP Verification",
                 text: `Your OTP for verification is: ${otp}`,
             };
-        
+
             console.log(otp + "generated otp");
             transporter.sendMail(mailOptions, (error, info) => {
                 if (error) {
                     console.log(error.message);
-        
-        
+
+
                 }
             });
             // if( )
-            res.redirect(`/otppage/${userAc}`) 
+            res.redirect(`/otppage/${userAc}`)
         }
 
-        
-    }catch (error) {
+
+    } catch (error) {
         console.log(error);
     }
 }
 
 const otpPage = async (req, res, next) => {
     try {
-        const email=req.params.email
-            console.log("otp page is loaded succesfully");
-            res.render("user/otpverification");
-       
+        const email = req.params.email
+        console.log("otp page is loaded succesfully");
+        res.render("user/otpverification");
+
 
     } catch (error) {
         console.log(error.message);
@@ -843,12 +856,12 @@ const otpPage = async (req, res, next) => {
 
 const otpVerification = async (req, res, next) => {
     try {
-       
+
         console.log(Object.values(req.body).join(""));
         const userInputOtp = Object.values(req.body).join("");
-        const userid=req.body.userId
+        const userid = req.body.userId
         console.log(userid);
-        const otp = await otpModal.findOne({ userId:userid });
+        const otp = await otpModal.findOne({ userId: userid });
         // const userData = await User.find({});
         console.log(otp.otp);
         console.log(
@@ -858,7 +871,7 @@ const otpVerification = async (req, res, next) => {
         console.log(userInputOtp);
         if (otp.otp == userInputOtp) {
             console.log("same user");
-            await User.updateOne({ _id:userid }, { $set: { is_verified: true } })
+            await User.updateOne({ _id: userid }, { $set: { is_verified: true } })
             req.session.destroy()
             res.redirect('/login')
         } else {
@@ -870,6 +883,39 @@ const otpVerification = async (req, res, next) => {
     }
 };
 
+const searchItem = async (req, res, next) => {
+    try {
+        const searchQuery = req.body.searchQuery
+        console.log(searchQuery);
+        const pipeline = [
+            {
+                $lookup: {
+                    from: 'categories',
+                    localField: '_id',
+                    foreignField: 'categoryId',
+                    as: 'category'
+                }
+            }, {
+                $match: {
+                    isListed: true,
+                    isProductBlocked: false,
+                    $or: [
+                        { productName: { $regex: searchQuery, $options: 'i' } },
+                        { 'category.categoryName': { $regex: searchQuery, $options: 'i' } }
+                    ]
+
+                }
+            }
+        ]
+
+        const search = await Product.aggregate(pipeline).exec()
+        console.log(search);
+
+    } catch (error) {
+        console.log(error.message);
+
+    }
+}
 
 
 
@@ -910,7 +956,8 @@ module.exports = {
     forgetpw,
     emailVerify,
     otpPage,
-    otpVerification
+    otpVerification,
+    searchItem
 
 
 }

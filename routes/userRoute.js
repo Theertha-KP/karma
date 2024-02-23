@@ -43,4 +43,7 @@ user_route.post('/verifyemail',userController.emailVerify)
 user_route.get('/otppage',userController.otpPage)
 user_route.post('otpverification',userController.otpVerification)
 
+//search
+user_route.post('/search',userController.searchItem)
+
 module.exports=user_route;

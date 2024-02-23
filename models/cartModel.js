@@ -12,8 +12,8 @@ const cartSchema = new mongoose.Schema({
             ref:'Product'
         },
         count:{
-            type:Number,
-            default:1
+            type:Number
+            
         },
         price:{
             type:Number,

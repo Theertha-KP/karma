@@ -4,19 +4,19 @@
         <div class="container">
             <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
                 <div class="col-first">
-                    <h1>Manage Address</h1>
+                    <h1>User Profile</h1>
                     <nav class="d-flex align-items-center">
                         <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="/userprofile">Userprofile<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="#">Manage address</a>
+                        <a href="/orders">Orders</a>
+                        <a href="category.html">Orders</a>
                     </nav>
                 </div>
             </div>
         </div>
     </section>
     <!-- End Banner Area -->
+    <!--user profile-->
 
-    <!--address page -->
     <section>
         <div class="container-fluid profile">
             <div class="row my-4">
@@ -26,46 +26,44 @@
                             style="background-image: url(&quot;/src/assets/man.png&quot;); background-size: cover;">
                             <input type="file" name="image" title=" " style="opacity: 0;">
                         </div>
-                        <div class="col-6 nameContainer ms-4 ">
+                        <div class="col-6 nameContainer ms-4">
                             {{#if user}}
-                        <p>Hello</p>
-                        <b class="fs-3">{{user.fname}}</b>
-                         {{else}}
-                          <b class="fs-3">User</b>
-                          {{/if}}
+                            <p>Hello</p>
+                            <b class="fs-3">{{user.fname}}</b>
+                            {{else}}
+                            <b class="fs-3">User</b>
+                            {{/if}}
                         </div>
                     </div>
                     <div class="left-sidebar m-auto mb-5 px-5 py-5 ">
                         <div class=" pt-3"><i class="fa-solid fa-user me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/userprofile">  Profile Information</a></div>
+                                href="/userprofile"> Profile Information</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-location-arrow me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/manageaddress">  Manage Address</a></div>
+                                href="/manageaddress"> Manage Address</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-ticket me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/profile/coupons">  My coupons</a></div>
+                                href="/profile/coupons"> My coupons</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-box-open me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/orders">  My Orders</a></div>
+                                href="/orders"> My Orders</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-heart me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/profile/wishlist">  My Wishlist</a></div>
+                                href="/profile/wishlist"> My Wishlist</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-arrow-right-from-bracket me-1"
-                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/logout">  Logout</a></div>
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold" href="/logout">
+                                Logout</a></div>
                     </div>
                 </div>
-                <div class="col-md-7 p-5  right">
+                <div class="col-md-7 p-3 right">
                     <div style="height: 40px;"></div>
                     <div class="card ">
-                        <h5 class="card-header">Manage Address</h5>
-                        <div class="col-md-6 mt-4">
-                            <a href="/addresspage" class="btn btn-warning">Add Address</a>
-                        </div>
-                        {{#if address }}
+                        <h5 class="card-header">Manage Orders</h5>
+                        
+                        {{#if orderData }}
                         <div class="card-body border mt-2">
-                            {{#each address.address}}
+                            {{#each order.items}}
                             <div class="mb-5">
                                 <div class="col-12 row justify-content-between  ">
                                     <div class="col-1 d-flex justify-content-center"
@@ -94,16 +92,13 @@
 
                         {{/if}}
                     </div>
+                   
                 </div>
             </div>
         </div>
     </section>
 </section>
 <style>
-    .whole {
-        background-color: #F1F3F6;
-    }
-
     .left-top {
         background-color: white;
         height: 90px;
@@ -126,7 +121,6 @@
     }
 
     .profile {
-        margin-top: 50px;
         background-color: #F1F3F6;
         min-height: 100vh;
     }
@@ -164,5 +158,9 @@
         background-color: white;
         border-radius: 10px;
 
+    }
+
+    .whole {
+        background-color: #F1F3F6;
     }
 </style>

@@ -20,7 +20,7 @@
     <!--================Checkout Area =================-->
     <section>
         <div class="container-fluid profile ">
-            <form method="post" action="/cashondelivery">
+            <form >
                 <div class="row my-4 mx-5">
                     <div class="col-md-7 p-3   right">
                         <div style="height: 40px;"></div>
@@ -34,7 +34,7 @@
                             <div class="card-body border mt-2">
                                 {{#each address.address}}
                                 <div class="form-check  col-12"><input class="form-check-input " type="radio"
-                                        name="addresstype" value="selectAddress" id="adtype" checked=""><label
+                                        name="address" value='{{this._id}}' id="adtype" checked=""><label
                                         class="form-check-label col-12" for="flexRadioDefault1">
                                         <div class="mb-5">
                                             <div class="col-12 row justify-content-between  ">
@@ -107,7 +107,7 @@
                                         <h6>Total Amount</h6>
                                     </div>
                                     <div class="amount">
-                                        <h6>₹{{total}}</h6>
+                                        <h6 id="total">₹{{total}}</h6>
                                     </div>
                                 </div>
                             </div>
@@ -119,7 +119,7 @@
                             <div class="container col-12 d-flex justify-content-between m-auto  px-1 py-1">
 
                                 <div class="col-md-6 mt-4 m-3">
-                                    <button  class="btn btn-warning">Cash on Delivery</button>
+                                    <button type="button" onclick="cod()" class="btn btn-warning">Cash on Delivery</button>
                                 </div>
                                 <div class="col-md-6 mt-4  ">
                                     <a href="#" class="btn btn-warning">RazorPay</a>
@@ -203,5 +203,32 @@
 
     }
 </style>
+<script>
+    
+    function cod(){
+        // Retrieve the selected address ID (you might use a different method based on your HTML structure)
+        const selectedAddressId = document.querySelector('input[name="address"]:checked').value;
+        const total=document.getElementById('total').innerText
+       
+         axios.post('/cashondelivery', {
+            addressId: selectedAddressId,
+            payment:'COD',
+            totalAmount:total
+        })
+        .then(response => {
+            console.log(response.data);
+            if(response.data.success){
+                window.location.href = "/orderstatus"
+            }
+        })
+        .catch(error => {
+            // Handle errors if the request fails
+            console.error(error);
+        });
+       
+    }
+  
+</script>
+
 
 <!--================End Checkout Area =================-->

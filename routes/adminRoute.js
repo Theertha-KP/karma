@@ -24,6 +24,8 @@ admin_route.get("/userdashboard",adminmiddle.checkAdmin, adminController.loadUse
 admin_route.get("/blockuser/:id",adminmiddle.checkAdmin, adminController.blockUser);
 admin_route.get("/unblockuser/:id",adminmiddle.checkAdmin, adminController.unblockUser);
 admin_route.get('/listproduct/:id',adminmiddle.checkAdmin,adminController.listProduct)
+admin_route.get('/orderlist',adminmiddle.checkAdmin,adminController.orderList)
+admin_route.patch('/changestatus/:id/:productId/:status',adminmiddle.checkAdmin,adminController.status)
 admin_route.get('/adminlogout',adminController.adminlogout)
 
 module.exports = admin_route;

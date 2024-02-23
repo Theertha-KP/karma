@@ -2,6 +2,7 @@ const adminModal = require("../models/adminModel");
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 const User = require("../models/userModel");
+const Order=require('../models/orderModel')
 // const adminmiddle=require('../middleware/adminmiddle')
 
 const { ObjectId } = require('mongodb')
@@ -318,6 +319,36 @@ const listProduct =async (req,res,next)=>{
  
   }
 }
+const orderList=async(req,res,next)=>{
+  try{
+    const order=await Order.aggregate([{$unwind:"$items"}])
+    console.log(order);
+    res.render('admin/order/orderlist',{order})
+  }catch (error) {
+    console.log(error);
+ 
+  }
+}
+const status=async(req,res,next)=>{
+try{
+  const productId = new ObjectId(req.params.productId)
+  const orderId=new ObjectId(req.params.id)
+  const newStatus=req.params.status
+  const orderstatus = await Order.updateOne({ _id:orderId  }, {
+    $set: { 'items.$[elem].orderStatus': newStatus }
+}, { arrayFilters: [{ "elem.product_id": productId }] })
+
+
+  
+   console.log(orderstatus);
+res.json({success:true})
+
+
+}catch (error) {
+    console.log(error);
+ 
+  }
+}
 
 //logout
 const adminlogout = async (req, res) => {
@@ -348,6 +379,8 @@ module.exports = {
   deleteProductImg,
   UpdateCategory,
   listProduct,
-  adminlogout
+  adminlogout,
+  orderList,
+  status
 
 };

@@ -265,8 +265,8 @@ const singleproduct = async (req, res, next) => {
 }
 const userprofile = async (req, res, next) => {
     try {
-          const user= req.session.userData._id
-      const userDoc=await User.findOne({_id:user})
+        const user = req.session.userData._id
+        const userDoc = await User.findOne({ _id: user })
         res.render("user/userprofile", { userDoc })
     } catch (error) {
         console.log("error at loading add products page");
@@ -408,7 +408,7 @@ const checkproduct = async (req, res) => {
 const addToCart = async (req, res) => {
     try {
         //searching for the user
-     
+
         const user = req.session.userData._id;
         //get the id by the params in a tag
         const productId = new ObjectId(req.params.id)
@@ -423,6 +423,7 @@ const addToCart = async (req, res) => {
                     product_id: productId,
                     count: 1
                 }]
+                
             })
             await newCart.save();
         } else {
@@ -516,7 +517,7 @@ const cartDelete = async (req, res, next) => {
 // add address
 const addressload = async (req, res, next) => {
     try {
-        const user = req.session.userData
+        const user = new ObjectId(req.session.userData._id)
         // const address = req.session.addressId
         const addressData = await Address.findOne({ user })
         console.log(addressData);
@@ -600,10 +601,10 @@ const editAddress = async (req, res, next) => {
         console.log(id);
         // const address = await Address.findOne({ user, 'address._id': id })
         // console.log(address);
-        const address= await Address.aggregate([
-            {$match:{user:user}},
-            {$unwind:"$address"},
-            {$match:{"address._id":id}}
+        const address = await Address.aggregate([
+            { $match: { user: user } },
+            { $unwind: "$address" },
+            { $match: { "address._id": id } }
         ])
         console.log(address);
         res.render('user/editAddress', { address: address })
@@ -698,7 +699,10 @@ const checkoutPage = async (req, res, next) => {
 //orderpage
 const orderPage = async (req, res, next) => {
     try {
-        res.render('user/orderstatus')
+        const user = req.session.userData
+        const orderdetails=await Order.find({user:user})
+        console.log(orderdetails);
+        res.render('user/orderstatus', { user,orderdetails })
 
     } catch (error) {
         console.log(error);
@@ -710,56 +714,162 @@ const orderPage = async (req, res, next) => {
 const cashOnDelivery = async (req, res, next) => {
     try {
         console.log('hiiorder');
-        const user = req.session.userData._id
-        const { address, payment, orderDate, product_id, quantity, price, orderStatus } = req.body;
-            console.log("user not found");
-            const newOrder = await new Order({
-                user,
-                address,
-                payment,
-                orderDate,
-               
-                items: {
-                    type: [{
-                        product_id,
-                        quantity,
-                        price,
-                        orderStatus,
-                    }]
-                }
-            })
-            await newOrder.save()
-            console.log("data saved");
-        await Cart.deleteOne({user})
-       
-        res.redirect('/orderstatus')
+        const user_id = new ObjectId(req.session.userData._id)
+        console.log(user_id);
+        const cart = await Cart.findOne({ user: user_id })
+        console.log(req.body.totalAmount);
+        // const { address, payment, orderDate, product_id, quantity, price, orderStatus } = req.body;
+        console.log(cart);
+        const newOrder = await new Order({
+            user: user_id,
+            address: req.body.address,
+             payment:req.body.payment,
+            orderDate: new Date().toLocaleDateString(),
+            totalAmount:req.body.totalAmount,
+
+            items:cart.product
+        })
+
+
+        await newOrder.save()
+        console.log(newOrder);
+        // console.log("data saved");
+        await Cart.deleteOne({ user:user_id })
+
+        res.json({success:true})
 
     } catch (error) {
         console.log(error);
     }
 
 }
-const updateUser=async(req,res,next)=>{
+const updateUser = async (req, res, next) => {
+    try {
+        const user = req.session.userData._id
+        console.log(req.body);
+        const updatedUser = await User.updateOne({ _id: user }, {
+            $set: {
+                fname: req.body.fname,
+                lname: req.body.lname,
+                email: req.body.email,
+                gender: req.body.gender,
+                mobilenumber: req.body.mobilenumber
+
+            }
+
+        })
+        console.log(updatedUser);
+        res.redirect('/userprofile')
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const orders = async (req, res, next) => {
+    try {
+        const user = new ObjectId(req.session.userData._id)
+        // const address = req.session.addressId
+        const orderData = await Order.findOne({ user })
+
+        console.log(orderData);
+        res.render('user/orderpage', { orderData: orderData, user: req.session.userData })
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//forgetpassword
+const forgetpw=async(req,res,next)=>{
+   try{
+       res.render('user/forgetpassword')
+   }catch (error) {
+        console.log(error);
+    }
+}
+
+const emailVerify=async(req,res,next)=>{
     try{
-    const user = req.session.userData._id
-console.log(req.body);
-const updatedUser=await User.updateOne({_id:user},{
-    $set:{
-    fname:req.body.fname,
-    lname:req.body.lname,
-    email:req.body.email,
-    gender:req.body.gender,
-    mobilenumber:req.body.mobilenumber
+
+        const email=req.body.email
+        console.log(email);
+        const userAc=await User.findOne({email:email})
+        console.log(userAc);
+        if (userAc){
+            const otp = speakeasy.totp({
+                secret: secret.base32,
+                encoding: "base32",
+            });
+            console.log(`req body in otp generator`);
+            console.log(req.body);
+            await otpModal.updateOne({userId:userAc._id}, { $set: { otp: otp } }, { upsert: true })
+            const mailOptions = {
+                from: "theerthatkp28@gmail.com",
+                to: email,
+                subject: "OTP Verification",
+                text: `Your OTP for verification is: ${otp}`,
+            };
+        
+            console.log(otp + "generated otp");
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.log(error.message);
+        
+        
+                }
+            });
+            // if( )
+            res.redirect(`/otppage/${userAc}`) 
+        }
+
+        
+    }catch (error) {
+        console.log(error);
+    }
+}
+
+const otpPage = async (req, res, next) => {
+    try {
+        const email=req.params.email
+            console.log("otp page is loaded succesfully");
+            res.render("user/otpverification");
+       
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+
+const otpVerification = async (req, res, next) => {
+    try {
+       
+        console.log(Object.values(req.body).join(""));
+        const userInputOtp = Object.values(req.body).join("");
+        const userid=req.body.userId
+        console.log(userid);
+        const otp = await otpModal.findOne({ userId:userid });
+        // const userData = await User.find({});
+        console.log(otp.otp);
+        console.log(
+            `otp verification of userinput otp & otp from otpDb : ${otp.otp == userInputOtp
+            }`
+        );
+        console.log(userInputOtp);
+        if (otp.otp == userInputOtp) {
+            console.log("same user");
+            await User.updateOne({ _id:userid }, { $set: { is_verified: true } })
+            req.session.destroy()
+            res.redirect('/login')
+        } else {
+            res.render('user/verifyotp', { message: 'Incorrect OTP ' })
+        }
+    } catch (error) {
+        console.log(error.message);
 
     }
+};
 
-})
-console.log(updatedUser);
-res.redirect('/userprofile')
-}catch (error) {
-    console.log(error);
-}
-}
 
 
 
@@ -795,7 +905,12 @@ module.exports = {
     checkoutPage,
     cashOnDelivery,
     orderPage,
-    updateUser
+    updateUser,
+    orders,
+    forgetpw,
+    emailVerify,
+    otpPage,
+    otpVerification
 
 
 }

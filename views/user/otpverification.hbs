@@ -1,0 +1,100 @@
+<!-- Start Banner Area -->
+<section class="banner-area organic-breadcrumb">
+	<div class="container">
+		<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
+			<div class="col-first">
+				<h1>OTP Verification</h1>
+				<nav class="d-flex align-items-center">
+					<a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+					<a href="#">OTP Verification</a>
+				</nav>
+			</div>
+		</div>
+	</div>
+</section>
+<!-- End Banner Area -->
+
+<!--================Login Box Area =================-->
+<section class=" container login_box_area section_gap ">
+	<div class="container d-flex justify-content-center">
+		<div class="row ">
+			<div class="mt-5  ">
+				<h3 class="h4 text-center"> enter otp</h3>
+				<div class="container col-lg-12 d-flex align-items-center  align-items-center ">
+
+					<form action="/otpverification" id="verifyotp" method="post">
+                        <input type="text" name="userId" value="userAc.id" display="none"/>
+						<div id="otp" class="inputs d-flex flex-row align-items-center  col-lg-12">
+							<input class=" text-center form-control rounded shadow-none " type="text" id="first"
+								name="otp" maxlength="6" />
+
+						</div>
+						{{#if message}}
+						<p style="color: red;">{{message}}</p>
+						{{/if}}
+
+				</div>
+				<div class="mt-4 text-center ">
+					<button class="btn btn-warning btn- px-4 validate" value="submit">Validate</button>
+				</div>
+				<div class="container-fluid mt-4 d-flex">
+					<div id="otpTimer">
+					<p class="timer" >Didn't received otp </p>
+					</div>
+					
+						<button type="button" class="btn btn-warning btn- px-4 validate" id="resend" value="submit">Resend</button>
+					
+				</div>
+
+
+				</form>
+			</div>
+
+		</div>
+	</div>
+</section>
+<!--================End Login Box Area =================-->
+
+<script>
+	
+
+let otpTimer;
+const otpTimerElement = document.getElementById('otpTimer');
+console.log('llll')
+function startOTPTimer() {
+   document.getElementById("resend").disabled = true;
+  let timeLeft = 60;
+
+  otpTimer = setInterval(() => {
+    if (timeLeft > 0) {
+      otpTimerElement.textContent = `OTP will expire in ${timeLeft} seconds`;
+      timeLeft--;
+    } else {
+      clearInterval(otpTimer);
+     document.getElementById("resend").disabled = false;
+      otpTimerElement.textContent = 'OTP has expired';
+    }
+  }, 1000);
+}
+startOTPTimer()
+function sendOTP() {
+	const otpsend=fetch('/resendotp')
+	
+    console.log(otpsend);
+
+  // For simplicity, we'll just start the timer here
+  startOTPTimer();
+}
+document.getElementById('resend').addEventListener('click',()=>{
+	sendOTP();
+})
+
+// You may want to stop the timer when the form is submitted successfully
+document.getElementById('verifyotp').addEventListener('submit', () => {
+  clearInterval(otpTimer);
+  otpTimerElement.textContent = ''; // Clear the timer display
+});
+
+
+
+</script>

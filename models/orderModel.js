@@ -21,6 +21,9 @@ orderSchema = new mongoose.Schema({
     coupon: {
         type: String
     },
+    totalAmount:{
+        type:String
+    },
 
     items: {
         type: [{
@@ -35,9 +38,9 @@ orderSchema = new mongoose.Schema({
                 type: Number
             },
             orderStatus: {
-                type: Number,
-                default: 1
-            },
+                type: String,
+                
+            }
         }],
         required: true
     }

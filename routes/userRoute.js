@@ -20,9 +20,10 @@ user_route.get('/checkproduct/:id',userController.checkproduct)
 user_route.get('/cartDelete',userController.cartDelete)
 user_route.patch('/changecount/:id/:count',userController.changeCount)
 //order
-user_route.get('/checkout/:id',userMiddleware.checkUser,userController.checkoutPage)
+user_route.get('/checkout',userMiddleware.checkUser,userController.checkoutPage)
 user_route.get('/orderstatus',userMiddleware.checkUser,userController.orderPage)
 user_route.post('/cashondelivery',userMiddleware.checkUser,userController.cashOnDelivery)
+user_route.get('/orders',userMiddleware.checkUser,userController.orders)
 
 user_route.get('/manageaddress',userMiddleware.checkUser,userController.addressload)
 user_route.get('/addresspage',userMiddleware.checkUser,userController.newaddress)
@@ -35,5 +36,11 @@ user_route.post('/updateaddress/:address_id/:user_id',userMiddleware.checkUser,u
 user_route.get('/userprofile',userMiddleware.checkUser,userController.userprofile)
 user_route.post('/saveuser',userMiddleware.checkUser,userController.updateUser)
 user_route.get('/logout',userController.logout)
+
+//forgetpassword
+user_route.get('/forgetpassword',userController.forgetpw)
+user_route.post('/verifyemail',userController.emailVerify)
+user_route.get('/otppage',userController.otpPage)
+user_route.post('otpverification',userController.otpVerification)
 
 module.exports=user_route;

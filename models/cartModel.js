@@ -22,6 +22,7 @@ const cartSchema = new mongoose.Schema({
     isCouponApplied:{
         type : String
     }
+   
 })
 
 const cart = new mongoose.model("cart", cartSchema);

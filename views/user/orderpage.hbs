@@ -47,7 +47,8 @@
                                 href="/profile/coupons"> My coupons</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-box-open me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/orders"> My Orders</a></div>
+                                href="/orders"></a>
+                            My Orders</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-heart me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
                                 href="/profile/wishlist"> My Wishlist</a></div>
@@ -60,39 +61,38 @@
                     <div style="height: 40px;"></div>
                     <div class="card ">
                         <h5 class="card-header">Manage Orders</h5>
-                        
-                        {{#if orderData }}
                         <div class="card-body border mt-2">
-                            {{#each order.items}}
-                            <div class="mb-5">
-                                <div class="col-12 row justify-content-between  ">
-                                    <div class="col-1 d-flex justify-content-center"
-                                        style="background-color: darkgray; height:35px; ; border-radius: 5px;">
-                                        <p class="type">{{this.addresstype}}</p>
-                                    </div>
-                                     <div class=" row col-3 justify-content-between ">
-                                        <a href="/editAddress/{{this._id}}" type="button" class="btn btn-outline-primary">Edit</a>
-                                        <a  href="/deleteaddress/{{this._id}}" type="button" class="btn btn-outline-danger">Delete</a>
-                                    </div>
-                                
-                                   
-                                </div>
-                                <div class="address " style="line-height: 10px; margin-top: 12px;">
-                                    <p class="card-text">{{this.fname}}<span class="">  {{this.lname}}</span></p>
-                                    <p class="card-text">{{this.phone}}</p>
-                                    <p class="card-text">{{this.email}}</p>
-                                    <p class="card-text">{{this.address}} ,</p>
-                                    <p class="card-text">{{this.place}}<span class=""> , {{this.pincode}}</span></p>
-                                    <p class="card-text">{{this.additionalinfo}}</p>
-                                </div>
-                                <hr>
-                            </div>
-                            {{/each}}
+
+                            
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Index</th>
+                                        <th scope="col">Product</th>
+                                        <th scope="col">Amount</th>
+                                        <th scope="col">Payment</th>
+                                        <th scope="col">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {{#each orderData}}
+                                    <tr>
+                                        <th scope="row">{{inc @index}}</th>
+                                        <td>{{this.productdetails.[0].productName}}</td>
+                                        <td>{{this.payment}}</td>
+                                        <td>{{this.totalAmount}}</td>
+                                        <td>{{this.items.orderStatus}}</td>
+                                    </tr>
+                                     {{/each}}
+
+                                </tbody>
+                            </table>
+                           
                         </div>
 
-                        {{/if}}
+
                     </div>
-                   
+
                 </div>
             </div>
         </div>

@@ -39,7 +39,7 @@ orderSchema = new mongoose.Schema({
             },
             orderStatus: {
                 type: String,
-                
+                default:'Order Confirmed'
             }
         }],
         required: true

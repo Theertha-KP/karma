@@ -40,8 +40,11 @@ user_route.get('/logout',userController.logout)
 //forgetpassword
 user_route.get('/forgetpassword',userController.forgetpw)
 user_route.post('/verifyemail',userController.emailVerify)
-user_route.get('/otppage',userController.otpPage)
-user_route.post('otpverification',userController.otpVerification)
+user_route.get('/otppage/:id',userController.otpPage)
+user_route.post('/otpverification',userController.otpVerification)
+user_route.get('/newpassword/:id',userController.newpassword)
+user_route.post('/savepassword',userController.saveNewPassword)
+user_route.post('/resendnewotp',userController.resendNewotp)
 
 //search
 user_route.post('/search',userController.searchItem)

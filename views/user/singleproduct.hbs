@@ -118,7 +118,7 @@
 					<h3>{{product.productName}}</h3>
 					<h2>Discount price Rs. {{product.price}}</h2>
 					<ul class="list">
-{{#if (eq countExist=true)}}
+						{{#if (eq countExist true)}}
 						<li><a href="#"><span>Availability:</span>In stock </a></li>
 						{{else}}
 						<li><a href="#" class="rrr font-danger"><span>Availability:</span>Out of stock </a></li>
@@ -129,19 +129,19 @@
 						something that can make your interior look awesome, and at the same time give you the
 						pleasant warm feeling
 						during the winter.</p>
-					
+
 					<div class="card_area d-flex align-items-center">
-						<div class=" ms-3" >
-							<input id="productid" value="{{product._id}} " hidden >
+						<div class=" ms-3">
+							<input id="productid" value="{{product._id}} " hidden>
 							{{!-- for add to cart --}}
-							
-							{{#if (eq countExist=true)}}
+
+							{{#if (eq countExist true)}}
 							<a href="/addtocart/{{product._id}}" class="btn text-white fw-bold" id="addtocart"
 								style="background-color: #ff9900;height:3rem; width:10rem margin-top:-53px!important;">
 								<i class="fa fa-shopping-cart text-light py-2" style="font-size:1rem; "></i>ADD TO CART
 							</a>
 							{{/if}}
-						
+
 						</div>
 
 						<a class="icon_btn" href="#"><i class="lnr lnr lnr-diamond"></i></a>
@@ -251,21 +251,21 @@
 
 
 <script>
-	document.addEventListener('DOMContentLoaded',()=>{
-		const productid=document.getElementById('productid')
-	    console.log(productid.value)
-		axios.get(`/checkproduct/${productid.value}`).then((res)=>{
-           console.log(res)
-			if(res.data.success){
-				document.getElementById('addtocart').href='/cart'
-				document.getElementById('addtocart').textContent='Go to cart'
+	document.addEventListener('DOMContentLoaded', () => {
+		const productid = document.getElementById('productid')
+		console.log(productid.value)
+		axios.get(`/checkproduct/${productid.value}`).then((res) => {
+			console.log(res)
+			if (res.data.success) {
+				document.getElementById('addtocart').href = '/cart'
+				document.getElementById('addtocart').textContent = 'Go to cart'
 			}
-		}).catch((err)=>{
+		}).catch((err) => {
 			console.log(error)
 		})
-		
 
-		
+
+
 	})
 </script>
 

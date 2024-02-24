@@ -33,6 +33,7 @@ hbs.registerHelper('inc', (value) => {
   return parseInt(value) + 1;
 })
 hbs.registerHelper('eq', (a,b) => {
+  console.log(a,b);
   return a===b
 })
 //morgan

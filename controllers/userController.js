@@ -653,11 +653,22 @@ const updateAddress = async (req, res, next) => {
 }
 const checkoutPage = async (req, res, next) => {
     try {
-        const user = req.session.userData
-        const addressData = await Address.findOne({ user })
-        console.log(addressData);
+        console.log('addressdata');
         const userdata = new ObjectId(req.session.userData._id)
-        console.log(user);
+        // const user = req.session.userData
+        const addressData = await Address.aggregate([
+            {
+                $match: {
+                    user: userdata
+                }
+            },
+            {
+                $unwind: "$address"
+            }
+        ])
+        console.log(addressData);
+        console.log('addressdatakkk');
+        // console.log(user);
 
         //getting cart product count
         const cartData = await Cart.aggregate([
@@ -706,7 +717,7 @@ const orderPage = async (req, res, next) => {
     try {
         const user = req.session.userData
         const orderdetails = await Order.find({ user: user })
-        console.log(orderdetails);
+        console.log(orderdetails, "kkkk");
         res.render('user/orderstatus', { user, orderdetails })
 
     } catch (error) {
@@ -722,12 +733,21 @@ const cashOnDelivery = async (req, res, next) => {
         const user_id = new ObjectId(req.session.userData._id)
         console.log(user_id);
         const cart = await Cart.findOne({ user: user_id })
-        console.log(req.body.totalAmount);
+        console.log("ygvghcr");
+        console.log(req.body);
         // const { address, payment, orderDate, product_id, quantity, price, orderStatus } = req.body;
         console.log(cart);
+        const addressId = new ObjectId(req.body.addressId)
+        const address = await Address.aggregate([
+            { $match: { user: user_id } },
+            { $unwind: "$address" },
+            { $match: { 'address._id': addressId } }
+        ])
+        console.log(address);
+
         const newOrder = await new Order({
             user: user_id,
-            address: req.body.address,
+            address: address,
             payment: req.body.payment,
             orderDate: new Date().toLocaleDateString(),
             totalAmount: req.body.totalAmount,
@@ -737,7 +757,7 @@ const cashOnDelivery = async (req, res, next) => {
 
 
         await newOrder.save()
-        console.log(newOrder);
+        console.log(newOrder, "jjjj");
         // console.log("data saved");
 
         Promise.all(newOrder.items.map(async (items) => {
@@ -781,11 +801,23 @@ const orders = async (req, res, next) => {
     try {
         const user = new ObjectId(req.session.userData._id)
         // const address = req.session.addressId
-        const orderData = await Order.findOne({ user })
+        const orderData = await Order.aggregate([
+            { $match: { user: user } },
+             { $unwind: "$items" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "items.product_id",
+                    foreignField: "_id",
+                    as: "productdetails"
+                }
+            }
+        ])
+
 
 
         console.log(orderData);
-        res.render('user/orderpage', { orderData: orderData, user: req.session.userData })
+        res.render('user/orderpage', { orderData, user: req.session.userData })
 
     } catch (error) {
         console.log(error);
@@ -832,7 +864,7 @@ const emailVerify = async (req, res, next) => {
                 }
             });
             // if( )
-            res.redirect(`/otppage/${userAc}`)
+            res.redirect(`/otppage/${userAc._id}`)
         }
 
 
@@ -843,9 +875,9 @@ const emailVerify = async (req, res, next) => {
 
 const otpPage = async (req, res, next) => {
     try {
-        const email = req.params.email
+        const id = req.params.id
         console.log("otp page is loaded succesfully");
-        res.render("user/otpverification");
+        res.render("user/otpverification", { id });
 
 
     } catch (error) {
@@ -857,8 +889,9 @@ const otpPage = async (req, res, next) => {
 const otpVerification = async (req, res, next) => {
     try {
 
-        console.log(Object.values(req.body).join(""));
-        const userInputOtp = Object.values(req.body).join("");
+        //console.log(Object.values(req.body).join(""));
+        const userInputOtp = Object.values(req.body.otp).join("");
+        console.log(userInputOtp);
         const userid = req.body.userId
         console.log(userid);
         const otp = await otpModal.findOne({ userId: userid });
@@ -871,17 +904,81 @@ const otpVerification = async (req, res, next) => {
         console.log(userInputOtp);
         if (otp.otp == userInputOtp) {
             console.log("same user");
-            await User.updateOne({ _id: userid }, { $set: { is_verified: true } })
-            req.session.destroy()
-            res.redirect('/login')
+            res.redirect(`/newpassword/${userid}`)
         } else {
-            res.render('user/verifyotp', { message: 'Incorrect OTP ' })
+            res.render('user/otppage', { message: 'Incorrect OTP ' })
         }
     } catch (error) {
         console.log(error.message);
 
     }
 };
+
+const newpassword = async (req, res, next) => {
+    try {
+        const id = req.params.id
+        console.log("otp page is loaded succesfully");
+        res.render("user/newpassword", { id });
+
+    } catch (error) {
+        console.log(error.message);
+
+    }
+}
+
+const saveNewPassword = async (req, res, next) => {
+    try {
+
+        const userid = new ObjectId(req.body.userId)
+        const newpassword = await bcrypt.hash(req.body.password, saltRounds)
+        await User.updateOne({ _id: userid }, { $set: { password: newpassword } })
+        res.redirect('/login')
+
+    } catch (error) {
+        console.log(error.message);
+
+    }
+}
+const resendNewotp = async (req, res, next) => {
+    try {
+        console.log(req.body)
+        const userid = new ObjectId(req.body.userId)
+
+        const userAc = await User.findOne({ _id: userid })
+        console.log(userAc);
+        if (userAc) {
+            const otp = speakeasy.totp({
+                secret: secret.base32,
+                encoding: "base32",
+            });
+            console.log(`req body in otp generator`);
+            console.log(req.body);
+            await otpModal.updateOne({ userId: userAc._id }, { $set: { otp: otp } }, { upsert: true })
+            const mailOptions = {
+                from: "theerthatkp28@gmail.com",
+                to: userAc.email,
+                subject: "OTP Verification",
+                text: `Your OTP for verification is: ${otp}`,
+            };
+
+            console.log(otp + "generated otp");
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.log(error.message);
+                }
+            });
+            // if( )
+            res.redirect(`/otppage/${userAc._id}`)
+        }
+
+    } catch (error) {
+        console.log(error.message);
+
+    }
+
+
+
+}
 
 const searchItem = async (req, res, next) => {
     try {
@@ -909,7 +1006,10 @@ const searchItem = async (req, res, next) => {
         ]
 
         const search = await Product.aggregate(pipeline).exec()
+
+
         console.log(search);
+        res.render('user/search', { search })
 
     } catch (error) {
         console.log(error.message);
@@ -957,7 +1057,10 @@ module.exports = {
     emailVerify,
     otpPage,
     otpVerification,
-    searchItem
+    newpassword,
+    saveNewPassword,
+    searchItem,
+    resendNewotp
 
 
 }

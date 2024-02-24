@@ -37,21 +37,16 @@
           <a class="dropdown-item" href="#">Add User</a>
           <a class="dropdown-item" href="#">Edit User</a>
       </li>
-      <li class="sidebar-list">
-        <a class="sidebar-link sidebar-title" href="javascript:void(0)">
-          <i class="ri-archive-line"></i>
-          <span>Orders</span>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="/admin/orderlist" id="navbarDropdown" role="button"
+          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+         Orders
         </a>
-        <ul class="sidebar-submenu">
-          <li>
-            <a href="/admin/orderlist">Order List</a>
-          </li>
-
-          <li>
-            <a href="order-tracking.html">Order Tracking</a>
-          </li>
-        </ul>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#">OrderList</a>
+         
       </li>
+      
     </ul>
     <form class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
@@ -59,3 +54,4 @@
     </form>
   </div>
 </nav>
+

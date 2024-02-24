@@ -20,7 +20,7 @@
     <!--================Checkout Area =================-->
     <section>
         <div class="container-fluid profile ">
-            <form >
+            <form>
                 <div class="row my-4 mx-5">
                     <div class="col-md-7 p-3   right">
                         <div style="height: 40px;"></div>
@@ -32,18 +32,20 @@
 
                             {{#if address }}
                             <div class="card-body border mt-2">
-                                {{#each address.address}}
+                                {{#each address}}
+
+                                {{#if (eq @index 0)}}
                                 <div class="form-check  col-12"><input class="form-check-input " type="radio"
-                                        name="address" value='{{this._id}}' id="adtype" checked=""><label
+                                        name="address" value='{{this.address._id}}' id="adtype" checked><label
                                         class="form-check-label col-12" for="flexRadioDefault1">
                                         <div class="mb-5">
                                             <div class="col-12 row justify-content-between  ">
                                                 <div class="col-1 d-flex justify-content-center"
                                                     style="background-color: darkgray; height:35px; ; border-radius: 5px;">
-                                                    <p class="type">{{this.addresstype}}</p>
+                                                    <p class="type">{{this.address.addresstype}}</p>
                                                 </div>
                                                 <div class=" row col-2 justify-content-between ">
-                                                    <a href="/editAddress/{{this._id}}" type="button"
+                                                    <a href="/editAddress/{{this.address._id}}" type="button"
                                                         class="btn btn-outline-primary">Edit</a>
 
                                                 </div>
@@ -51,19 +53,55 @@
 
                                             </div>
                                             <div class="address " style="line-height: 10px; margin-top: 12px;">
-                                                <p class="card-text">{{this.fname}}<span class=""> {{this.lname}}</span>
+                                                <p class="card-text">{{this.address.fname}}<span class="">
+                                                        {{this.address.lname}}</span>
                                                 </p>
-                                                <p class="card-text">{{this.phone}}</p>
-                                                <p class="card-text">{{this.email}}</p>
-                                                <p class="card-text">{{this.address}} ,</p>
+                                                <p class="card-text">{{this.address.phone}}</p>
+                                                <p class="card-text">{{this.address.email}}</p>
+                                                <p class="card-text">{{this.address.address}} ,</p>
                                                 <p class="card-text">{{this.place}}<span class=""> ,
-                                                        {{this.pincode}}</span>
+                                                        {{this.address.pincode}}</span>
                                                 </p>
-                                                <p class="card-text">{{this.additionalinfo}}</p>
+                                                <p class="card-text">{{this.address.additionalinfo}}</p>
+                                            </div>
+                                            <hr>
+                                        </div>
+                                    </label>
+                                </div>
+                                {{else}}
+                                <div class="form-check  col-12"><input class="form-check-input " type="radio"
+                                        name="address" value='address' id="adtype"><label
+                                        class="form-check-label col-12" for="flexRadioDefault1">
+                                        <div class="mb-5">
+                                            <div class="col-12 row justify-content-between  ">
+                                                <div class="col-1 d-flex justify-content-center"
+                                                    style="background-color: darkgray; height:35px; ; border-radius: 5px;">
+                                                    <p class="type">{{this.address.addresstype}}</p>
+                                                </div>
+                                                <div class=" row col-2 justify-content-between ">
+                                                    <a href="/editAddress/{{this.address._id}}" type="button"
+                                                        class="btn btn-outline-primary">Edit</a>
+
+                                                </div>
+
+
+                                            </div>
+                                            <div class="address " style="line-height: 10px; margin-top: 12px;">
+                                                <p class="card-text">{{this.address.fname}}<span class="">
+                                                        {{this.address.lname}}</span>
+                                                </p>
+                                                <p class="card-text">{{this.address.phone}}</p>
+                                                <p class="card-text">{{this.address.email}}</p>
+                                                <p class="card-text">{{this.address.address}} ,</p>
+                                                <p class="card-text">{{this.place}}<span class=""> ,
+                                                        {{this.address.pincode}}</span>
+                                                </p>
+                                                <p class="card-text">{{this.address.additionalinfo}}</p>
                                             </div>
                                             <hr>
                                         </div>
                                     </label></div>
+                                {{/if}}
                                 {{/each}}
                             </div>
 
@@ -119,7 +157,8 @@
                             <div class="container col-12 d-flex justify-content-between m-auto  px-1 py-1">
 
                                 <div class="col-md-6 mt-4 m-3">
-                                    <button type="button" onclick="cod()" class="btn btn-warning">Cash on Delivery</button>
+                                    <button type="button" onclick="cod()" class="btn btn-warning">Cash on
+                                        Delivery</button>
                                 </div>
                                 <div class="col-md-6 mt-4  ">
                                     <a href="#" class="btn btn-warning">RazorPay</a>
@@ -204,30 +243,30 @@
     }
 </style>
 <script>
-    
-    function cod(){
+
+    function cod() {
         // Retrieve the selected address ID (you might use a different method based on your HTML structure)
         const selectedAddressId = document.querySelector('input[name="address"]:checked').value;
-        const total=document.getElementById('total').innerText
-       
-         axios.post('/cashondelivery', {
+        const total = document.getElementById('total').innerText
+
+        axios.post('/cashondelivery', {
             addressId: selectedAddressId,
-            payment:'COD',
-            totalAmount:total
+            payment: 'COD',
+            totalAmount: total
         })
-        .then(response => {
-            console.log(response.data);
-            if(response.data.success){
-                window.location.href = "/orderstatus"
-            }
-        })
-        .catch(error => {
-            // Handle errors if the request fails
-            console.error(error);
-        });
-       
+            .then(response => {
+                console.log(response.data);
+                if (response.data.success) {
+                    window.location.href = "/orderstatus"
+                }
+            })
+            .catch(error => {
+                // Handle errors if the request fails
+                console.error(error);
+            });
+
     }
-  
+
 </script>
 
 

@@ -3,11 +3,13 @@ var user_route = express.Router();
 user_route.use('/node_modules', express.static('./node_modules'));
 const userController=require('../controllers/userController')
 const userMiddleware=require('../middleware/usermiddleware')
+const validation=require('../middleware/validation');
+const { checkSchema } = require('express-validator');
 user_route.get('/',userController.home);
 user_route.get('/login',userController.loadLoginPage);
 user_route.post('/login',userController.verifyUser);
 user_route.get('/registration',userController.loadSignupPage);
-user_route.post('/registration',userController.signUpValidation,userController.insertUser,userController.otpGenerator);
+user_route.post('/registration',checkSchema(validation.userValidate()),userController.signUpValidation,userController.insertUser,userController.otpGenerator);
 user_route.get('/otp',userController.verifyOtpLoad)
 user_route.post('/verifyotp',userController.verifyOtp)
 user_route.get('/resendotp',userController.resendOTP)
@@ -48,5 +50,8 @@ user_route.post('/resendnewotp',userController.resendNewotp)
 
 //search
 user_route.post('/search',userController.searchItem)
+//coupons
+user_route.get('/coupons',userMiddleware.checkUser,userController.couponList)
+user_route.get('/applycoupon/:id',userMiddleware.checkUser,userController.applyCoupon)
 
 module.exports=user_route;

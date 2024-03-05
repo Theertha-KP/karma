@@ -128,12 +128,10 @@
                                         onclick=" quantityChange('{{this.product.product_id}}',-1)">-</button>
                                     <h5 class="mx-1 countOnScreen" id="product-{{data.product_id._id}}">
                                         {{this.product.count}}</h5>
-                                    <button class="btn btn-primary btn-sm p-0 countButton"
+                                    <button class="btn btn-primary btn-sm p-0 countButton" id="changecount"
                                         data-item-id="{{this.product_id._id}}" data-to-do="plus" style="width: 1.5rem;"
                                         onclick=" quantityChange('{{this.product.product_id}}',1)">+</button>
-                                </div>
-                                <div>
-                                    <p id="warning-{{data.product_id._id}}"></p>
+                                    <p class="mx-1 countOnScreen" id="product-{{data.product_id._id}}"></p>
                                 </div>
                             </td>
                             <td>
@@ -152,8 +150,8 @@
                         <tr>
                             <td>
                                 <div class="cupon_text d-flex align-items-center">
-                                    <input type="text" placeholder="Coupon Code">
-                                    <a class="primary-btn" href="#">Apply</a>
+                                    <input type="text" name="couponid" placeholder="Coupon Code">
+                                    <a class="primary-btn" href="/coupons">View Coupon</a>
 
                                 </div>
                             </td>
@@ -210,9 +208,6 @@
 
 
     function quantityChange(id, count,) {
-
-    
-
         axios.patch(`/changecount/${id}/${count}`).then(() => {
 
         })

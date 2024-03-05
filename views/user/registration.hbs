@@ -6,7 +6,7 @@
 				<h1>Login/Register</h1>
 				<nav class="d-flex align-items-center">
 					<a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
-					<a href="">Login/Register</a>
+					<a href="/registration">Login/Register</a>
 				</nav>
 			</div>
 		</div>
@@ -36,16 +36,16 @@
 						<p style="color: red;">{{message}}</p>
 						{{/if}}
 
-						<form  onsubmit="return Validation()" class="row login_form d-flex" action="/registration" method="post" id="registerform"
-							novalidate="novalidate">
+						<form  class="row login_form d-flex" action="/registration"
+							method="post" id="registerform" novalidate="novalidate">
 							<div class="col-md-12 form-group">
-								<input type="text" name="fname" id="fName" class="form-control"  />
+								<input type="text" name="fname" id="fName" class="form-control" />
 								<p id="validation-alert" class="text-danger "></p>
 								<label class="form-label" for="form3Example1c">First Name</label>
 
 							</div>
 							<div class="col-md-12 form-group">
-								<input type="text" name="lname" id="lName" class="form-control"  />
+								<input type="text" name="lname" id="lName" class="form-control" />
 								<p id="validation-alert" class="text-danger "></p>
 								<label class="form-label" for="form3Example1c">Last Name</label>
 
@@ -53,7 +53,7 @@
 
 
 							<div class="col-md-12 form-group">
-								<input type="email" name="email" id="email" class="form-control"/>
+								<input type="email" name="email" id="email" class="form-control" />
 								<p id="validation-alert1" class="text-danger "></p>
 								<label class="form-label" for="form3Example3c">Your Email</label>
 							</div>
@@ -61,21 +61,21 @@
 
 							<div class="col-md-12 form-group">
 								<input type="password" id="password" name="password" class="form-control" />
-								<p id="validation-alert2" class="text-danger "></p>
+								<p id="validation-alert3" class="text-danger "></p>
 								<label class="form-label" for="form3Example4c">Password</label>
 							</div>
 
 
 							<div class="col-md-12 form-group">
-								<input type="password" id="comfirm_password" name="'confirm password"
+								<input type="password" id="comfirm_password" name="confirm password"
 									class="form-control" />
-									<p id="validation-alert3" class="text-danger "></p>
+								<p id="validation-alert2" class="text-danger "></p>
 								<label class="form-label" for="form3Example4cd">Confirm your password</label>
 							</div>
 
 
 							<div class="col-md-12 form-group">
-								<button type="submit" value="submit" class="primary-btn">Register</button>
+								<button type="submit" value="submit"  class="primary-btn">Register</button>
 							</div>
 						</form>
 				</div>
@@ -86,57 +86,68 @@
 <!--================End Login Box Area =================-->
 
 <script>
-  const Alert=document.getElementById('validation-alert2')
-  const emailalert=document.getElementById('validation-alert1')
-  const nameAlert=document.getElementById('validation-alert')
+	const Alert = document.getElementById('validation-alert2')
+	const emailalert = document.getElementById('validation-alert1')
+	const nameAlert = document.getElementById('validation-alert')
+	const pwAlert=document.getElementById('validation-alert3')
 
-  function  Validation()
-{
-  
+	document.getElementById('registerform').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+		
+		let password = document.getElementById("password").value
+		console.log(password)
+		
+		const uppercaseRegex = /[A-Z]/;
+		const lowercaseRegex = /[a-z]/;
+		const digitRegex = /\d/;
+		let confirmpassword = document.getElementById('comfirm_password').value
+		
+		let email = document.getElementById('email').value
+		console.log(email)
+		
+		let name = document.getElementById('fName').value
+		let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+		let nameRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)?$/;
+		let mobileRegex = /^\d{10}$/
 
-  let password=document.getElementById("password").value
-  let confirmpassword=document.getElementById('comfirm_password').value
-  let email=document.getElementById('email').value
-  let name=document.getElementById('fName').value
-    let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  let nameRegex=/^[a-zA-Z]+(?: [a-zA-Z]+)?$/;
-  let mobileRegex= /^\d{10}$/
-    
-    Alert.innerText="";
-    emailalert.innerText="";
-	nameAlert.innerText="";
+		Alert.innerText = "";
+		emailalert.innerText = "";
+		nameAlert.innerText = "";
+		pwAlert.innerText = ""
 
-    if(name.trim() === ""){
-        nameAlert.innerText = "name can't be empty";
-        return false;
-    }else if(password.trim() === ""){
-        Alert.innerText = "Password can't be empty";
-        return false;
-    }else if(email.trim() === ""){
-        emailalert.innerText = "email can't be empty";
-        return false;
-    }
+		if (name.trim() === "") {
+			nameAlert.innerText = "name can't be empty";
+			console.log("bfhsbfh")
+			return false;
+		} else if (password.trim() === "") {
+			Alert.innerText = "Password can't be empty";
+			return false;
+		} else if (email.trim() === "") {
+			emailalert.innerText = "email can't be empty";
+			return false;
+		}
 
 
-   if(password!=confirmpassword)
-  {
-    Alert.innerHTML="Password Not Matching"
-    return false
-  }else if(!email.match(emailRegex))
-  {
-     emailalert.innerHTML="Email Not Valid"
-    return false
-  }else if(!name.match(nameRegex))
-  {
-    nameAlert.innerHTML="Space Not Allowed"
-    return false
-  }else if(!mobile.match(mobileRegex))
-  {
-	return false
-  }else
-  {
-    return true
-}
-}
+		if (password != confirmpassword) {
+			Alert.innerHTML = "Password Not Matching"
+			return false
+		} else if (!email.match(emailRegex)) {
+			emailalert.innerHTML = "Email Not Valid"
+			return false
+		} else if (!name.match(nameRegex)) {
+			nameAlert.innerHTML = "Space Not Allowed"
+			return false
+		} 
+		 else if (!(password.length >= 8) || !uppercaseRegex.test(password) || !lowercaseRegex.test(password) || !digitRegex.test(password)) {
+			console.log('inside elsif')
+			pwAlert.innerHTML = 'Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, and one digit.'
+			return false
+		}
+		else {
+			this.submit()
+		}
+
+		
+	})
 </script>
-

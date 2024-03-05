@@ -4,19 +4,17 @@
         <div class="container">
             <div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
                 <div class="col-first">
-                    <h1>Manage Address</h1>
+                    <h1>Order Placed</h1>
                     <nav class="d-flex align-items-center">
                         <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="/userprofile">Userprofile<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="#">Manage address</a>
+                        <a href="/">User profile class="lnr lnr-arrow-right"></span></a>
+                        <a href="/coupons">Coupons</a>
                     </nav>
                 </div>
             </div>
         </div>
     </section>
     <!-- End Banner Area -->
-
-    <!--address page -->
     <section>
         <div class="container-fluid profile">
             <div class="row my-4">
@@ -28,76 +26,75 @@
                         </div>
                         <div class="col-6 nameContainer ms-4 ">
                             {{#if user}}
-                        <p>Hello</p>
-                        <b class="fs-3">{{user.fname}}</b>
-                         {{else}}
-                          <b class="fs-3">User</b>
-                          {{/if}}
+                            <p>Hello</p>
+                            <b class="fs-3">{{user.fname}}</b>
+                            {{else}}
+                            <b class="fs-3">User</b>
+                            {{/if}}
                         </div>
                     </div>
                     <div class="left-sidebar m-auto mb-5 px-5 py-5 ">
                         <div class=" pt-3"><i class="fa-solid fa-user me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/userprofile">  Profile Information</a></div>
+                                href="/userprofile"> Profile Information</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-location-arrow me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/manageaddress">  Manage Address</a></div>
+                                href="/manageaddress"> Manage Address</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-ticket me-4"
-                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/coupons">  My coupons</a></div>
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold" href="/coupons">
+                                My coupons</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-box-open me-4"
-                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/orders">  My Orders</a></div>
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold" href="/orders">
+                                My Orders</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-heart me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/wishlist">  My Wishlist</a></div>
-                        <div class=" pt-3"><i class="fa-solid fa-arrow-right-from-bracket me-1"
-                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/logout">  Logout</a></div>
+                                href="/wishlist"> My Wishlist</a></div>
+                        <div class=" pt-3"><i class="fa-solid fa-arrow-right-from-bracket me-4"
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold" href="/logout">
+                                Logout</a></div>
                     </div>
                 </div>
                 <div class="col-md-7 p-5  right">
                     <div style="height: 40px;"></div>
                     <div class="card ">
-                        <h5 class="card-header">Manage Address</h5>
-                        <div class="col-md-6 mt-4">
-                            <a href="/addresspage" class="btn btn-warning">Add Address</a>
-                        </div>
-                        {{#if address }}
+                        <h5 class="card-header">Manage Coupons </h5>
+                        {{#each coupons}}
                         <div class="card-body border mt-2">
-                            {{#each address.address}}
+
                             <div class="mb-5">
                                 <div class="col-12 row justify-content-between  ">
-                                    <div class="col-1 d-flex justify-content-center"
-                                        style="background-color: darkgray; height:35px; ; border-radius: 5px;">
-                                        <p class="type">{{this.addresstype}}</p>
+                                    <div class="coupon col-9 " style="line-height: 10px; margin-top: 12px;">
+                                        <p class="card-text">{{this.name}}</p>
+                                        <p class="card-text">Coupon code:{{this.couponId}}</p>
+                                        <p class="card-text">Expiry date:{{datehelper this.expiryDate}}</p>
+                                        <p class="card-text">Description:{{this.description}} </p>
                                     </div>
-                                     <div class=" row col-3 justify-content-between ">
-                                        <a href="/editAddress/{{this._id}}" type="button" class="btn btn-outline-primary">Edit</a>
-                                        <a  href="/deleteaddress/{{this._id}}" type="button" class="btn btn-outline-danger">Delete</a>
-                                    </div>
-                                
-                                   
-                                </div>
-                                <div class="address " style="line-height: 10px; margin-top: 12px;">
-                                    <p class="card-text">{{this.fname}}<span class="">  {{this.lname}}</span></p>
-                                    <p class="card-text">{{this.phone}}</p>
-                                    <p class="card-text">{{this.email}}</p>
-                                    <p class="card-text">{{this.address}} ,</p>
-                                    <p class="card-text">{{this.place}}<span class=""> , {{this.pincode}}</span></p>
-                                    <p class="card-text">{{this.additionalinfo}}</p>
-                                </div>
-                                <hr>
-                            </div>
-                            {{/each}}
-                        </div>
 
-                        {{/if}}
+                                    <div class="  col-3 justify-content-between height-3 p-4">
+
+                                        <button class="btn btn-outline-warning" onclick="apply('{{this._id}}')"
+                                            type="button">
+                                            Apply
+                                        </button>
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+                        {{/each}}
+
+
                     </div>
                 </div>
             </div>
         </div>
     </section>
+</section>
 </section>
 <style>
     .whole {
@@ -166,3 +163,12 @@
 
     }
 </style>
+<script>
+    function apply(id) {
+
+
+        console.log(id)
+        axios.get(`/applycoupon/${id}`).then(() => { })
+
+    };
+</script>

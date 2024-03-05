@@ -81,21 +81,7 @@
                     </div>
                 </div>
 
-                <form class="form-inline search-full" action="javascript:void(0)" method="get">
-                    <div class="form-group w-100">
-                        <div class="Typeahead Typeahead--twitterUsers">
-                            <div class="u-posRelative">
-                                <input class="demo-input Typeahead-input form-control-plaintext w-100" type="text"
-                                    placeholder="Search Fastkart .." name="q" title="" autofocus>
-                                <i class="close-search" data-feather="x"></i>
-                                <div class="spinner-border Typeahead-spinner" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            </div>
-                            <div class="Typeahead-menu"></div>
-                        </div>
-                    </div>
-                </form>
+                
                 <div class="nav-right col-6 pull-right right-header p-0">
                     <ul class="nav-menus">
                         <li>
@@ -103,45 +89,7 @@
                                 <i class="ri-search-line"></i>
                             </span>
                         </li>
-                        <li class="onhover-dropdown">
-                            <div class="notification-box">
-                                <i class="ri-notification-line"></i>
-                                <span class="badge rounded-pill badge-theme">4</span>
-                            </div>
-                            <ul class="notification-dropdown onhover-show-div">
-                                <li>
-                                    <i class="ri-notification-line"></i>
-                                    <h6 class="f-18 mb-0">Notitications</h6>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-primary"></i>Delivery processing <span
-                                            class="pull-right">10 min.</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-success"></i>Order Complete<span
-                                            class="pull-right">1 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-info"></i>Tickets Generated<span
-                                            class="pull-right">3 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <p>
-                                        <i class="fa fa-circle me-2 font-danger"></i>Delivery Complete<span
-                                            class="pull-right">6 hr</span>
-                                    </p>
-                                </li>
-                                <li>
-                                    <a class="btn btn-primary" href="javascript:void(0)">Check all notification</a>
-                                </li>
-                            </ul>
-                        </li>
+                        
 
                         <li>
                             <div class="mode">
@@ -156,39 +104,8 @@
                                     <p class="mb-0 font-roboto">Admin<i class="middle ri-arrow-down-s-line"></i></p>
                                 </div>
                             </div>
-                            <ul class="profile-dropdown onhover-show-div">
-                                <li>
-                                    <a href="/admin/userDashboard">
-                                        <i data-feather="users"></i>
-                                        <span>Users</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="">
-                                        <i data-feather="archive"></i>
-                                        <span>Orders</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="support-ticket.html">
-                                        <i data-feather="phone"></i>
-                                        <span>Spports Tickets</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="profile-setting.html">
-                                        <i data-feather="settings"></i>
-                                        <span>Settings</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a data-bs-toggle="modal" data-bs-target="#staticBackdrop" href="/adminlogout">
-                                        <i data-feather="log-out"></i>
-                                        <span>Log out</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li> 1
+                            
+                        </li> 
                     </ul>
                 </div>
             </div>
@@ -283,7 +200,7 @@
 
                                     </ul>
                                 </li>
-
+                               
 
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title" href="javascript:void(0)">
@@ -294,16 +211,14 @@
                                         <li>
                                             <a href="/admin/orderlist">Order List</a>
                                         </li>
-
-                                        <li>
-                                            <a href="order-tracking.html">Order Tracking</a>
-                                        </li>
+                                       
+                                       
                                     </ul>
                                 </li>
 
+                                
 
-
-                               <li class="sidebar-list">
+                                <li class="sidebar-list">
                                     <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
                                         <i class="ri-price-tag-3-line"></i>
                                         <span>Coupons</span>
@@ -314,7 +229,7 @@
                                         </li>
 
                                         <li>
-                                            <a href="create-coupon.html">Create Coupon</a>
+                                            <a href="/admin/addcoupon">Create Coupon</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -378,184 +293,167 @@
             </div>
             <!-- Page Sidebar Ends-->
 
-            <!-- Order section Start -->
+            <!-- Coupon list table starts-->
             <div class="page-body">
-                <!-- Table Start -->
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-sm-12">
                             <div class="card card-table">
                                 <div class="card-body">
                                     <div class="title-header option-title">
-                                        <h5>Order List</h5>
-
+                                        <h5>Coupon List</h5>
+                                        <div class="right-options">
+                                            <ul>
+                                                <li>
+                                                    <a class="btn btn-solid" href="/admin/addcoupon">Add Coupon</a>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                     <div>
-                                        {{#if order.length}}
                                         <div class="table-responsive">
-                                            <table class="table all-package order-table theme-table" id="table_id">
+                                            <table class="table all-package coupon-list-table table-hover theme-table"
+                                                id="table_id">
                                                 <thead>
                                                     <tr>
-
-                                                        <th>Order Id</th>
-                                                        <th>Date</th>
-                                                        <th>Payment method</th>
-                                                        <th>Amount</th>
-                                                        <th>Status</th>
+                                                        <th>
+                                                            <span class="form-check user-checkbox m-0 p-0">
+                                                                <input class="checkbox_animated checkall"
+                                                                    type="checkbox" value="">
+                                                            </span>
+                                                        </th>
+                                                        <th>Title</th>
+                                                        <th>Code</th>
+                                                        <th>Discount</th>
+                                                        <th>Expiry Date</th>
                                                         <th>Option</th>
                                                     </tr>
                                                 </thead>
-                                                {{#each order }}
-
+                                                {{#each coupon}}
                                                 <tbody>
-                                                    <tr data-bs-toggle="offcanvas" href="#order-details">
-
-
-                                                        <td>{{this._id}} </td>
-
-                                                        <td>{{this.orderDate}}</td>
-
-
-
-                                                        <td class="order-success">
-                                                            <span>{{this.payment}}</span>
-                                                        </td>
-
-                                                        <td>{{this.totalAmount}}</td>
-                                                        <td>{{this.items.orderStatus}}</td>
-
+                                                    <tr>
                                                         <td>
+                                                            <span class="form-check user-checkbox m-0 p-0">
+                                                                <input class="checkbox_animated check-it"
+                                                                    type="checkbox" value="">
+                                                            </span>
+                                                        </td>
+                                                        <td>{{this.name}}</td>
+                                                        <td>{{this.couponId}}</td>
+                                                        <td class="theme-color">{{this.discount}}</td>
+                                                        
+                                                        <td class='date'>
+                                                          {{datehelper this.expiryDate}}
+                                                        </td>
+                                                        <td>
+                                                            <ul>
+                                                                <li>
+                                                                    <a href="javascript:void(0)">
+                                                                        <i class="ri-pencil-line"></i>
+                                                                    </a>
+                                                                </li>
 
-
-                                                            <div class="d-flex col-md-8 justify-content-between">
-                                                                <div class="dropdown">
-                                                                    <button
-                                                                        class="btn btn-primary dropdown-toggle col-md-8 "
-                                                                        type="button" id="dropdownMenuButton{{@index}}"
-                                                                        style="height: 30px;" data-toggle="dropdown"
-                                                                        aria-haspopup="true" aria-expanded="false">
-                                                                       Change Status
-                                                                    </button>
-                                                                    <div class="dropdown-menu"
-                                                                        aria-labelledby="dropdownMenuButton{{@index}}">
-                                                                        <button class="dropdown-item" type="button" onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Shipped')">Shipped</button>
-                                                                        <button class="dropdown-item"  type="button" onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Out for delivery')">Out for
-                                                                            delivery
-                                                                        </button>
-                                                                        <button class="dropdown-item"  type="button" onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Delivered')" >Delivered
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                                <button class="btn btn-sm btn-outline-danger  border"
-                                                                    style="border-color:red!important"
-                                                                     type="button" onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Cancelled')">
-                                                                    Cancel 
-                                                                </button>
-
-                                                            </div>
+                                                                <li>
+                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
+                                                                        data-bs-target="#exampleModalToggle">
+                                                                        <i class="ri-delete-bin-line"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
                                                         </td>
                                                     </tr>
-                                                  
 
-
+                                                    
                                                 </tbody>
-                                                  {{/each}}
+                                                {{/each}}
                                             </table>
                                         </div>
-                                        {{/if}}
                                     </div>
                                 </div>
+                                <!-- Pagination End -->
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Table End -->
+                <!-- Container-fluid Ends-->
 
-                <!-- footer start-->
-                <div class="container-fluid">
-                    <footer class="footer">
-                        <div class="row">
-                            <div class="col-md-12 footer-copyright text-center">
-                                <p class="mb-0">Copyright 2022 © Fastkart theme by pixelstrap</p>
-                            </div>
+                
+        </div>
+
+        <!-- Modal Start -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+            aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog  modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
+                        <p>Are you sure you want to log out?</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <div class="button-box">
+                            <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
+                            <button type="button" class="btn  btn--yes btn-primary">Yes</button>
                         </div>
-                    </footer>
+                    </div>
                 </div>
             </div>
-            <!-- Order section End -->
         </div>
-        <!-- Page Body End-->
+        <!-- Modal End -->
     </div>
     <!-- page-wrapper End -->
 
-    <!-- Modal Start -->
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-        aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog  modal-dialog-centered">
+    <!-- Delete Modal Box Start -->
+    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
+                <div class="modal-header d-block text-center">
+                    <h5 class="modal-title w-100" id="exampleModalLabel22">Are You Sure ?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
                 <div class="modal-body">
-                    <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
-                    <p>Are you sure you want to log out?</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <div class="button-box">
-                        <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
-                        <button type="button" class="btn  btn--yes btn-primary">Yes</button>
+                    <div class="remove-box">
+                        <p>The permission for the use/group, preview is inherited from the object, object will create a
+                            new permission for this object</p>
                     </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn btn-animation btn-md fw-bold" data-bs-target="#exampleModalToggle2"
+                        data-bs-toggle="modal" data-bs-dismiss="modal">Yes</button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Modal End -->
 
-    {{!-- <!-- latest js -->
-    <script src="/assets/js/jquery-3.6.0.min.js"></script>
+    <div class="modal fade theme-modal remove-coupon" id="exampleModalToggle2" aria-hidden="true" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-center" id="exampleModalLabel12">Done!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="remove-box text-center">
+                        <div class="wrapper">
+                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" />
+                                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+                            </svg>
+                        </div>
+                        <h4 class="text-content">It's Removed.</h4>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Delete Modal Box End -->
 
-    <!-- Bootstrap js -->
-    <script src="/assets/js/bootstrap/bootstrap.bundle.min.js"></script>
-
-    <!-- feather icon js -->
-    <script src="/assets/js/icons/feather-icon/feather.min.js"></script>
-    <script src="/assets/js/icons/feather-icon/feather-icon.js"></script>
-
-    <!-- scrollbar simplebar js -->
-    <script src="/assets/js/scrollbar/simplebar.js"></script>
-    <script src="/assets/js/scrollbar/custom.js"></script>
-
-    <!-- Sidebar jquery -->
-    <script src="/assets/js/config.js"></script>
-
-    <!-- tooltip init js -->
-    <script src="/assets/js/tooltip-init.js"></script>
-
-    <!-- Plugins JS -->
-    <script src="/assets/js/sidebar-menu.js"></script>
-    <script src="/assets/js/notify/bootstrap-notify.min.js"></script>
-    <script src="/assets/js/notify/index.js"></script>
-
-    <!-- Apexchar js -->
-    <script src="/assets/js/chart/apex-chart/apex-chart1.js"></script>
-    <script src="/assets/js/chart/apex-chart/moment.min.js"></script>
-    <script src="/assets/js/chart/apex-chart/apex-chart.js"></script>
-    <script src="/assets/js/chart/apex-chart/stock-prices.js"></script>
-    <script src="/assets/js/chart/apex-chart/chart-custom1.js"></script>
-
-
-    <!-- slick slider js -->
-    <script src="/assets/js/slick.min.js"></script>
-    <script src="/assets/js/custom-slick.js"></script>
-
-     <!-- customizer js -->
-    <script src="/assets/js/customizer.js"></script> 
-
-    <!-- ratio js -->
-    <script src="/assets/js/ratio.js"></script>
-
-    <!-- sidebar effect -->
-    <script src="/assets/js/sidebareffect.js"></script>
-
-    <!-- Theme js -->
-    <script src="/assets/js/script.js"></script> --}}
-    
     <!-- latest js -->
     <script src="/assets/js/jquery-3.6.0.min.js"></script>
 
@@ -604,24 +502,6 @@
 
     <!-- Theme js -->
     <script src="/assets/js/script.js"></script>
-{{!-- 
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script> --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 
 </html>
-
-<script>
-
-
-    function statusChange(id, productId,status ) {
-        console.log(id)
-        console.log(productId)
-        console.log(status)
-        axios.patch(`/admin/changestatus/${id}/${productId}/${status}`).then(() => {
-            location.reload()
-        })
-
-    }
-</script>

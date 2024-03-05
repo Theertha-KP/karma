@@ -2,17 +2,17 @@ const adminModal = require("../models/adminModel");
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 const User = require("../models/userModel");
-const Order=require('../models/orderModel')
-// const adminmiddle=require('../middleware/adminmiddle')
-
+const Order = require('../models/orderModel')
+const Coupons = require('../models/couponModel')
 const { ObjectId } = require('mongodb')
+
 const adminDashboard = async (req, res) => {
   try {
-    if(req.session.admin){
+    if (req.session.admin) {
       console.log(req.session.admin);
-    return res.render('admin/adminDashboard')
-    }else{
-    return  res.render('admin/adminLogin',{message:'Please login'})
+      return res.render('admin/adminDashboard')
+    } else {
+      return res.render('admin/adminLogin', { message: 'Please login' })
     }
 
   } catch (error) {
@@ -26,11 +26,11 @@ const adminDashboard = async (req, res) => {
 //admin page
 const adminPageLoad = async (req, res) => {
   try {
-    if(req.session.admin){
+    if (req.session.admin) {
       res.redirect("/admin/dashboard");
-    }else{
-    console.log("Log in with admin credentials");
-    res.render("admin/adminLogin");
+    } else {
+      console.log("Log in with admin credentials");
+      res.render("admin/adminLogin");
     }
   } catch (error) {
     console.log(error.message);
@@ -41,13 +41,14 @@ const verifyAdmin = async (req, res) => {
   try {
     const adminData = await adminModal.findOne({});
     console.log(req.body);
+
     console.log(adminData);
-    if (adminData.name == req.body.name) {
+    if (adminData.name === req.body.name) {
       console.log("welcome admin");
-      req.session.admin=adminData
+      req.session.admin = adminData
       res.redirect("/admin/dashboard");
-    }else{
-      req.session.adminError=true
+    } else {
+      req.session.adminError = true
       res.redirect('/admin/')
     }
   } catch (error) {
@@ -58,7 +59,7 @@ const loadAddproduct = async (req, res) => {
   try {
     const catDoc = await Category.find({});
     console.log(catDoc);
-    res.render("admin/products/addproducts", {admin:true, category: catDoc });
+    res.render("admin/products/addproducts", { admin: true, category: catDoc });
   } catch (error) {
     console.log("error at loading add products page");
     console.log(error.message);
@@ -101,29 +102,29 @@ const loadCategory = async (req, res) => {
   try {
     const categoryDoc = await Category.find({});
     console.log(categoryDoc);
-    res.render("admin/category/categoryDashboard", {admin:true,  category: categoryDoc });
+    res.render("admin/category/categoryDashboard", { admin: true, category: categoryDoc });
   } catch (error) {
     console.log(error.message);
   }
 };
 const loadAddCategory = async (req, res) => {
   try {
-    res.render("admin/category/addcategory",{admin:true });
+    res.render("admin/category/addcategory", { admin: true });
   } catch (error) {
     console.log(error.message);
   }
 };
 const insertCategoryDb = async (req, res) => {
   try {
-    
+
     const category = new Category({
       categoryName: req.body.categoryname,
       description: req.body.description,
       isBlocked: req.body.isBlocked,
     });
 
-    if(category)
-    var categoryData = await category.save();
+    if (category)
+      var categoryData = await category.save();
 
     res.redirect("/admin/categoryDashboard")
   } catch (error) {
@@ -135,7 +136,7 @@ const insertCategoryDb = async (req, res) => {
 const loadProductsDashboard = async (req, res) => {
   try {
     const productDoc = await Product.find({}).populate("categoryId");
-    res.render("admin/products/productdashboard", {admin:true,  products: productDoc });
+    res.render("admin/products/productdashboard", { admin: true, products: productDoc });
   } catch (error) {
     console.log("error at loading add products page");
     console.log(error.message);
@@ -161,7 +162,7 @@ const editProduct = async (req, res) => {
     const _id = new ObjectId(req.params.id)
     const productData = await Product.findOne({ _id: _id });
     console.log(productData);
-    res.render("admin/products/editproducts", {admin:true,  product: productData });
+    res.render("admin/products/editproducts", { admin: true, product: productData });
   } catch (error) {
     console.log("error at loading edit page");
     console.log(error.message);
@@ -174,7 +175,7 @@ const editUpdateDb = async (req, res) => {
     console.log(UpdateProductId);
     console.log(req.files);
     const imagesPaths = req.files.map((i) => i.filename);
-    const productData = await Product.findByIdAndUpdate(
+    const productData = await Product.updateOne(
       { _id: UpdateProductId },
       {
         $set: {
@@ -216,7 +217,7 @@ const deleteProductImg = async (req, res) => {
 const loadUserDashboard = async (req, res) => {
   try {
     userData = await User.find({});
-    res.render("admin/users/userdashboard", {admin:true,  user: userData });
+    res.render("admin/users/userdashboard", { admin: true, user: userData });
   } catch (error) {
     console.log("error at loading user dashboard");
     console.log(error.message);
@@ -267,11 +268,11 @@ const deleteCategory = async (req, res) => {
 };
 const editCategory = async (req, res) => {
   try {
-   
+
     const _id = new ObjectId(req.params.id)
     const categoryData = await Category.findOne({ _id: _id });
     console.log(categoryData);
-    res.render("admin/category/editcategory", { admin:true, category: categoryData });
+    res.render("admin/category/editcategory", { admin: true, category: categoryData });
   } catch (error) {
     console.log("error at loading edit page");
     console.log(error.message);
@@ -291,7 +292,7 @@ const UpdateCategory = async (req, res) => {
       }
 
     );
- console.log(categoryData);
+    console.log(categoryData);
     console.log("updation succesful");
     res.redirect("/admin/categoryDashboard");
   } catch (error) {
@@ -299,49 +300,49 @@ const UpdateCategory = async (req, res) => {
     console.log(error.message);
   }
 };
-const listProduct =async (req,res,next)=>{
+const listProduct = async (req, res, next) => {
   try {
     const id = new ObjectId(req.params.id)
     console.log(id);
-    const prdtData = await Product.findOne({_id:id})
-    if(prdtData.isListed ==true){
-      await Product.updateOne({_id:id},{$set:{isListed:false}})
+    const prdtData = await Product.findOne({ _id: id })
+    if (prdtData.isListed == true) {
+      await Product.updateOne({ _id: id }, { $set: { isListed: false } })
       res.redirect('/admin/productDashboard')
-    }    
-    else{
-     
-      await Product.updateOne({_id:id},{$set:{isListed:true}})
+    }
+    else {
+
+      await Product.updateOne({ _id: id }, { $set: { isListed: true } })
       res.redirect('/admin/productDashboard')
     }
     console.log("Product list changed");
   } catch (error) {
     console.log(error);
- 
+
   }
 }
-const orderList=async(req,res,next)=>{
-  try{
-    const order=await Order.aggregate([{$unwind:"$items"}])
+const orderList = async (req, res, next) => {
+  try {
+    const order = await Order.aggregate([{ $unwind: "$items" }])
     console.log(order);
-    res.render('admin/order/orderlist',{order})
-  }catch (error) {
+    res.render('admin/order/orderlist', { order })
+  } catch (error) {
     console.log(error);
- 
+
   }
 }
-const status=async(req,res,next)=>{
-try{
-  const productId = new ObjectId(req.params.productId)
-  const orderId=new ObjectId(req.params.id)
-  const newStatus=req.params.status
-  const orderstatus = await Order.updateOne({ _id:orderId  }, {
-    $set: { 'items.$[elem].orderStatus': newStatus }
-}, { arrayFilters: [{ "elem.product_id": productId }] })
- console.log(orderstatus);
-res.json({success:true})
-}catch (error) {
+const status = async (req, res, next) => {
+  try {
+    const productId = new ObjectId(req.params.productId)
+    const orderId = new ObjectId(req.params.id)
+    const newStatus = req.params.status
+    const orderstatus = await Order.updateOne({ _id: orderId }, {
+      $set: { 'items.$[elem].orderStatus': newStatus }
+    }, { arrayFilters: [{ "elem.product_id": productId }] })
+    console.log(orderstatus);
+    res.json({ success: true })
+  } catch (error) {
     console.log(error);
- 
+
   }
 }
 
@@ -349,10 +350,54 @@ res.json({success:true})
 //logout
 const adminlogout = async (req, res) => {
   req.session.destroy(() => {
-      res.redirect('/admin')
+    res.redirect('/admin')
   })
 }
 
+
+//coupons
+
+const couponDashboard = async (req, res) => {
+  try {
+    const couponData = await Coupons.find({});
+    
+    console.log(couponData);
+    res.render('admin/coupons/couponDashboard', { coupon : couponData})
+  } catch (error) {
+    console.log(error);
+
+  }
+}
+const addCoupon = async (req, res) => {
+  try {
+    res.render('admin/coupons/addcoupon')
+  } catch (error) {
+    console.log(error);
+
+  }
+}
+const insertCoupon = async (req, res, next) => {
+  try {
+    const coupon = new Coupons({
+      name:req.body.name,
+      couponId: req.body.couponId,
+      expiryDate: req.body.expiryDate,
+      discountType: req.body.state,
+      discount: req.body.discount,
+      description: req.body.description,
+      minPurchase: req.body.minPurchase,
+      maxUsers: req.body.maxUser
+    })
+    if (coupon)
+      var couponData = await coupon.save();
+
+    res.redirect("/admin/couponlist")
+
+  } catch (error) {
+    console.log(error);
+
+  }
+}
 
 module.exports = {
   adminPageLoad,
@@ -377,6 +422,9 @@ module.exports = {
   listProduct,
   adminlogout,
   orderList,
-  status
+  status,
+  couponDashboard,
+  addCoupon,
+  insertCoupon
 
 };

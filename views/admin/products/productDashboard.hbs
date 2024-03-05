@@ -27,9 +27,9 @@
           <tr>
            
             <th scope="row">{{inc @index}}</th>
-            <td>{{product.productName}}</td>
-            <td>{{product.description}}</td>
-            <td>{{product.categoryId.categoryName}}</td>
+            <td class="bigtext">{{product.productName}}</td>
+            <td class="bigtext">{{product.description}}</td>
+            <td class="bigtext">{{product.categoryId.categoryName}}</td>
             <td>{{product.price}}</td>
             <td><img src="/multer/products/{{product.image.[0]}}" alt="" style="height:50px"></td>
             <td>
@@ -41,8 +41,8 @@
                   onclick="return confirm('Are you sure you want to Unlist product?')">List</button></a>
               {{/if}}
 
-              <a class="btn btn-danger " href="/admin/deleteproduct/{{product._id}}"
-                onclick="return confirm('Are you sure you want to delete it?')">Delete</a>
+              {{!-- <a class="btn btn-danger " href="/admin/deleteproduct/{{product._id}}"
+                onclick="return confirm('Are you sure you want to delete it?')">Delete</a> --}}
 
               <a class="btn btn-primary" href="/admin/editproduct/{{product._id}}">Edit</a>
             </td>
@@ -53,3 +53,25 @@
     </div>
   </div>
 </div>
+
+{{!-- <style> 
+  .truncate-text {
+    
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+</style>
+<script>
+  console.log('lll')
+  document.addEventListener('DOMContentLoaded', function () {
+    console.log('iiii')
+    var cells = document.querySelectorAll('bigtext');
+console.log(cells)
+    cells.forEach(function (cell) {
+      var originalText = cell.textContent;
+      var truncatedText = originalText.length > 20 ? originalText.substring(0, 20) + '...' : originalText;
+      cell.textContent = truncatedText;
+    });
+});
+</script> --}}

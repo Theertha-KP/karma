@@ -22,9 +22,6 @@ app.use(express.urlencoded({ extended: true }));
 
 
 //setting view engine
-// Register `hbs.engine` with the Express app.
-// app.engine('handlebars', hbs.engine);
-
 app.set("views", path.join(__dirname, "views"));
 app.set('view engine', 'hbs');
 app.use(express.static(path.join(__dirname, 'public')));
@@ -36,10 +33,16 @@ hbs.registerHelper('eq', (a,b) => {
   console.log(a,b);
   return a===b
 })
+hbs.registerHelper('datehelper', (date) => {
+  
+  return new Date(date).toLocaleDateString()
+})
 //morgan
 var logger = require('morgan');
 app.use(logger("dev"))
 
+//joi vaidation
+const { validationResult } = require('express-validator');
 
 
 
@@ -47,7 +50,7 @@ app.use(logger("dev"))
 // Use the session middleware
 app.use(
     session({
-      secret: "keyboard-cat", // Change this to a random string
+      secret: process.env.secret, // Change this to a random string
       resave: false,
       saveUninitialized: true,
     })

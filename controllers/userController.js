@@ -6,7 +6,9 @@ const Product = require("../models/productModel");
 const Cart = require('../models/cartModel')
 const Order = require('../models/orderModel')
 const Address = require('../models/addressModel')
+const Coupons = require('../models/couponModel')
 const bcrypt = require('bcrypt')
+const { validationResult } = require('express-validator');
 const saltRounds = 10;
 const { ObjectId } = require('mongodb')
 // loading login page
@@ -121,17 +123,19 @@ const verifyUser = async (req, res) => {
 //signup validation
 const signUpValidation = async (req, res, next) => {
     try {
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            console.log(result.array());
+            return res.render('user/registration', { message: result.array()[0].msg });
+        }
+       
+
         const Email = req.body.email;
         console.log("Sign-up validation loaded succesfully");
-
         const userData = await User.findOne({ email: Email });
-
         if (userData && userData.email) {
             console.log("Existing email account with input email");
-            return res.render("user/registration", { message: "Email is already taken" });
-        } else if (req.body.password.length < 6) {
-            console.log("input password is small");
-            return res.render("user/registration", { message: "Password is too short" });
+            return res.render("user/registration", { message: "Email already exist" });
         } else {
             console.log("Signup validation went succesfull");
             next();
@@ -445,6 +449,7 @@ const addToCart = async (req, res) => {
             })
 
         }
+        res.json({ success: true, message: 'Product added to cart' });
 
         res.redirect(`/singleproduct/${productId}`)
 
@@ -783,10 +788,7 @@ const updateUser = async (req, res, next) => {
             $set: {
                 fname: req.body.fname,
                 lname: req.body.lname,
-                email: req.body.email,
-                gender: req.body.gender,
-                mobilenumber: req.body.mobilenumber
-
+                gender: req.body.gender
             }
 
         })
@@ -803,7 +805,7 @@ const orders = async (req, res, next) => {
         // const address = req.session.addressId
         const orderData = await Order.aggregate([
             { $match: { user: user } },
-             { $unwind: "$items" },
+            { $unwind: "$items" },
             {
                 $lookup: {
                     from: "products",
@@ -1017,6 +1019,26 @@ const searchItem = async (req, res, next) => {
     }
 }
 
+const couponList = async (req, res, next) => {
+    try {
+        const coupons = await Coupons.find({})
+        res.render('user/coupon', { coupons: coupons })
+
+    } catch (error) {
+        console.log(error.message);
+
+    }
+}
+const applyCoupon = async (req, res, next) => {
+    try {
+        const coupon_id = new ObjectId(req.params.id)
+        const user = new ObjectId(req.session.userData._id)
+
+    } catch (error) {
+        console.log(error.message);
+
+    }
+}
 
 
 
@@ -1060,7 +1082,9 @@ module.exports = {
     newpassword,
     saveNewPassword,
     searchItem,
-    resendNewotp
+    resendNewotp,
+    couponList,
+    applyCoupon
 
 
 }

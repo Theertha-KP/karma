@@ -26,6 +26,9 @@ admin_route.get("/unblockuser/:id",adminmiddle.checkAdmin, adminController.unblo
 admin_route.get('/listproduct/:id',adminmiddle.checkAdmin,adminController.listProduct)
 admin_route.get('/orderlist',adminmiddle.checkAdmin,adminController.orderList)
 admin_route.patch('/changestatus/:id/:productId/:status',adminmiddle.checkAdmin,adminController.status)
+admin_route.get('/couponlist',adminmiddle.checkAdmin,adminController.couponDashboard)
+admin_route.get('/addcoupon',adminmiddle.checkAdmin,adminController.addCoupon)
+admin_route.post('/insertcoupon',adminmiddle.checkAdmin,adminController.insertCoupon)
 admin_route.get('/adminlogout',adminController.adminlogout)
 
 module.exports = admin_route;

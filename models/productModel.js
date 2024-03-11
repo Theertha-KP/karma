@@ -1,4 +1,4 @@
-mongoose = require("mongoose");
+const mongoose = require("mongoose");
 var Schema = mongoose.Schema
 const productSchema = new mongoose.Schema({
   productName: {
@@ -15,7 +15,7 @@ const productSchema = new mongoose.Schema({
   },
   color: {
     type: String,
-    required: true,
+    
   },
   quantity:{
     type:Number,

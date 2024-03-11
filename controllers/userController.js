@@ -128,7 +128,7 @@ const signUpValidation = async (req, res, next) => {
             console.log(result.array());
             return res.render('user/registration', { message: result.array()[0].msg });
         }
-       
+
 
         const Email = req.body.email;
         console.log("Sign-up validation loaded succesfully");
@@ -449,7 +449,7 @@ const addToCart = async (req, res) => {
             })
 
         }
-        res.json({ success: true, message: 'Product added to cart' });
+        // res.json({ success: true, message: 'Product added to cart' });
 
         res.redirect(`/singleproduct/${productId}`)
 
@@ -488,12 +488,12 @@ const changeCount = async (req, res) => {
         if ((cart[0].product.count + count > cart[0].productDetails.quantity && count > 0) || cart[0].product.count + count > 5 || cart[0].product.count + count < 1) {
             return false
         }
-        const res = await Cart.updateOne({ user: user }, {
+        const response = await Cart.updateOne({ user: user }, {
             $inc: { 'product.$[elem].count': count }
         }, { arrayFilters: [{ "elem.product_id": productId }] })
-
-
-        console.log(res);
+        
+        res.json({ success: true })
+        console.log(response);
 
     } catch (error) {
         console.log(error);
@@ -660,6 +660,8 @@ const checkoutPage = async (req, res, next) => {
     try {
         console.log('addressdata');
         const userdata = new ObjectId(req.session.userData._id)
+        const total = req.query.total
+        console.log(total);
         // const user = req.session.userData
         const addressData = await Address.aggregate([
             {
@@ -706,9 +708,7 @@ const checkoutPage = async (req, res, next) => {
             }
         ]).exec()
         console.log(cartData);
-        const total = cartData.reduce((acc, val) => {
-            return acc + val.total
-        }, 0)
+
         const cartCount = cartData.length
         res.render("user/checkout", { address: addressData, user: req.session.userData, cartData, total, cartCount })
 
@@ -783,12 +783,20 @@ const cashOnDelivery = async (req, res, next) => {
 const updateUser = async (req, res, next) => {
     try {
         const user = req.session.userData._id
+        const userDoc = await User.findOne({ _id: user })
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            console.log(result.array());
+            return res.render('user/userprofile', { userDoc, message: result.array()[0].msg });
+        }
+
         console.log(req.body);
         const updatedUser = await User.updateOne({ _id: user }, {
             $set: {
                 fname: req.body.fname,
                 lname: req.body.lname,
-                gender: req.body.gender
+                gender: req.body.gender,
+                mobilenumber: req.body.mobilenumber
             }
 
         })
@@ -1022,6 +1030,7 @@ const searchItem = async (req, res, next) => {
 const couponList = async (req, res, next) => {
     try {
         const coupons = await Coupons.find({})
+        console.log(coupons);
         res.render('user/coupon', { coupons: coupons })
 
     } catch (error) {
@@ -1031,15 +1040,80 @@ const couponList = async (req, res, next) => {
 }
 const applyCoupon = async (req, res, next) => {
     try {
-        const coupon_id = new ObjectId(req.params.id)
+        console.log('applycoupon');
+        const coupon_id = req.params.id
+        console.log(coupon_id);
         const user = new ObjectId(req.session.userData._id)
+        const cartData = await Cart.findOne({ user }).populate('product.product_id');
+        console.log(cartData);
+        const cart = cartData.product;
+        let totalAmount = 0, date = new Date();
+
+        totalAmount += cartData?.product.reduce((acc, item) => {
+            console.log("item");
+            console.log(item);
+            const totalItem = item.product_id.price * item.count;
+            console.log(totalItem);
+            return acc + totalItem
+        }, 0)
+        console.log('totalAmount,', totalAmount);
+
+
+
+        const couponFound = await Coupons.findOne({ couponId: coupon_id })
+        console.log('coponFound', couponFound);
+
+
+        //checks if the coupon is already used by the user  
+        const usedUser = couponFound.claimedUser.includes(user)
+        console.log(usedUser);
+        if (usedUser) {
+            res.json({ success: false, message: "Coupon is already used by the user" })
+        }
+        else if (couponFound?.expiryDate < date) {
+            res.json({ success: false, message: 'Coupon Expired' })
+        }
+        // else if(usedUser){
+        //     res.json({message:'User already used the coupon'})
+        // }
+        else if (couponFound) {
+            if (totalAmount < couponFound.minimumPurchase) {
+                res.json({ success: false, message: 'Less amount to apply' })
+            }
+            else {
+                await Cart.findOneAndUpdate({ user }, { $set: { isCouponApplied: coupon_id } })
+                totalAmount = totalAmount - (totalAmount * couponFound.discount) / 100
+                console.log(totalAmount);
+                res.json({ success: true, message: 'Coupon applied', discount: couponFound.discount, totalAmount })
+
+                // await Coupon.updateOne({couponName:coupon},{$set:{usedUser:user}})
+            }
+        }
+        else {
+            res.json({ success: false, message: 'Invalid coupon' })
+        }
+
+
+
 
     } catch (error) {
         console.log(error.message);
 
     }
 }
-
+//remove coupon
+const removeCoupon = async (req, res) => {
+    try {
+        console.log("coupon remove");
+        const user = req.session.userId;
+        console.log(user);
+        await Cart.updateOne({ user }, { $set: { isCouponApplied: "" } })
+        res.json({ success: true })
+        // res.rediect('/cart')
+    } catch (error) {
+        console.log(error.message);
+    }
+}
 
 
 
@@ -1084,7 +1158,8 @@ module.exports = {
     searchItem,
     resendNewotp,
     couponList,
-    applyCoupon
+    applyCoupon,
+    removeCoupon
 
 
 }

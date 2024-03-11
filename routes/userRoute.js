@@ -36,7 +36,7 @@ user_route.get('/editaddress/:id',userMiddleware.checkUser,userController.editAd
 user_route.post('/updateaddress/:address_id/:user_id',userMiddleware.checkUser,userController.updateAddress)
 
 user_route.get('/userprofile',userMiddleware.checkUser,userController.userprofile)
-user_route.post('/saveuser',userMiddleware.checkUser,userController.updateUser)
+user_route.post('/saveuser',checkSchema(validation.userProfileValidate()),userMiddleware.checkUser,userController.updateUser)
 user_route.get('/logout',userController.logout)
 
 //forgetpassword

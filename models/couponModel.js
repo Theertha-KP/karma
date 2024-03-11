@@ -35,13 +35,11 @@ const couponSchema = new mongoose.Schema({
     maxUsers: {
         type: Number,
         required: true,
-
     },
     usedUsers: {
         type: Number,
         required: true,
         default: 0
-
     }
 })
 

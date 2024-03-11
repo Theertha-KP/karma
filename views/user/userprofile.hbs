@@ -7,7 +7,7 @@
                     <h1>User Profile</h1>
                     <nav class="d-flex align-items-center">
                         <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="category.html">User profile</a>
+                        <a href="/userprofile">User profile</a>
                     </nav>
                 </div>
             </div>
@@ -43,10 +43,10 @@
                                 href="/manageaddress"> Manage Address</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-ticket me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/coupons"> My coupons</a></div>
+                                href="/coupons">  My coupons</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-box-open me-4"
-                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/orders"> My Orders</a></div>
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold" href="/orders">
+                                My Orders</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-heart me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
                                 href="/wishlist"> My Wishlist</a></div>
@@ -57,41 +57,48 @@
                 </div>
                 <div class="col-md-7 p-3 right">
                     <div style="height: 30px; "></div>
-                    <form class="col-md-10 " method="post" action="/saveuser">
+                    {{#if message}}
+                    <p style="color: red;">{{message}}</p>
+                    {{/if}}
+                    <form class="col-md-10 " method="post" id="save" action="/saveuser">
                         <div class="row">
-                            <div class="form-group col-md-6"><label for="inputEmail4">First Name</label><input
-                                    type="text" class="form-control" name="fname" id="" value="{{userDoc.fname}}"
-                                    placeholder="First Name"></div>
+                            <div class="form-group col-md-6"><label for="inputEmail4">First Name</label>
+                                <input type="text" class="form-control" name="fname" id="fName"
+                                    value="{{userDoc.fname}}" placeholder="First Name">
+                                <p id="validation-alert" class="text-danger "></p>
+                            </div>
                             <div class="form-group col-md-6"><label for="inputPassword4">Last Name</label><input
-                                    type="text" class="form-control" name="lname" id="" value="{{userDoc.lname}}"
+                                    type="text" class="form-control" name="lname" id="lName" value="{{userDoc.lname}}"
                                     placeholder="Last Name"></div>
                         </div>
                         <div class="row">
-                            <div class="form-group col-md-6"><label for="inputEmail4">Email</label><input type="email"
-                                    class="form-control" name="email" value="{{userDoc.email}}" id="" placeholder="Age">
+                            <div class="form-group col-md-6"><label for="inputEmail4">Email</label>
+                                <input type="email" class="form-control" name="email" value="{{userDoc.email}}"
+                                    id="email" placeholder="Age" readonly>
+                                <p id="validation-alert1" class="text-danger "></p>
                             </div>
                             <div class="form-group col-md-6 px-5">
                                 <label for="inputPassword4">Gender</label>
                                 <div class="row">
                                     <div class="form-check col-md-6">
-                                         {{#if (eq userDoc.gender 'male')}}
+                                        {{#if (eq userDoc.gender 'male')}}
                                         <input class="form-check-input" type="radio" name="gender" id="genderMale"
                                             value="male" checked>
-                                            {{else}}
-                                             <input class="form-check-input" type="radio" name="gender" id="genderMale"
-                                            value="male" >
-                                            {{/if}}
+                                        {{else}}
+                                        <input class="form-check-input" type="radio" name="gender" id="genderMale"
+                                            value="male">
+                                        {{/if}}
                                         <label class="form-check-label" for="genderMale">Male</label>
                                     </div>
 
                                     <div class="form-check col-md-6">
                                         {{#if (eq userDoc.gender 'female')}}
-                                        <input class="form-check-input" type="radio" name="gender" id="genderMale"
+                                        <input class="form-check-input" type="radio" name="gender" id="genderfemale"
                                             value="female" checked>
-                                             {{else}}
-                                             <input class="form-check-input" type="radio" name="gender" id="genderMale"
-                                            value="female" >
-                                            {{/if}}
+                                        {{else}}
+                                        <input class="form-check-input" type="radio" name="gender" id="genderfemale"
+                                            value="female">
+                                        {{/if}}
                                         <label class="form-check-label" for="genderFemale">Female</label>
                                     </div>
                                 </div>
@@ -101,12 +108,15 @@
                         </div>
                         <div class="row">
                             <div class="form-group col-md-6"><label for="">Phone</label><input type="number"
-                                    value="{{userDoc.mobilenumber}}" name="mobilenumber" class="form-control" id="">
+                                    value="{{userDoc.mobilenumber}}" name="mobilenumber" class="form-control"
+                                    id="mobile">
+                                <p id="validation-alert2" class="text-danger "></p>
                             </div>
                         </div>
 
                         <button type="submit" class="btn btn-warning">Save</button>
                     </form>
+
                 </div>
             </div>
         </div>
@@ -178,3 +188,47 @@
         background-color: #F1F3F6;
     }
 </style>
+
+
+
+<script>
+
+    const nameAlert = document.getElementById('validation-alert');
+    const mobileAlert = document.getElementById('validation-alert2');
+
+    const nameInput = document.getElementById('fName');
+    const mobileInput = document.getElementById('mobile');
+
+
+    document.getElementById('save').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        let name = nameInput.value;
+        let mobile = mobileInput.value;
+
+        let nameRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)?$/;
+        let mobileRegex = /^\d{10}$/;
+
+
+        nameAlert.innerText = "";
+        mobileAlert.innerText = "";
+
+        if (name.trim() === "") {
+            nameAlert.innerText = "Name can't be empty";
+            return false;
+        } else if (mobile.trim() === "") {
+            mobileAlert.innerText = "Mobile can't be empty";
+            return false;
+        } else if (!name.match(nameRegex)) {
+            nameAlert.innerText = "Invalid name format";
+            return false;
+        } else if (!mobile.match(mobileRegex)) {
+            mobileAlert.innerText = "Invalid mobile number";
+            return false;
+        }
+
+        // Rest of your form validation logic and submission code
+        this.submit();
+    });
+
+</script>

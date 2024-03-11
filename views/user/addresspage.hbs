@@ -29,12 +29,14 @@
                         <div class="col">
                             <div class="form-outline">
                                 <input type="text" name="fname" id="form7Example1" class="form-control" />
+                                <p id="validation-alert" class="text-danger "></p>
                                 <label class="form-label" for="form7Example1">First name</label>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-outline">
                                 <input type="text" name="lname" id="form7Example2" class="form-control" />
+                                <p id="validation-alert" class="text-danger "></p>
                                 <label class="form-label" for="form7Example2">Last name</label>
                             </div>
                         </div>
@@ -46,18 +48,21 @@
                     <!-- Text input -->
                     <div class="form-outline mb-4">
                         <input type="text" name="address" id="form7Example4" class="form-control" />
+                        <p id="validation-alert-address" class="text-danger "></p>
                         <label class="form-label" for="form7Example4">Address</label>
                     </div>
                      <div class="row mb-4">
                         <div class="col">
                         <div class="form-outline">
-                                <input type="text" name="place" id="form7Example1" class="form-control" />
-                                <label class="form-label" for="form7Example1">Place</label>
+                                <input type="text" name="place" id="form7Example3" class="form-control" />
+                                <p id="validation-alert-place" class="text-danger "></p>
+                                <label class="form-label" for="form7Example3">Place</label>
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-outline">
-                                <input type="number" name="pincode" id="form7Example2" class="form-control" />
+                                <input type="number" name="pincode" id="form7Example6" class="form-control" />
+                                <p id="validation-alert-pincode" class="text-danger "></p>
                                 <label class="form-label" for="form7Example6">Pincode</label>
                             </div>
                         </div>
@@ -66,13 +71,15 @@
                     <!-- Email input -->
                     <div class="form-outline mb-4">
                         <input type="email" name="email" id="form7Example5" class="form-control" />
+                        <p id="validation-alert-email" class="text-danger "></p>
                         <label class="form-label" for="form7Example5">Email</label>
                     </div>
 
                     <!-- Number input -->
                     <div class="form-outline mb-4">
-                        <input type="number" name="phone" id="form7Example6" class="form-control" />
-                        <label class="form-label" for="form7Example6">Phone</label>
+                        <input type="number" name="phone" id="form7Example7" class="form-control" />
+                        <p id="validation-alert-phone" class="text-danger "></p>
+                        <label class="form-label" for="form7Example7">Phone</label>
                     </div>
                     <!--addresstype-->
                     <div class="form-group col-md-6 px-2">
@@ -110,3 +117,72 @@
 </div>
 </section>
 <!--end adress area-->
+
+<script>
+    const nameAlert = document.getElementById('validation-alert');
+    const addressAlert = document.getElementById('validation-alert-address');
+    const placeAlert = document.getElementById('validation-alert-place');
+    const pincodeAlert = document.getElementById('validation-alert-pincode');
+    const emailAlert = document.getElementById('validation-alert-email');
+    const phoneAlert = document.getElementById('validation-alert-phone');
+
+    const nameInput = document.getElementById('form7Example1');
+    const addressInput = document.getElementById('form7Example4');
+    const placeInput = document.getElementById('form7Example3');
+    const pincodeInput = document.getElementById('form7Example6');
+    const emailInput = document.getElementById('form7Example5');
+    const phoneInput = document.getElementById('form7Example7');
+
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        let name = nameInput.value;
+        let address = addressInput.value;
+        let place = placeInput.value;
+        let pincode = pincodeInput.value;
+        let email = emailInput.value;
+        let phone = phoneInput.value;
+        console.log(name)
+        console.log(address)
+        console.log(place)
+        console.log(pincode)
+        console.log(email)
+        console.log(phone)
+        let nameRegex = /^[a-zA-Z]+(?: [a-zA-Z]+)?$/;
+        let pincodeRegex = /^\d{6}$/;
+        let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        let phoneRegex = /^\d{10}$/;
+
+        nameAlert.innerText = "";
+        addressAlert.innerText = "";
+        placeAlert.innerText = "";
+        pincodeAlert.innerText = "";
+        emailAlert.innerText = "";
+        phoneAlert.innerText = "";\
+
+        if (name.trim() === "") {
+            nameAlert.innerText = "Name can't be empty";
+            return false;
+        } else if (address.trim() === "") {
+            addressAlert.innerText = "Address can't be empty";
+            return false;
+        } else if (place.trim() === "") {
+            placeAlert.innerText = "Place can't be empty";
+            return false;
+        } else if (pincode.trim() === "" || !pincode.match(pincodeRegex)) {
+            pincodeAlert.innerText = "Invalid pincode format (6 digits)";
+            return false;
+        } else if (email.trim() === "" || !email.match(emailRegex)) {
+            emailAlert.innerText = "Invalid email format";
+            return false;
+        } else if (phone.trim() === "" || !phone.match(phoneRegex)) {
+            phoneAlert.innerText = "Invalid phone number format (10 digits)";
+            return false;
+        }
+
+        // Rest of your form validation logic and submission code
+        this.submit();
+    });
+</script>

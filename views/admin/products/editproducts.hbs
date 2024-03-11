@@ -1,7 +1,7 @@
 <div class="bg-info-subtle   bg-opacity-10  d-flex justify-content-center ">
   <div style="margin-top: 4%;" class="p-5 bg-light  bg-opacity-50 shadow-sm  col-md-6   ">
     <div>
-      <h3 class="h3">Edit product</h3>
+      <h3 class="h3" style="color: black;">Edit product</h3>
     </div>
     <form  onsubmit="return editProduct()" method="post" action="/admin/editproduct/{{product._id}}"  enctype="multipart/form-data">
       <div class="row mb-3">
@@ -12,16 +12,16 @@
         </div>
       </div>
       <div class="row mb-3 ">
-        <div class="col-sm-3">
+        <div class="col-3">
           <input type="number" class="form-control shadow-none" name="price" placeholder="price"
             value="{{product.price}}" min="0">
         </div>
-        <div class="col-sm-4">
+        <div class="col-3">
           <input type="text" class="form-control shadow-none" name="cost" placeholder="cost" value="{{product.cost}}">
         </div>
-        <div class="col-sm-3 d-flex align-items-center ">
-          <label for="" class="pe-3 ">Color</label>
-          <input type="color" class="form-control form-control-color border-0 shadow-none " name="color"
+        <div class="col-4 d-flex align-items-center ">
+          <label for="" class="pe-3  " style="color: black;">Color:</label>
+          <input  class="form-control  shadow-none " name="color"
             value="{{product.color}}">
         </div>
       </div>
@@ -46,14 +46,15 @@
         </div>
       </div>
       <div class="">
-        <div class="row">
+        <div class="row col-md-9">
          
           <!-- Display previous product images -->
           {{#each product.image }}
-           <div class="col-md-6">
-          <img src="/multer/products/{{this}}" alt="{{product.name}}" class="img-fluid col-md-6">
+           <div class="col-md-6 row">
+          <img src="/multer/products/{{this}}" alt="{{product.name}}" class="img-fluid col-md-6 existing-image">
+
           {{#if this}}
-          <a class="btn btn-danger  w-30"  href="/admin/deleteImg?filename={{this}}&id={{../product._id}}" onclick="return confirm('Are you sure you want to delete it?')">Delete</a>
+          <a class="btn btn-danger col-md-2 " style="height: 20px;"  href="/admin/deleteImg?filename={{this}}&id={{../product._id}}" onclick="return confirm('Are you sure you want to delete it?')">Delete</a>
           {{/if}}
            </div>
           {{/each}}
@@ -62,8 +63,8 @@
 
         </div>
         <!-- Input for updating product images -->
-        <label for="newImages">Add New Images:</label>
-        <input type="file" id="newImages" name="newImages" multiple>
+        <label class="col-md-6" for="newImages" style="color: black ; border: 10px;">Add New Images:</label>
+        <input type="file" id="newImages" style="color: black ; border: 10px;" name="newImages" multiple>
 
       </div>
 
@@ -73,31 +74,56 @@
 </div>
 
 
-<script>
+<!-- Add this code inside your head tag -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-    
+<!-- Your existing HTML code -->
+
+<script>
     const alertProductName = document.getElementById("alertProductName");
     const alertDescription = document.getElementById("alertDescription");
-    
 
-    function editProduct() {        
-        console.log("add product  fucntion")
-        const productName= document.getElementById("productName").value;
-        const about= document.getElementById("about").value;
-              console.log(productName)
+    function editProduct() {
+        const productName = document.getElementById("productName").value;
+        const about = document.getElementById("about").value;
+        const newImagesInput = document.getElementById("newImages");
+        const existingImagesCount = document.querySelectorAll('.existing-image').length;
+        const allowedExtensions = /(\.jpeg|\.jpg)$/i;
+
         alertProductName.innerText = "";
         alertDescription.innerText = "";
 
-        if(productName.trim()==""){
-            console.log("entered empty name")
-            alertProductName.innerText = "Product title can't be empty."
-            return false
+        if (productName.trim() === "") {
+            alertProductName.innerText = "Product title can't be empty.";
+            return false;
+        } else if (about.trim() === "") {
+            alertDescription.innerText = "Product description can't be empty.";
+            return false;
         }
-        else if(about.trim()==""){
-            alertDescription.innerText = "Product description can't be empty."
-            return false
+
+        // Validate new image files
+        if (newImagesInput.files.length > 0) {
+            if (newImagesInput.files.length + existingImagesCount > 5) {
+                alert("You can upload a maximum of 5 images.");
+                return false;
             }
 
+            for (let i = 0; i < newImagesInput.files.length; i++) {
+                const fileName = newImagesInput.files[i].name;
+                if (!allowedExtensions.test(fileName)) {
+                    alert("Please select only JPEG files.");
+                    return false;
+                }
+            }
+        }
+
+        return true; 
     }
 
+    // Optional: Add event listener to trigger validation when file input changes
+    document.getElementById("newImages").addEventListener('change', function () {
+        editProduct();
+    });
 </script>
+
+

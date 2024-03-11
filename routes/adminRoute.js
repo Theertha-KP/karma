@@ -29,6 +29,11 @@ admin_route.patch('/changestatus/:id/:productId/:status',adminmiddle.checkAdmin,
 admin_route.get('/couponlist',adminmiddle.checkAdmin,adminController.couponDashboard)
 admin_route.get('/addcoupon',adminmiddle.checkAdmin,adminController.addCoupon)
 admin_route.post('/insertcoupon',adminmiddle.checkAdmin,adminController.insertCoupon)
+admin_route.get('/editcoupon/:id',adminmiddle.checkAdmin,adminController.editCoupon)
+admin_route.post('/updatecoupon/:id',adminmiddle.checkAdmin,adminController.updateCoupon)
+admin_route.get('/deletecoupon/:id',adminmiddle.checkAdmin,adminController.deleteCoupon)
+admin_route.get('/offer',adminmiddle.checkAdmin,adminController.offerList)
+admin_route.get('/createoffer',adminmiddle.checkAdmin,adminController.createOffer)
 admin_route.get('/adminlogout',adminController.adminlogout)
 
 module.exports = admin_route;

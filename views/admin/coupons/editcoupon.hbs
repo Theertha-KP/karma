@@ -68,34 +68,20 @@
             <div class="header-wrapper m-0">
                 <div class="header-logo-wrapper p-0">
                     <div class="logo-wrapper">
-                        <a href="/admin/dashboard">
+                        <a href="index.html">
                             <img class="img-fluid main-logo" src="/assets/images/logo/1.png" alt="logo">
                             <img class="img-fluid white-logo" src="/assets/images/logo/1-white.png" alt="logo">
                         </a>
                     </div>
                     <div class="toggle-sidebar">
                         <i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i>
-                        <a href="/admin/dashboard">
+                        <a href="index.html">
                             <img src="/assets/images/logo/1.png" class="img-fluid" alt="">
                         </a>
                     </div>
                 </div>
 
-                <form class="form-inline search-full" action="javascript:void(0)" method="get">
-                    <div class="form-group w-100">
-                        <div class="Typeahead Typeahead--twitterUsers">
-                            <div class="u-posRelative">
-                                <input class="demo-input Typeahead-input form-control-plaintext w-100" type="text"
-                                    placeholder="Search Fastkart .." name="q" title="" autofocus>
-                                <i class="close-search" data-feather="x"></i>
-                                <div class="spinner-border Typeahead-spinner" role="status">
-                                    <span class="sr-only">Loading...</span>
-                                </div>
-                            </div>
-                            <div class="Typeahead-menu"></div>
-                        </div>
-                    </div>
-                </form>
+
                 <div class="nav-right col-6 pull-right right-header p-0">
                     <ul class="nav-menus">
                         <li>
@@ -103,6 +89,7 @@
                                 <i class="ri-search-line"></i>
                             </span>
                         </li>
+
 
                         <li>
                             <div class="mode">
@@ -132,7 +119,7 @@
                 <div id="sidebarEffect"></div>
                 <div>
                     <div class="logo-wrapper logo-wrapper-center">
-                        <a href="/admin/dashboard" data-bs-original-title="" title="">
+                        <a href="index.html" data-bs-original-title="" title="">
                             <img class="img-fluid for-white" src="/assets/images/logo/full-white.png" alt="logo">
                         </a>
                         <div class="back-btn">
@@ -143,7 +130,7 @@
                         </div>
                     </div>
                     <div class="logo-icon-wrapper">
-                        <a href="/admin/dashboard">
+                        <a href="index.html">
                             <img class="img-fluid main-logo main-white" src="/assets/images/logo/logo.png" alt="logo">
                             <img class="img-fluid main-logo main-dark" src="/assets/images/logo/logo-white.png"
                                 alt="logo">
@@ -159,7 +146,7 @@
                                 <li class="back-btn"></li>
 
                                 <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="/admin/dashboard">
+                                    <a class="sidebar-link sidebar-title link-nav" href="/dashboard">
                                         <i class="ri-home-line"></i>
                                         <span>Dashboard</span>
                                     </a>
@@ -246,24 +233,13 @@
                                         </li>
                                     </ul>
                                 </li>
+
                                 <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-star-line"></i>
-                                        <span>Offers</span>
+                                    <a class="sidebar-link sidebar-title link-nav" href="taxes.html">
+                                        <i class="ri-price-tag-3-line"></i>
+                                        <span>Tax</span>
                                     </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="/admin/offer">Offer List</a>
-                                        </li>
-
-                                        <li>
-                                            <a href="/admin/addoffer">Create Offer</a>
-                                        </li>
-                                    </ul>
                                 </li>
-
-
-
 
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="product-review.html">
@@ -273,7 +249,17 @@
                                 </li>
 
 
-
+                                <li class="sidebar-list">
+                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
+                                        <i class="ri-settings-line"></i>
+                                        <span>Settings</span>
+                                    </a>
+                                    <ul class="sidebar-submenu">
+                                        <li>
+                                            <a href="profile-setting.html">Profile Setting</a>
+                                        </li>
+                                    </ul>
+                                </li>
 
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="reports.html">
@@ -282,7 +268,12 @@
                                     </a>
                                 </li>
 
-
+                                <li class="sidebar-list">
+                                    <a class="sidebar-link sidebar-title link-nav" href="list-page.html">
+                                        <i class="ri-list-check"></i>
+                                        <span>List Page</span>
+                                    </a>
+                                </li>
 
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="/admin/adminlogout">
@@ -300,121 +291,173 @@
                     </nav>
                 </div>
             </div>
-            <!-- Page Sidebar Ends--><!-- Order section Start -->
+            <!-- Page Sidebar Ends-->
+
+            <!-- Create Coupon Table start -->
             <div class="page-body">
-                <!-- Table Start -->
                 <div class="container-fluid">
                     <div class="row">
-                        <div class="col-sm-12">
-                            <div class="card card-table">
-                                <div class="card-body">
-                                    <div class="title-header option-title">
-                                        <h5>Order List</h5>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <div class="title-header option-title">
+                                                <h5>Edit Coupon</h5>
+                                            </div>
 
-                                    </div>
-                                    <div>
-                                        {{#if order.length}}
-                                        <div class="table-responsive">
-                                            <table class="table all-package order-table theme-table" id="table_id">
-                                                <thead>
-                                                    <tr>
-
-                                                        <th>Order Id</th>
-                                                        <th>Date</th>
-                                                        <th>Payment method</th>
-                                                        <th>Amount</th>
-                                                        <th>Status</th>
-                                                        <th>Option</th>
-                                                    </tr>
-                                                </thead>
-                                                {{#each order }}
-
-                                                <tbody>
-                                                    <tr data-bs-toggle="offcanvas" href="#order-details">
+                                            <div class="tab-content" id="pills-tabContent">
+                                                <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
+                                                    {{#each coupon}}
+                                                    <form class="theme-form theme-form-2 mega-form" method="post"
+                                                        action="/admin/updatecoupon/{{this._id}}">
 
 
-                                                        <td>{{this._id}} </td>
+                                                        <div class="row">
+                                                            <div class="mb-4 row align-items-center">
+                                                                <label
+                                                                    class="form-label-title col-lg-2 col-md-3 mb-0">Coupon
+                                                                    Title</label>
+                                                                <div class="col-md-9 col-lg-10">
+                                                                    <input class="form-control" value="{{this.name}}"
+                                                                        name="name" type="text">
+                                                                </div>
+                                                            </div>
 
-                                                        <td>{{this.orderDate}}</td>
+                                                            <div class="mb-4 row align-items-center">
+                                                                <label
+                                                                    class="col-lg-2 col-md-3 col-form-label form-label-title">Coupon
+                                                                    Code</label>
+                                                                <div class="col-md-6 col-lg-6">
+                                                                    <input class="form-control"
+                                                                        value="{{this.couponId}}" name="couponId"
+                                                                        type="text">
+                                                                </div>
+                                                                {{!-- <div class="col-md-3">
+                                                                    <a class="col-md-3" href="/generateid"
+                                                                        style="background-color: darkcyan; border-radius: 3px;">Generate
+                                                                        Id</a>
+                                                                </div> --}}
+                                                            </div>
 
+                                                            <div class="mb-4 row align-items-center">
+                                                                <label
+                                                                    class="col-lg-2 col-md-3 col-form-label form-label-title">Expiry
+                                                                    Date</label>
+                                                                <div class="col-md-9 col-lg-10">
+                                                                    <input class="form-control"
+                                                                        value="{{  this.expiryDate}}"
+                                                                        name="expiryDate" type="date">
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 row justify-content-between">
 
-
-                                                        <td class="order-success">
-                                                            <span>{{this.payment}}</span>
-                                                        </td>
-
-                                                        <td>{{this.totalAmount}}</td>
-                                                        <td>{{this.items.orderStatus}}</td>
-
-                                                        <td>
-
-
-                                                            <div class="d-flex col-md-8 justify-content-between">
-                                                                <div class="dropdown">
-                                                                    <button
-                                                                        class="btn btn-primary dropdown-toggle col-md-8 "
-                                                                        type="button" id="dropdownMenuButton{{@index}}"
-                                                                        style="height: 30px;" data-toggle="dropdown"
-                                                                        aria-haspopup="true" aria-expanded="false">
-                                                                        Change Status
-                                                                    </button>
-                                                                    <div class="dropdown-menu"
-                                                                        aria-labelledby="dropdownMenuButton{{@index}}">
-                                                                        <button class="dropdown-item" type="button"
-                                                                            onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Shipped')">Shipped</button>
-                                                                        <button class="dropdown-item" type="button"
-                                                                            onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Out for delivery')">Out
-                                                                            for
-                                                                            delivery
-                                                                        </button>
-                                                                        <button class="dropdown-item" type="button"
-                                                                            onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Delivered')">Delivered
-                                                                        </button>
+                                                                <div class="col-6 mb-4 row align-items-center">
+                                                                    <label
+                                                                        class=" col-5  col-form-label form-label-title"
+                                                                        style="width: 35% !important;">Maximum
+                                                                        User</label>
+                                                                    <div class="col-7 ">
+                                                                        <input class=" form-control"
+                                                                            value="{{this.maxUsers}}" name="maxUser"
+                                                                            type="number">
                                                                     </div>
                                                                 </div>
-                                                                <button class="btn btn-sm btn-outline-danger  border"
-                                                                    style="border-color:red!important" type="button"
-                                                                    onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Cancelled')">
-                                                                    Cancel
-                                                                </button>
-
+                                                                <div class="col-6 mb-4 row align-items-center">
+                                                                    <label
+                                                                        class="col-5 col-form-label form-label-title">Minimum
+                                                                        Amount of Purchase</label>
+                                                                    <div class="col-6">
+                                                                        <input class="form-control"
+                                                                            value="{{this.minPurchase}}"
+                                                                            name="minPurchase" type="number">
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </td>
-                                                    </tr>
 
 
 
-                                                </tbody>
-                                                {{/each}}
-                                            </table>
+                                                            <div class=" col-12   d-flex justify-content-between">
+                                                                <div class="mb-4 row  col-6 justify-content-between">
+                                                                    <label
+                                                                        class="col-5 col-form-label form-label-title">Discount
+                                                                        Type</label>
+                                                                    <div class="col-7 px-4">
+                                                                        <select class="js-example-basic-single"
+                                                                            name="state">
+                                                                            <option disabled>--Select--</option>
+                                                                            <option {{#if (eq discountType "Percent"
+                                                                                )}}selected{{/if}}>Percent</option>
+                                                                            <option {{#if (eq discountType "Amount"
+                                                                                )}}selected{{/if}}>Amount</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div
+                                                                    class="mb-4 row align-items-center col-4 justify-content-between">
+                                                                    <label
+                                                                        class="col-5 col-form-label form-label-title">Discount
+                                                                    </label>
+                                                                    <div class="col-7">
+                                                                        <input class="form-control"
+                                                                            value="{{this.discount}}" name="discount"
+                                                                            type="number">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mb-4 row align-items-center">
+                                                                <label class="col-2 col-form-label form-label-title">
+                                                                    Description</label>
+                                                                <div class="form-group col-10">
+                                                                    <div class="dropzone-wrapper">
+                                                                        <div class="dropzone-desc">
+                                                                            <textarea class="form-control shadow-none"
+                                                                                name="description"
+                                                                                placeholder="description"></textarea>
+                                                                        </div>
+                                                                        <input type="file" class="dropzone">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="d-block mt-5">
+                                                                <button type="submit" class="btn btn-info">Update
+                                                                    Coupon</button>
+                                                            </div>
+
+                                                        </div>
+                                                    </form>
+                                                    {{/each}}
+                                                </div>
+
+
+                                            </div>
                                         </div>
-                                        {{/if}}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- Table End -->
-
-                <!-- footer start-->
-
             </div>
-            <!-- Order section End -->
-        </div>
-        <!-- Page Body End-->
-    </div>
-    <!-- page-wrapper End -->
+            <!-- Create Coupon Table End -->
 
-    <!-- Modal Start -->
+
+        </div>
+    </div>
+    <!-- page-wrapper end-->
+
+    <!-- Modal start -->
     <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog  modal-dialog-centered">
             <div class="modal-content">
+
                 <div class="modal-body">
                     <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
                     <p>Are you sure you want to log out?</p>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
                     <div class="button-box">
                         <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
                         <button type="button" class="btn  btn--yes btn-primary">Yes</button>
@@ -423,56 +466,7 @@
             </div>
         </div>
     </div>
-    <!-- Modal End -->
-
-    {{!-- <!-- latest js -->
-    <script src="/assets/js/jquery-3.6.0.min.js"></script>
-
-    <!-- Bootstrap js -->
-    <script src="/assets/js/bootstrap/bootstrap.bundle.min.js"></script>
-
-    <!-- feather icon js -->
-    <script src="/assets/js/icons/feather-icon/feather.min.js"></script>
-    <script src="/assets/js/icons/feather-icon/feather-icon.js"></script>
-
-    <!-- scrollbar simplebar js -->
-    <script src="/assets/js/scrollbar/simplebar.js"></script>
-    <script src="/assets/js/scrollbar/custom.js"></script>
-
-    <!-- Sidebar jquery -->
-    <script src="/assets/js/config.js"></script>
-
-    <!-- tooltip init js -->
-    <script src="/assets/js/tooltip-init.js"></script>
-
-    <!-- Plugins JS -->
-    <script src="/assets/js/sidebar-menu.js"></script>
-    <script src="/assets/js/notify/bootstrap-notify.min.js"></script>
-    <script src="/assets/js/notify/index.js"></script>
-
-    <!-- Apexchar js -->
-    <script src="/assets/js/chart/apex-chart/apex-chart1.js"></script>
-    <script src="/assets/js/chart/apex-chart/moment.min.js"></script>
-    <script src="/assets/js/chart/apex-chart/apex-chart.js"></script>
-    <script src="/assets/js/chart/apex-chart/stock-prices.js"></script>
-    <script src="/assets/js/chart/apex-chart/chart-custom1.js"></script>
-
-
-    <!-- slick slider js -->
-    <script src="/assets/js/slick.min.js"></script>
-    <script src="/assets/js/custom-slick.js"></script>
-
-    <!-- customizer js -->
-    <script src="/assets/js/customizer.js"></script>
-
-    <!-- ratio js -->
-    <script src="/assets/js/ratio.js"></script>
-
-    <!-- sidebar effect -->
-    <script src="/assets/js/sidebareffect.js"></script>
-
-    <!-- Theme js -->
-    <script src="/assets/js/script.js"></script> --}}
+    <!-- Modal end -->
 
     <!-- latest js -->
     <script src="/assets/js/jquery-3.6.0.min.js"></script>
@@ -522,24 +516,6 @@
 
     <!-- Theme js -->
     <script src="/assets/js/script.js"></script>
-    {{!--
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script> --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 </body>
 
 </html>
-
-<script>
-
-
-    function statusChange(id, productId, status) {
-        console.log(id)
-        console.log(productId)
-        console.log(status)
-        axios.patch(`/admin/changestatus/${id}/${productId}/${status}`).then(() => {
-            location.reload()
-        })
-
-    }
-</script>

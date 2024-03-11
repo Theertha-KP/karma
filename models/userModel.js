@@ -53,7 +53,7 @@ address:{
     type: String
 },
 wishlist:[{
-   type:mongoose.Schema.Types.ObjectId,ref:"Product"
+   type:mongoose.Schema.Types.ObjectId,ref:"products"
 }]
 })
 

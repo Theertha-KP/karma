@@ -1,8 +1,8 @@
 
 <div class="bg-info-subtle bg-opacity-10 d-flex justify-content-center vh-100">
   <div
-    style="margin-top: 6%"
-    class="p-5 bg-light bg-opacity-50 shadow-sm col-md-10">
+    style="margin-top: 6% ; margin-left: 10px;" 
+    class="p-0 mx-5  bg-light bg-opacity-50 shadow-sm col-md-9">
   
     <table class="table">
     <thead>
@@ -12,8 +12,8 @@
             {{!-- <th scope="col">image</th> --}}
             <th scope="col">mobile</th>
             <th scope="col">email</th>
-            <th scope="col">dateofjoin</th>
-            <th scope="col">orders</th>
+            
+           
             <th scope="col">actions</th>
         </tr>
     </thead>
@@ -22,19 +22,19 @@
         <tr>
           
             <th scope="row">{{inc @index}}</th>
-            <td>{{user.name}}</td>
+            <td>{{user.fname}}</td>
             {{!-- <td>images</td> --}}
             <td>{{user.mobilenumber}}</td>
             <td>{{user.email}}</td>
-            <td>dateofjoin</td>
-            <td>order</td>
+            
+          
             <td>
                 {{#if user.is_blocked}}
                 <a href="/admin/unblockuser/{{user._id}}"><button class="btn btn-sm btn-primary "onclick="return confirm('Are you sure you want to unblock user?')">Unblock</button></a>
                 {{else}}
                 <a href="/admin/blockuser/{{user._id}}"><button class="btn btn-sm btn-primary "onclick="return confirm('Are you sure you want to block User?')">Block</button></a>
                 {{/if}}
-                <a href="/admin/edituser/{{user._id}}"><button class="btn btn-sm btn-danger ms-2">edit</button></a>
+               
             </td>
         </tr>
         {{/each}}

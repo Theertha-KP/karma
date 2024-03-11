@@ -146,7 +146,7 @@
                                 <li class="back-btn"></li>
 
                                 <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="index.html">
+                                    <a class="sidebar-link sidebar-title link-nav" href="/admin/dashboard">
                                         <i class="ri-home-line"></i>
                                         <span>Dashboard</span>
                                     </a>
@@ -235,46 +235,13 @@
                                 </li>
 
                                 <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="taxes.html">
-                                        <i class="ri-price-tag-3-line"></i>
-                                        <span>Tax</span>
-                                    </a>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="product-review.html">
-                                        <i class="ri-star-line"></i>
-                                        <span>Product Review</span>
-                                    </a>
-                                </li>
-
-
-                                <li class="sidebar-list">
-                                    <a class="linear-icon-link sidebar-link sidebar-title" href="javascript:void(0)">
-                                        <i class="ri-settings-line"></i>
-                                        <span>Settings</span>
-                                    </a>
-                                    <ul class="sidebar-submenu">
-                                        <li>
-                                            <a href="profile-setting.html">Profile Setting</a>
-                                        </li>
-                                    </ul>
-                                </li>
-
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="reports.html">
+                                    <a class="sidebar-link sidebar-title link-nav" href="/admin/report">
                                         <i class="ri-file-chart-line"></i>
                                         <span>Reports</span>
                                     </a>
                                 </li>
 
-                                <li class="sidebar-list">
-                                    <a class="sidebar-link sidebar-title link-nav" href="list-page.html">
-                                        <i class="ri-list-check"></i>
-                                        <span>List Page</span>
-                                    </a>
-                                </li>
-
+                              
                                 <li class="sidebar-list">
                                     <a class="sidebar-link sidebar-title link-nav" href="/admin/adminlogout">
                                         <i class="ri-list-check"></i>
@@ -348,14 +315,13 @@
                                                         <td>
                                                             <ul>
                                                                 <li>
-                                                                    <a href="javascript:void(0)">
+                                                                    <a href="/admin/editcoupon/{{this._id}}">
                                                                         <i class="ri-pencil-line"></i>
                                                                     </a>
                                                                 </li>
 
                                                                 <li>
-                                                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                                                        data-bs-target="#exampleModalToggle">
+                                                                    <a href="/admin/deletecoupon/{{this._id}}"onclick="return confirm('Are you sure you want to delete it?')" >
                                                                         <i class="ri-delete-bin-line"></i>
                                                                     </a>
                                                                 </li>

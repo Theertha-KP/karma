@@ -116,6 +116,12 @@ const loadAddCategory = async (req, res) => {
 };
 const insertCategoryDb = async (req, res) => {
   try {
+    const { categoryname, description } = req.body;
+    const existingCategory = await Category.findOne({ categoryName: categoryname });
+
+    if (existingCategory) {
+      return res.render("admin/category/addcategory",{ admin: true , message: 'Category already exists' });
+    }
 
     const category = new Category({
       categoryName: req.body.categoryname,
@@ -217,7 +223,11 @@ const deleteProductImg = async (req, res) => {
 const loadUserDashboard = async (req, res) => {
   try {
     userData = await User.find({});
+    console.log(userData);
+    const order=await Order.find({user:userData._id})
+    console.log(order);
     res.render("admin/users/userdashboard", { admin: true, user: userData });
+
   } catch (error) {
     console.log("error at loading user dashboard");
     console.log(error.message);
@@ -360,9 +370,9 @@ const adminlogout = async (req, res) => {
 const couponDashboard = async (req, res) => {
   try {
     const couponData = await Coupons.find({});
-    
+
     console.log(couponData);
-    res.render('admin/coupons/couponDashboard', { coupon : couponData})
+    res.render('admin/coupons/couponDashboard', { coupon: couponData })
   } catch (error) {
     console.log(error);
 
@@ -379,7 +389,7 @@ const addCoupon = async (req, res) => {
 const insertCoupon = async (req, res, next) => {
   try {
     const coupon = new Coupons({
-      name:req.body.name,
+      name: req.body.name,
       couponId: req.body.couponId,
       expiryDate: req.body.expiryDate,
       discountType: req.body.state,
@@ -398,6 +408,73 @@ const insertCoupon = async (req, res, next) => {
 
   }
 }
+const editCoupon = async (req, res, next) => {
+  try {
+    const couponId = new ObjectId(req.params.id)
+    const couponData = await Coupons.find({ _id: couponId });
+    console.log(couponData);
+    res.render("admin/coupons/editcoupon", { coupon: couponData })
+  } catch (error) {
+    console.log(error);
+
+  }
+}
+const updateCoupon = async (req, res, next) => {
+  try {
+    const couponId = new ObjectId(req.params.id)
+    const couponData = await Coupons.updateOne(
+      { _id: couponId },
+      {
+        $set: {
+          name: req.body.name,
+          couponId: req.body.couponId,
+          expiryDate: req.body.expiryDate,
+          discountType: req.body.state,
+          discount: req.body.discount,
+          description: req.body.description,
+          minPurchase: req.body.minPurchase,
+          maxUsers: req.body.maxUser
+        }
+      }
+    );
+    console.log(couponData);
+    res.redirect("/admin/couponlist")
+
+  } catch (error) {
+    console.log(error);
+
+  }
+}
+const deleteCoupon = async (req, res, next) => {
+  try {
+    console.log('jodhuiwhdjqdiqhd');
+      const couponId = new ObjectId(req.params.id);
+      console.log("Deleting coupon with ID:", couponId);
+      await Coupons.deleteOne({ _id: couponId });
+      console.log("Coupon has been deleted");
+      res.redirect("/admin/couponlist");
+  } catch (error) {
+      console.error("Error deleting coupon:", error);
+      // Handle the error or add more detailed logging.
+  }
+};
+const offerList=async(req,res,next)=>{
+  try{
+    res.render("admin/offers/offerlist")
+  }catch (error) {
+      console.error("Error deleting coupon:", error);
+      // Handle the error or add more detailed logging.
+  }
+}
+const createOffer=async(req,res,next)=>{
+  try{
+    res.render("admin/offers/createoffer")
+  }catch (error) {
+      console.error("Error deleting coupon:", error);
+      // Handle the error or add more detailed logging.
+  }
+}
+
 
 module.exports = {
   adminPageLoad,
@@ -425,6 +502,11 @@ module.exports = {
   status,
   couponDashboard,
   addCoupon,
-  insertCoupon
+  insertCoupon,
+  editCoupon,
+  updateCoupon,
+  deleteCoupon,
+  offerList,
+  createOffer
 
 };

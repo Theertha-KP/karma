@@ -113,7 +113,7 @@
                                     </a>
                                     <div class="product__cart__item__text">
                                         <h6>{{this.productDetails.productName}}</h6>
-                                        <h5>₹{{this.productDetails.price}}</h5>
+                                        <h5 id="productPrice">₹{{this.productDetails.price}}</h5>
                                     </div>
                                 </div>
                             </td>
@@ -126,12 +126,12 @@
                                         data-item-id="{{this.product.product_id}}" data-to-do="minus"
                                         style="width:1.5rem"
                                         onclick=" quantityChange('{{this.product.product_id}}',-1)">-</button>
-                                    <h5 class="mx-1 countOnScreen" id="product-{{data.product_id._id}}">
+                                    <h5 class="mx-1 countOnScreen" id="product-{{this.product.product_id}}">
                                         {{this.product.count}}</h5>
                                     <button class="btn btn-primary btn-sm p-0 countButton" id="changecount"
                                         data-item-id="{{this.product_id._id}}" data-to-do="plus" style="width: 1.5rem;"
                                         onclick=" quantityChange('{{this.product.product_id}}',1)">+</button>
-                                    <p class="mx-1 countOnScreen" id="product-{{data.product_id._id}}"></p>
+                                    <p class="mx-1 countOnScreen" id="product-{{this.product.product_id}}"></p>
                                 </div>
                             </td>
                             <td>
@@ -146,12 +146,20 @@
                         </tr>
                         {{/each}}
 
-                   
+
                         <tr>
                             <td>
                                 <div class="cupon_text d-flex align-items-center">
-                                    <input type="text" name="couponid" placeholder="Coupon Code">
+                                    <input id="coupon" type="text" name="couponid" placeholder="Coupon Code">
                                     <a class="primary-btn" href="/coupons">View Coupon</a>
+                                    <div class="  col-3 justify-content-between height-3 p-4">
+
+                                        <button class="btn btn-outline-warning" onclick="apply()" type="button">
+                                            Apply
+                                        </button>
+
+                                    </div>
+
 
                                 </div>
                             </td>
@@ -162,10 +170,10 @@
                                 <h5>Subtotal</h5>
                             </td>
                             <td>
-                                <h5>{{total}}</h5>
+                                <h5 id="totalamount">{{total}}</h5>
                             </td>
                         </tr>
-                       
+
                         <tr class="out_button_area">
                             <td>
 
@@ -179,7 +187,7 @@
                             <td>
                                 <div class="checkout_btn_inner d-flex align-items-center">
                                     <a class="gray_btn" href="/shop">Continue Shopping</a>
-                                    <a class="primary-btn" href="/checkout">Proceed </a>
+                                    <a class="primary-btn" id="checkpage" href="/checkout">Proceed </a>
                                 </div>
                             </td>
                         </tr>
@@ -207,10 +215,49 @@
 <script>
 
 
-    function quantityChange(id, count,) {
-        axios.patch(`/changecount/${id}/${count}`).then(() => {
+    function quantityChange(id, count) {
+        axios.patch(`/changecount/${id}/${count}`).then((res) => {
+            // Update the count on the page without refreshing
+            if(res.data.success==true){
+            const countOnScreen = document.getElementById(`product-${id}`);
+           
+            countOnScreen.innerText = parseInt(countOnScreen.innerText) + count;
+//increasing price
+            const productPrice = parseFloat(document.getElementById("productPrice").innerText.replace('₹', ''));
+            console.log(productPrice)
+            const totalElement = document.getElementById("totalamount");
+            let currentTotal = parseFloat(totalElement.innerText.replace('₹', ''));
+            currentTotal += (count * productPrice);
+            console.log(currentTotal)
+             
+             totalElement.innerText = `₹${currentTotal.toFixed(2)}`
+             const check = document.getElementById('checkpage');
+            check.href = `/checkout?total=${currentTotal.toFixed(2)}`;
+
+        }
+        }).catch((error) => {
+            console.error("Error changing quantity:", error);
+        });
+    }
+
+    function apply() {
+
+        const id = document.getElementById("coupon").value
+        console.log(id)
+        axios.get(`/applycoupon/${id}`).then((response) => {
+            console.log(response + "response")
+            const updatedTotal = response.data.totalAmount;
+            const totalAmountElement = document.getElementById("totalamount");
+            
+            totalAmountElement.innerText = updatedTotal;
+            const check = document.getElementById('checkpage')
+            check.href=`/checkout?total=${updatedTotal}`
 
         })
 
-    }
+    };
+
+
+
+
 </script>

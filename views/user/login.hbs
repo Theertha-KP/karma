@@ -33,22 +33,28 @@
 				</div>
 			</div>
 			<div class="col-lg-6">
-				<div class="login_form_inner pt-0">
+				<div class="login_form_inner pt-6">
 					<h3>Log in to enter</h3>
 
-					{{#if error}}
+					{{#if messages}}
+					<p style="color: red;">{{messages}}</p>
+					{{else if error}}
 					<p style="color: red;">{{error}}</p>
+
 					{{/if}}
-					<form onsubmit="return validate()" class="row login_form" action="/login" method="post" id="loginform" novalidate="novalidate">
+
+					<form onsubmit="return validate()" class="row login_form" action="/login" method="post"
+						id="loginform" novalidate="novalidate">
 						<div class="col-md-12 form-group">
 							<input type="text" class="form-control" id="Value" name="email" placeholder="email"
-								onfocus="this.placeholder = ''" onblur="this.placeholder = 'email'" >
-								 <p id="valueAlert" class="text-danger "></p>
+								onfocus="this.placeholder = ''" onblur="this.placeholder = 'email'">
+							<p id="valueAlert" class="text-danger "></p>
 						</div>
 						<div class="col-md-12 form-group">
-							<input type="password" class="form-control" id="Password" name="password" placeholder="Password"
-								onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
-								<p id="passwordAlert" class="text-danger "></p>
+							<input type="password" class="form-control" id="Password" name="password"
+								placeholder="Password" onfocus="this.placeholder = ''"
+								onblur="this.placeholder = 'Password'">
+							<p id="passwordAlert" class="text-danger "></p>
 						</div>
 
 						<div class="col-md-12 form-group">
@@ -64,36 +70,36 @@
 <!--================End Login Box Area =================-->
 
 <script>
-  const valueAlert = document.getElementById("valueAlert");
-  const passwordAlert = document.getElementById("passwordAlert");
+	const valueAlert = document.getElementById("valueAlert");
+	const passwordAlert = document.getElementById("passwordAlert");
 
-  function validate(){
-    console.log("This is validate")
-    
-    const value = document.getElementById("Value").value;
-    const password = document.getElementById("Password").value;
-    console.log(value)
-    valueAlert.innerText="";
-    passwordAlert.innerText="";
+	function validate() {
+		console.log("This is validate")
 
-    if(value.trim() === ""){
-        valueAlert.innerText = "Email can't be empty";
-        return false;
-    }else if(password.trim() === ""){
-        passwordAlert.innerText = "Password can't be empty";
-        return false;
-    }
+		const value = document.getElementById("Value").value;
+		const password = document.getElementById("Password").value;
+		console.log(value)
+		valueAlert.innerText = "";
+		passwordAlert.innerText = "";
+
+		if (value.trim() === "") {
+			valueAlert.innerText = "Email can't be empty";
+			return false;
+		} else if (password.trim() === "") {
+			passwordAlert.innerText = "Password can't be empty";
+			return false;
+		}
 
 
- 
-    let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-    if(value.match(emailRegex)){
-      console.log("Value is matching");
-      return true;
-    }
+		let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-    valueAlert.innerText = "Invalid email ";
-    return false 
-}
+		if (value.match(emailRegex)) {
+			console.log("Value is matching");
+			return true;
+		}
+
+		valueAlert.innerText = "Invalid email ";
+		return false
+	}
 </script>

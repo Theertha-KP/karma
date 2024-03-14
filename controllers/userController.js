@@ -20,10 +20,10 @@ const loadLoginPage = async (req, res) => {
             if (req.session.userLoginError)
                 var error = "email or password is incorrect"
             req.session.userLoginError = false
-            console.log("Login page is loaded");
-            // res.set('Cache-Control', 'no-store')
-            res.render('user/login', { error })
+            const messages = req.flash('message')
+            res.render('user/login', { error, messages })
         }
+
     } catch (error) {
         console.log("error at loadLoginPage");
         console.log(error.message);
@@ -47,7 +47,9 @@ const loadSignupPage = async (req, res) => {
 //user load home page
 const home = async (req, res) => {
     try {
+        
         res.render('user/index', { user: req.session.userData })
+
     } catch (error) {
         console.log(error.message)
 
@@ -67,7 +69,8 @@ const insertUser = async (req, res, next) => {
             gender: req.body.gender,
             password: hash,
             mobile: req.body.mobile,
-            isVerified: false,
+            is_verified: false,
+            is_blocked: false
         });
 
         // checking session exists or not
@@ -105,6 +108,7 @@ const verifyUser = async (req, res) => {
                     res.redirect('/')
                 } else {
                     req.session.userLoginError = true
+                    req.flash('message', 'Your account is blocked. Please contact support for assistance.')
                     res.redirect("/login")
                 }
             } else {
@@ -491,7 +495,7 @@ const changeCount = async (req, res) => {
         const response = await Cart.updateOne({ user: user }, {
             $inc: { 'product.$[elem].count': count }
         }, { arrayFilters: [{ "elem.product_id": productId }] })
-        
+
         res.json({ success: true })
         console.log(response);
 

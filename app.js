@@ -55,6 +55,15 @@ app.use(
       saveUninitialized: true,
     })
   );
+
+  // Use connect-flash middleware
+  // app.use(
+  //   flash({
+  //     sessionKeyName: 'express-flash-message'
+  //   })
+  // )
+app.use(flash())
+
   //requiring routes
   const user_route = require("./routes/userRoute");
   const admin_route = require("./routes/adminRoute");
@@ -66,8 +75,6 @@ app.use(function(req, res, next) {
     next(createError(404));
   });
 
-// Initialize connect-flash to use flash messages
-app.use(flash());
 
   
   //error handler

@@ -1,16 +1,18 @@
 const User = require("../models/userModel");
-const nodemailer = require("nodemailer");
-const speakeasy = require("speakeasy");
-const otpModal = require("../models/otpModel");
-const Product = require("../models/productModel");
-const Cart = require('../models/cartModel')
-const Order = require('../models/orderModel')
-const Address = require('../models/addressModel')
-const Coupons = require('../models/couponModel')
 const bcrypt = require('bcrypt')
-const { validationResult } = require('express-validator');
 const saltRounds = 10;
 const { ObjectId } = require('mongodb')
+
+//user load home page
+const home = async (req, res) => {
+    try {
+        res.render('user/index', { user: req.session.userData })
+    } catch (error) {
+        console.log(error.message)
+
+    }
+}
+
 // loading login page
 const loadLoginPage = async (req, res) => {
     try {
@@ -27,67 +29,6 @@ const loadLoginPage = async (req, res) => {
     } catch (error) {
         console.log("error at loadLoginPage");
         console.log(error.message);
-    }
-};
-// loading registration page
-const loadSignupPage = async (req, res) => {
-    try {
-        if (req.session.userStatus) {
-            res.redirect('/')
-        } else {
-            console.log("Signup page is loaded");
-            res.render("./user/registration");
-        }
-    } catch (error) {
-        console.log("error at loadSignupPage ");
-        console.log(error.message);
-    }
-};
-
-//user load home page
-const home = async (req, res) => {
-    try {
-        
-        res.render('user/index', { user: req.session.userData })
-
-    } catch (error) {
-        console.log(error.message)
-
-    }
-
-}
-//inserting users 
-const insertUser = async (req, res, next) => {
-    try {
-        //hash
-        const hash = await bcrypt.hash(req.body.password, saltRounds)
-
-        const user = new User({
-            fname: req.body.fname,
-            lname: req.body.lname,
-            email: req.body.email,
-            gender: req.body.gender,
-            password: hash,
-            mobile: req.body.mobile,
-            is_verified: false,
-            is_blocked: false
-        });
-
-        // checking session exists or not
-        req.session ? console.log("session exists") : console.log("session error");
-
-        req.session.userData = user;
-        const userData = await user.save();
-        console.log(req.session.userData);
-
-        // Send a success response
-
-        next()
-    } catch (error) {
-        console.log("error at insertuser ");
-        console.log(error.message);
-        // Send an error response
-
     }
 };
 
@@ -124,6 +65,22 @@ const verifyUser = async (req, res) => {
         console.log(error);
     }
 };
+
+// loading registration page
+const loadSignupPage = async (req, res) => {
+    try {
+        if (req.session.userStatus) {
+            res.redirect('/')
+        } else {
+            console.log("Signup page is loaded");
+            res.render("./user/registration");
+        }
+    } catch (error) {
+        console.log("error at loadSignupPage ");
+        console.log(error.message);
+    }
+};
+
 //signup validation
 const signUpValidation = async (req, res, next) => {
     try {
@@ -132,124 +89,46 @@ const signUpValidation = async (req, res, next) => {
             console.log(result.array());
             return res.render('user/registration', { message: result.array()[0].msg });
         }
-
-
         const Email = req.body.email;
-        console.log("Sign-up validation loaded succesfully");
         const userData = await User.findOne({ email: Email });
         if (userData && userData.email) {
-            console.log("Existing email account with input email");
             return res.render("user/registration", { message: "Email already exist" });
         } else {
-            console.log("Signup validation went succesfull");
             next();
         }
     } catch (error) {
-        console.log("error at signup Validation ");
-        console.error(error.message);
         return res.status(500).send("Internal Server Error");
     }
 };
-//load otp page
-const verifyOtpLoad = async (req, res, next) => {
+
+//inserting users 
+const insertUser = async (req, res, next) => {
     try {
-        if (req.session.userData) {
-            console.log("otp page is loaded succesfully");
-            res.render("user/verifyotp");
-        } else {
-            res.redirect('/registration')
-        }
-
-    } catch (error) {
-        console.log(error.message);
-    }
-};
-
-//   nodemailer
-
-require("dotenv").config();
-
-const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: process.env.useremail,
-        pass: process.env.password,
-    },
-});
-
-const secret = speakeasy.generateSecret({ length: 20 });
-//send otp
-
-const otpGenerator = async (req, res, next) => {
-    console.log("otp generated ");
-    email = req.session.userData.email;
-    // checking input email for otp verification NotImp
-    console.log("input email is " + email);
-    const otp = speakeasy.totp({
-        secret: secret.base32,
-        encoding: "base32",
-    });
-    console.log(`req body in otp generator`);
-    console.log(req.body);
-    await otpModal.updateOne({ userId: req.session.userData._id }, { $set: { otp: otp } }, { upsert: true })
-    const mailOptions = {
-        from: "theerthatkp28@gmail.com",
-        to: email,
-        subject: "OTP Verification",
-        text: `Your OTP for verification is: ${otp}`,
-    };
-
-    console.log(otp + "generated otp");
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log(error.message);
-
-
-        }
-    });
-    // if( )
-    res.redirect('/otp')
-}
-//Verifying Otp
-const verifyOtp = async (req, res, next) => {
-    try {
-        console.log("verify otp section----");
-        console.log(Object.values(req.body).join(""));
-        const userInputOtp = Object.values(req.body).join("");
-        console.log(req.session);
-        const otp = await otpModal.findOne({ userId: req.session.userData._id });
-        // const userData = await User.find({});
-        console.log(otp.otp);
-        console.log(
-            `otp verification of userinput otp & otp from otpDb : ${otp.otp == userInputOtp
-            }`
-        );
-        console.log(userInputOtp);
-        if (otp.otp == userInputOtp) {
-            console.log("same user");
-            await User.updateOne({ _id: req.session.userData._id }, { $set: { is_verified: true } })
-            req.session.destroy()
-            res.redirect('/login')
-        } else {
-            res.render('user/verifyotp', { message: 'Incorrect OTP ' })
-        }
+        //hash
+        const hash = await bcrypt.hash(req.body.password, saltRounds)
+        const user = new User({
+            fname: req.body.fname,
+            lname: req.body.lname,
+            email: req.body.email,
+            gender: req.body.gender,
+            password: hash,
+            mobile: req.body.mobile,
+            isVerified: false,
+        });
+        // checking session exists or not
+        req.session ? console.log("session exists") : console.log("session error");
+        req.session.userData = user;
+        const userData = await user.save();
+        next()
     } catch (error) {
         console.log(error.message);
 
     }
 };
 
-//listing product
-const productlist = async (req, res, next) => {
-    try {
 
-        const productDoc = await Product.find({ isListed: true }).populate("categoryId");
-        res.render("user/productlist", { products: productDoc });
-    } catch (error) {
-        console.log("error at loading add products page");
-        console.log(error.message);
-    }
-}
+
+
 
 //logout
 const logout = async (req, res) => {
@@ -258,531 +137,14 @@ const logout = async (req, res) => {
     })
 }
 
-//singleproduct
-const singleproduct = async (req, res, next) => {
-    try {
-        const _id = new ObjectId(req.params.id);
-        console.log(_id);
-        const productDoc = await Product.findOne({ _id: _id })
-        console.log(productDoc);
-        if (productDoc.quantity === 0) {
-            var countExist = false
-        } else {
-            var countExist = true
-        }
-        res.render("user/singleproduct", { product: productDoc, countExist });
-    } catch (error) {
-        console.log("error at loading add products page");
-        console.log(error.message);
-    }
-}
+
 const userprofile = async (req, res, next) => {
     try {
-        const user = req.session.userData._id
-        const userDoc = await User.findOne({ _id: user })
-        res.render("user/userprofile", { userDoc })
+        res.render("user/userprofile", { user: req.session.userData })
     } catch (error) {
         console.log("error at loading add products page");
         console.log(error.message);
     }
-}
-
-const resendOTP = async function (req, res, next) {
-    try {
-
-        console.log("otp generated ");
-        email = req.session.userData.email;
-        // checking input email for otp verification NotImp
-        console.log("input email is " + email);
-        const otp = speakeasy.totp({
-            secret: secret.base32,
-            encoding: "base32",
-        });
-        console.log(`req body in otp generator`);
-        console.log(req.body);
-
-        const otpDB = new otpModal({
-            userId: req.session.userData._id,
-            otp: otp,
-        });
-        console.log("Otp database is created");
-        await otpDB.save();
-        console.log(otpDB);
-        console.log("otp from otpdb" + otpDB.otp);
-        const mailOptions = {
-            from: "theerthatkp28@gmail.com",
-            to: email,
-            subject: "OTP Verification",
-            text: `Your OTP for verification is: ${otp}`,
-        };
-
-        console.log(otp + "generated otp");
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.log(error.message);
-            }
-        });
-        // req.flash('fmessage','OTP resend successfully.');
-        return res.json({ success: true });
-    } catch (error) {
-        console.log('Error sending OTP', error);
-        // req.flash('fmessage', 'Internal server error');
-        return res.json({ success: false, message: 'Internal server error' });
-
-    }
-};
-
-//cart 
-
-
-const cart = async function (req, res, next) {
-    try {
-        //wraning mesage
-        console.log('hai');
-        var context = req.app.locals.specialContext
-        req.app.locals.specialContext = ""
-        //we need an user to logged in to go cart
-
-
-        const user = new ObjectId(req.session.userData._id)
-        console.log(user);
-
-        //getting cart product count
-        let cartCount = 0
-
-        const cartData = await Cart.aggregate([
-            {
-                $match: {
-                    user: user
-                }
-            },
-            {
-                $unwind: "$product"
-            },
-            {
-                $lookup: {
-                    from: "products",
-                    localField: "product.product_id",
-                    foreignField: "_id",
-                    as: "productDetails"
-                }
-            },
-            {
-                $unwind: "$productDetails"
-            }, {
-                $project: {
-                    _id: 1,
-                    user: 1,
-                    product: 1,
-                    productDetails: 1,
-                    total: { $multiply: ['$product.count', '$productDetails.price'] }
-                }
-            }
-        ]).exec()
-        console.log(cartData);
-        const total = cartData.reduce((acc, val) => {
-            return acc + val.total
-        }, 0)
-        res.render('user/cart', { cartData, total })
-    }
-    catch (error) {
-        console.log('Error sending OTP', error);
-        // req.flash('fmessage', 'Internal server error');
-        return res.json({ success: false, message: 'Internal server error' });
-    }
-}
-
-//check product in cart
-const checkproduct = async (req, res) => {
-    try {
-        if (req.session.userData) {
-            console.log(req.params.id);
-            const user = new ObjectId(req.session.userData._id)
-            const productId = new ObjectId(req.params.id)
-
-            const cart = await Cart.findOne({ user: user, product: { $elemMatch: { product_id: productId } } })
-            console.log(cart);
-            if (cart) {
-                res.status(200).json({ success: true })
-            } else {
-                res.status(200).json({ success: false, msg: 'product not found' })
-            }
-        } else {
-            res.status(200).json({ success: false, msg: 'user not found' })
-        }
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-
-//add to cart
-const addToCart = async (req, res) => {
-    try {
-        //searching for the user
-
-        const user = req.session.userData._id;
-        //get the id by the params in a tag
-        const productId = new ObjectId(req.params.id)
-        // //find the user already exist in the cart
-        let userFound = await Cart.findOne({ user })
-        console.log(userFound);
-        if (!userFound) {
-            //creating a new cart
-            const newCart = new Cart({
-                user,
-                product: [{
-                    product_id: productId,
-                    count: 1
-                }]
-
-            })
-            await newCart.save();
-        } else {
-            if (userFound.product.find(product => productId.equals(product.product_id))) {
-                return false
-            }
-            //checking for already existing products in the cart
-            await Cart.updateOne({ user }, {
-                $push: {
-                    product: {
-                        product_id: productId, count: 1
-                    }
-                }
-            })
-
-        }
-        // res.json({ success: true, message: 'Product added to cart' });
-
-        res.redirect(`/singleproduct/${productId}`)
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-
-const changeCount = async (req, res) => {
-    try {
-        console.log("changecount");
-        const user = new ObjectId(req.session.userData._id)
-        const productId = new ObjectId(req.params.id)
-        const count = Number(req.params.count)
-        const cart = await Cart.aggregate([
-            { $match: { user: user } },
-            { $unwind: "$product" },
-            { $match: { 'product.product_id': productId } },
-
-            {
-                $lookup: {
-                    from: "products",
-                    localField: "product.product_id",
-                    foreignField: "_id",
-                    as: "productDetails"
-                }
-            },
-
-            { $unwind: "$productDetails" },
-
-
-        ]).exec()
-        // console.log(cart);
-        console.log(cart[0].product.count + count);
-        if ((cart[0].product.count + count > cart[0].productDetails.quantity && count > 0) || cart[0].product.count + count > 5 || cart[0].product.count + count < 1) {
-            return false
-        }
-        const response = await Cart.updateOne({ user: user }, {
-            $inc: { 'product.$[elem].count': count }
-        }, { arrayFilters: [{ "elem.product_id": productId }] })
-
-        res.json({ success: true })
-        console.log(response);
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-
-
-
-
-//deleting items in the cart
-const cartDelete = async (req, res, next) => {
-    try {
-
-        const id = new ObjectId(req.query.productId)
-        console.log(id)
-        // const product = await Product.findOne({ _id: id })
-        // console.log(product);
-        const deleteItem = await Cart.findOneAndUpdate({ user: new ObjectId(req.session.userData._id) }, {
-            $pull: { product: { product_id: id } }
-        })
-        console.log(deleteItem);
-        res.redirect('/cart')
-    } catch (error) {
-        console.log(error)
-
-    }
-}
-
-
-// add address
-const addressload = async (req, res, next) => {
-    try {
-        const user = new ObjectId(req.session.userData._id)
-        // const address = req.session.addressId
-        const addressData = await Address.findOne({ user })
-        console.log(addressData);
-        res.render('user/manageaddress', { address: addressData, user: req.session.userData })
-    } catch (error) {
-        console.log(error);
-        next(error)
-    }
-}
-const newaddress = async (req, res) => {
-    try {
-        res.render('user/addresspage')
-
-    } catch (error) {
-        console.log(error);
-
-    }
-}
-
-const addAddress = async (req, res) => {
-    try {
-        const user = req.session.userData
-        // console.log(user);
-        const userFound = await Address.findOne({ user })
-        //console.log(userFound)
-        const { fname, lname, phone, address, place, pincode, city, state, email, additionalinfo, addresstype } = req.body;
-        if (!userFound) {
-            console.log("user not found");
-            const newAddress = await new Address({
-                user,
-                address: [{
-                    fname,
-                    lname,
-                    phone,
-                    email,
-                    additionalinfo,
-                    address,
-                    place,
-                    pincode,
-                    city,
-                    state,
-                    addresstype
-                }]
-            })
-            await newAddress.save()
-            console.log("data saved");
-        }
-        else {
-            console.log("userfound");
-            await Address.updateOne({ user }, {
-                $push: { address: { fname, lname, phone, address, place, pincode, city, state, email, additionalinfo, addresstype } }
-            })
-            console.log("data pushed");
-        }
-        res.redirect('/manageaddress')
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-
-//delete address -profile side side
-const deleteAddress = async (req, res, next) => {
-    try {
-        const user = req.session.userData
-        const id = new ObjectId(req.params.id);
-        console.log(id);
-        await Address.findOneAndUpdate({ user, 'address._id': id }, { $pull: { address: { _id: id } } })
-        res.redirect('/manageaddress')
-        console.log("pulled");
-    } catch (error) {
-        console.log(error);
-        next(error)
-    }
-}
-const editAddress = async (req, res, next) => {
-    try {
-        const user = new ObjectId(req.session.userData._id)
-        const id = new ObjectId(req.params.id)
-        console.log(id);
-        // const address = await Address.findOne({ user, 'address._id': id })
-        // console.log(address);
-        const address = await Address.aggregate([
-            { $match: { user: user } },
-            { $unwind: "$address" },
-            { $match: { "address._id": id } }
-        ])
-        console.log(address);
-        res.render('user/editAddress', { address: address })
-
-    } catch (error) {
-        console.log(error);
-        next(error)
-    }
-}
-const updateAddress = async (req, res, next) => {
-    try {
-        const user_id = new ObjectId(req.params.user_id)
-        const address_id = new ObjectId(req.params.address_id)
-        console.log(address_id);
-        console.log(req.body)
-        const address = await Address.updateOne(
-            { user: user_id },
-            {
-                $set: {
-                    "address.$[elem].fname": req.body.fname,
-                    "address.$[elem].lname": req.body.lname,
-                    "address.$[elem].phone": req.body.phone,
-                    "address.$[elem].email": req.body.email,
-                    "address.$[elem].additionalinfo": req.body.additionalinfo,
-                    "address.$[elem].address": req.body.address,
-                    "address.$[elem].place": req.body.place,
-                    "address.$[elem].pincode": req.body.pincode,
-                    "address.$[elem].addresstype": req.body.addresstype
-                }
-            },
-            {
-                arrayFilters: [{ "elem._id": address_id }]
-            }
-        )
-        console.log(address);
-        res.redirect('/manageaddress')
-    } catch (error) {
-        console.log(error);
-        next(error)
-    }
-}
-const checkoutPage = async (req, res, next) => {
-    try {
-        console.log('addressdata');
-        const userdata = new ObjectId(req.session.userData._id)
-        const total = req.query.total
-        console.log(total);
-        // const user = req.session.userData
-        const addressData = await Address.aggregate([
-            {
-                $match: {
-                    user: userdata
-                }
-            },
-            {
-                $unwind: "$address"
-            }
-        ])
-        console.log(addressData);
-        console.log('addressdatakkk');
-        // console.log(user);
-
-        //getting cart product count
-        const cartData = await Cart.aggregate([
-            {
-                $match: {
-                    user: userdata
-                }
-            },
-            {
-                $unwind: "$product"
-            },
-            {
-                $lookup: {
-                    from: "products",
-                    localField: "product.product_id",
-                    foreignField: "_id",
-                    as: "productDetails"
-                }
-            },
-            {
-                $unwind: "$productDetails"
-            }, {
-                $project: {
-                    _id: 1,
-                    user: 1,
-                    product: 1,
-                    productDetails: 1,
-                    total: { $multiply: ['$product.count', '$productDetails.price'] }
-                }
-            }
-        ]).exec()
-        console.log(cartData);
-
-        const cartCount = cartData.length
-        res.render("user/checkout", { address: addressData, user: req.session.userData, cartData, total, cartCount })
-
-    } catch (error) {
-        console.log(error);
-        next(error)
-    }
-}
-//orderpage
-const orderPage = async (req, res, next) => {
-    try {
-        const user = req.session.userData
-        const orderdetails = await Order.find({ user: user })
-        console.log(orderdetails, "kkkk");
-        res.render('user/orderstatus', { user, orderdetails })
-
-    } catch (error) {
-        console.log(error);
-
-    }
-}
-
-//place order
-const cashOnDelivery = async (req, res, next) => {
-    try {
-
-        const user_id = new ObjectId(req.session.userData._id)
-        console.log(user_id);
-        const cart = await Cart.findOne({ user: user_id })
-        console.log("ygvghcr");
-        console.log(req.body);
-        // const { address, payment, orderDate, product_id, quantity, price, orderStatus } = req.body;
-        console.log(cart);
-        const addressId = new ObjectId(req.body.addressId)
-        const address = await Address.aggregate([
-            { $match: { user: user_id } },
-            { $unwind: "$address" },
-            { $match: { 'address._id': addressId } }
-        ])
-        console.log(address);
-
-        const newOrder = await new Order({
-            user: user_id,
-            address: address,
-            payment: req.body.payment,
-            orderDate: new Date().toLocaleDateString(),
-            totalAmount: req.body.totalAmount,
-
-            items: cart.product
-        })
-
-
-        await newOrder.save()
-        console.log(newOrder, "jjjj");
-        // console.log("data saved");
-
-        Promise.all(newOrder.items.map(async (items) => {
-            const product = await Product.findOne({ _id: items.product_id })
-            console.log(product + "this is product quantity");
-            product.quantity = product.quantity - items.count
-            await product.save()
-        }))
-        await Cart.deleteOne({ user: user_id })
-
-        res.json({ success: true })
-
-    } catch (error) {
-        console.log(error);
-    }
-
 }
 const updateUser = async (req, res, next) => {
     try {
@@ -810,315 +172,49 @@ const updateUser = async (req, res, next) => {
         console.log(error);
     }
 }
-
-const orders = async (req, res, next) => {
+const loadUserDashboard = async (req, res) => {
     try {
-        const user = new ObjectId(req.session.userData._id)
-        // const address = req.session.addressId
-        const orderData = await Order.aggregate([
-            { $match: { user: user } },
-            { $unwind: "$items" },
-            {
-                $lookup: {
-                    from: "products",
-                    localField: "items.product_id",
-                    foreignField: "_id",
-                    as: "productdetails"
-                }
-            }
-        ])
-
-
-
-        console.log(orderData);
-        res.render('user/orderpage', { orderData, user: req.session.userData })
+        userData = await User.find({});
+        console.log(userData);
+        // const order = await Order.find({ user: userData._id })
+        // console.log(order);
+        res.render("admin/users/userdashboard", { admin: true, user: userData });
 
     } catch (error) {
-        console.log(error);
-    }
-}
-
-//forgetpassword
-const forgetpw = async (req, res, next) => {
-    try {
-        res.render('user/forgetpassword')
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-const emailVerify = async (req, res, next) => {
-    try {
-
-        const email = req.body.email
-        console.log(email);
-        const userAc = await User.findOne({ email: email })
-        console.log(userAc);
-        if (userAc) {
-            const otp = speakeasy.totp({
-                secret: secret.base32,
-                encoding: "base32",
-            });
-            console.log(`req body in otp generator`);
-            console.log(req.body);
-            await otpModal.updateOne({ userId: userAc._id }, { $set: { otp: otp } }, { upsert: true })
-            const mailOptions = {
-                from: "theerthatkp28@gmail.com",
-                to: email,
-                subject: "OTP Verification",
-                text: `Your OTP for verification is: ${otp}`,
-            };
-
-            console.log(otp + "generated otp");
-            transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                    console.log(error.message);
-
-
-                }
-            });
-            // if( )
-            res.redirect(`/otppage/${userAc._id}`)
-        }
-
-
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-const otpPage = async (req, res, next) => {
-    try {
-        const id = req.params.id
-        console.log("otp page is loaded succesfully");
-        res.render("user/otpverification", { id });
-
-
-    } catch (error) {
+        console.log("error at loading user dashboard");
         console.log(error.message);
     }
 };
 
-
-const otpVerification = async (req, res, next) => {
+const blockUser = async (req, res) => {
     try {
-
-        //console.log(Object.values(req.body).join(""));
-        const userInputOtp = Object.values(req.body.otp).join("");
-        console.log(userInputOtp);
-        const userid = req.body.userId
-        console.log(userid);
-        const otp = await otpModal.findOne({ userId: userid });
-        // const userData = await User.find({});
-        console.log(otp.otp);
-        console.log(
-            `otp verification of userinput otp & otp from otpDb : ${otp.otp == userInputOtp
-            }`
+        const userId = new ObjectId(req.params.id);
+        console.log(userId);
+        const userData = await User.updateOne(
+            { _id: userId },
+            { $set: { is_blocked: true } }
         );
-        console.log(userInputOtp);
-        if (otp.otp == userInputOtp) {
-            console.log("same user");
-            res.redirect(`/newpassword/${userid}`)
-        } else {
-            res.render('user/otppage', { message: 'Incorrect OTP ' })
-        }
+        console.log(userData);
+        res.redirect("/admin/userdashboard");
     } catch (error) {
+        console.log("error at blocking user");
         console.log(error.message);
-
     }
 };
-
-const newpassword = async (req, res, next) => {
+const unblockUser = async (req, res) => {
     try {
-        const id = req.params.id
-        console.log("otp page is loaded succesfully");
-        res.render("user/newpassword", { id });
-
+        const userId = req.params.id;
+        const userData = await User.findByIdAndUpdate(
+            { _id: userId },
+            { $set: { is_blocked: false } }
+        );
+        console.log(`${userData.name} has been succesfully unblocked`);
+        res.redirect("/admin/userdashboard");
     } catch (error) {
-        console.log(error.message);
-
-    }
-}
-
-const saveNewPassword = async (req, res, next) => {
-    try {
-
-        const userid = new ObjectId(req.body.userId)
-        const newpassword = await bcrypt.hash(req.body.password, saltRounds)
-        await User.updateOne({ _id: userid }, { $set: { password: newpassword } })
-        res.redirect('/login')
-
-    } catch (error) {
-        console.log(error.message);
-
-    }
-}
-const resendNewotp = async (req, res, next) => {
-    try {
-        console.log(req.body)
-        const userid = new ObjectId(req.body.userId)
-
-        const userAc = await User.findOne({ _id: userid })
-        console.log(userAc);
-        if (userAc) {
-            const otp = speakeasy.totp({
-                secret: secret.base32,
-                encoding: "base32",
-            });
-            console.log(`req body in otp generator`);
-            console.log(req.body);
-            await otpModal.updateOne({ userId: userAc._id }, { $set: { otp: otp } }, { upsert: true })
-            const mailOptions = {
-                from: "theerthatkp28@gmail.com",
-                to: userAc.email,
-                subject: "OTP Verification",
-                text: `Your OTP for verification is: ${otp}`,
-            };
-
-            console.log(otp + "generated otp");
-            transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                    console.log(error.message);
-                }
-            });
-            // if( )
-            res.redirect(`/otppage/${userAc._id}`)
-        }
-
-    } catch (error) {
-        console.log(error.message);
-
-    }
-
-
-
-}
-
-const searchItem = async (req, res, next) => {
-    try {
-        const searchQuery = req.body.searchQuery
-        console.log(searchQuery);
-        const pipeline = [
-            {
-                $lookup: {
-                    from: 'categories',
-                    localField: '_id',
-                    foreignField: 'categoryId',
-                    as: 'category'
-                }
-            }, {
-                $match: {
-                    isListed: true,
-                    isProductBlocked: false,
-                    $or: [
-                        { productName: { $regex: searchQuery, $options: 'i' } },
-                        { 'category.categoryName': { $regex: searchQuery, $options: 'i' } }
-                    ]
-
-                }
-            }
-        ]
-
-        const search = await Product.aggregate(pipeline).exec()
-
-
-        console.log(search);
-        res.render('user/search', { search })
-
-    } catch (error) {
-        console.log(error.message);
-
-    }
-}
-
-const couponList = async (req, res, next) => {
-    try {
-        const coupons = await Coupons.find({})
-        console.log(coupons);
-        res.render('user/coupon', { coupons: coupons })
-
-    } catch (error) {
-        console.log(error.message);
-
-    }
-}
-const applyCoupon = async (req, res, next) => {
-    try {
-        console.log('applycoupon');
-        const coupon_id = req.params.id
-        console.log(coupon_id);
-        const user = new ObjectId(req.session.userData._id)
-        const cartData = await Cart.findOne({ user }).populate('product.product_id');
-        console.log(cartData);
-        const cart = cartData.product;
-        let totalAmount = 0, date = new Date();
-
-        totalAmount += cartData?.product.reduce((acc, item) => {
-            console.log("item");
-            console.log(item);
-            const totalItem = item.product_id.price * item.count;
-            console.log(totalItem);
-            return acc + totalItem
-        }, 0)
-        console.log('totalAmount,', totalAmount);
-
-
-
-        const couponFound = await Coupons.findOne({ couponId: coupon_id })
-        console.log('coponFound', couponFound);
-
-
-        //checks if the coupon is already used by the user  
-        const usedUser = couponFound.claimedUser.includes(user)
-        console.log(usedUser);
-        if (usedUser) {
-            res.json({ success: false, message: "Coupon is already used by the user" })
-        }
-        else if (couponFound?.expiryDate < date) {
-            res.json({ success: false, message: 'Coupon Expired' })
-        }
-        // else if(usedUser){
-        //     res.json({message:'User already used the coupon'})
-        // }
-        else if (couponFound) {
-            if (totalAmount < couponFound.minimumPurchase) {
-                res.json({ success: false, message: 'Less amount to apply' })
-            }
-            else {
-                await Cart.findOneAndUpdate({ user }, { $set: { isCouponApplied: coupon_id } })
-                totalAmount = totalAmount - (totalAmount * couponFound.discount) / 100
-                console.log(totalAmount);
-                res.json({ success: true, message: 'Coupon applied', discount: couponFound.discount, totalAmount })
-
-                // await Coupon.updateOne({couponName:coupon},{$set:{usedUser:user}})
-            }
-        }
-        else {
-            res.json({ success: false, message: 'Invalid coupon' })
-        }
-
-
-
-
-    } catch (error) {
-        console.log(error.message);
-
-    }
-}
-//remove coupon
-const removeCoupon = async (req, res) => {
-    try {
-        console.log("coupon remove");
-        const user = req.session.userId;
-        console.log(user);
-        await Cart.updateOne({ user }, { $set: { isCouponApplied: "" } })
-        res.json({ success: true })
-        // res.rediect('/cart')
-    } catch (error) {
+        console.log("error at unblocking user");
         console.log(error.message);
     }
-}
-
+};
 
 
 
@@ -1129,41 +225,11 @@ module.exports = {
     verifyUser,
     signUpValidation,
     loadSignupPage,
-    verifyOtpLoad,
-    verifyOtp,
-    otpGenerator,
-    productlist,
     logout,
-    singleproduct,
     userprofile,
-    resendOTP,
-    cart,
-    addToCart,
-    checkproduct,
-    addressload,
-    addAddress,
-    deleteAddress,
-    newaddress,
-    cartDelete,
-    changeCount,
-    editAddress,
-    updateAddress,
-    checkoutPage,
-    cashOnDelivery,
-    orderPage,
     updateUser,
-    orders,
-    forgetpw,
-    emailVerify,
-    otpPage,
-    otpVerification,
-    newpassword,
-    saveNewPassword,
-    searchItem,
-    resendNewotp,
-    couponList,
-    applyCoupon,
-    removeCoupon
-
+    loadUserDashboard,
+    blockUser,
+    unblockUser,
 
 }

@@ -3,37 +3,25 @@
     <div>
       <h3 class="h3" style="color: black;">Edit product</h3>
     </div>
-    <form  onsubmit="return editProduct()" method="post" action="/admin/editproduct/{{product._id}}"  enctype="multipart/form-data">
+    <form onsubmit="return editProduct()" method="post" action="/admin/editproduct/{{product._id}}"
+      enctype="multipart/form-data">
       <div class="row mb-3">
         <div class="col-sm-10">
-          <input type="text"  id="productName" class="form-control shadow-none" name="productname" placeholder="product Name"
-            value="{{product.productName}}">
-             <p id="alertProductName" class="text-danger "></p>
+          <input type="text" id="productName" class="form-control shadow-none" name="productname"
+            placeholder="product Name" value="{{product.productName}}">
+          <p id="alertProductName" class="text-danger "></p>
         </div>
       </div>
-      <div class="row mb-3 ">
-        <div class="col-3">
-          <input type="number" class="form-control shadow-none" name="price" placeholder="price"
-            value="{{product.price}}" min="0">
-        </div>
-        <div class="col-3">
-          <input type="text" class="form-control shadow-none" name="cost" placeholder="cost" value="{{product.cost}}">
-        </div>
-        <div class="col-4 d-flex align-items-center ">
-          <label for="" class="pe-3  " style="color: black;">Color:</label>
-          <input  class="form-control  shadow-none " name="color"
-            value="{{product.color}}">
-        </div>
-      </div>
+
       <div class="row mb-4">
         <div class=" row mb-3 col-sm-10 ms-1  ">
-          <textarea class="form-control shadow-none" name="description"  id="about" rows="3" placeholder="product description"
-            value="{{product.description}}"></textarea>
-             <p id="alertDescription" class="text-danger "></p>
+          <textarea class="form-control shadow-none " id="about" name="description" rows="3"
+            placeholder="product description" value="{{product.description}}"></textarea>
+          <p id="alertDescription" class="text-danger "></p>
         </div>
         <div class="col-md-4 mb-3 ">
-          <select class="form-select shadow-none " aria-label="Default select example"
-            value="{{product.isListed}}" name="islisted">
+          <select class="form-select shadow-none " aria-label="Default select example" value="{{product.isListed}}"
+            name="islisted">
             <option selected>islisted</option>
             <option value="true">true</option>
             <option value="false">false</option>
@@ -41,89 +29,112 @@
         </div>
 
         <div class="col-md-3 mb-3 ">
-          <input class="form-control shadow-none " name="quantity" placeholder="Quantity" value="{{product.quantity}}">
+          <input type="text" class="form-control shadow-none " value="{{product.brand}}" name="brand" id="brand"
+            placeholder="Brand">
+          <p id="alertBrand" class="text-danger "></p>
+        </div>
+        <div class="col-md-6 mb-3 ">
+          <!-- <input class="form-control shadow-none "  name="category" placeholder="category"> -->
+          <select class="form-select shadow-none " aria-label="Default select example" name="category" value="category">
+            <option value="" selected>Select Category</option>
+            {{#each category}}
+            <option value={{this._id}}>
+              {{this.categoryName}}
+            </option>
+            {{/each}}
+          </select>
+
+
+
+
 
         </div>
-      </div>
-      <div class="">
-        <div class="row col-md-9">
-         
-          <!-- Display previous product images -->
-          {{#each product.image }}
-           <div class="col-md-6 row">
-          <img src="/multer/products/{{this}}" alt="{{product.name}}" class="img-fluid col-md-6 existing-image">
 
-          {{#if this}}
-          <a class="btn btn-danger col-md-2 " style="height: 20px;"  href="/admin/deleteImg?filename={{this}}&id={{../product._id}}" onclick="return confirm('Are you sure you want to delete it?')">Delete</a>
-          {{/if}}
-           </div>
-          {{/each}}
+        <div class="">
+          <div class="row col-md-9">
 
-         
+            <!-- Display previous product images -->
+            {{#each product.image }}
+            <div class="col-md-6 row">
+              <img src="/multer/products/{{this}}" alt="{{product.name}}" class="img-fluid col-md-6 existing-image">
+
+              {{#if this}}
+              <a class="btn btn-danger col-md-2 " style="height: 20px;"
+                href="/admin/deleteImg?filename={{this}}&id={{../product._id}}"
+                onclick="return confirm('Are you sure you want to delete it?')">Delete</a>
+              {{/if}}
+            </div>
+            {{/each}}
+
+
+
+          </div>
+          <!-- Input for updating product images -->
+          <label class="col-md-6" for="newImages" style="color: black ; border: 10px;">Add New Images:</label>
+          <input type="file" id="newImages" style="color: black ; border: 10px;" name="newImages" multiple>
 
         </div>
-        <!-- Input for updating product images -->
-        <label class="col-md-6" for="newImages" style="color: black ; border: 10px;">Add New Images:</label>
-        <input type="file" id="newImages" style="color: black ; border: 10px;" name="newImages" multiple>
 
       </div>
 
-      <button type="submit" class="btn btn-primary">Add product</button>
+      <button type="submit" class="btn btn-primary">Update product
+        details
+      </button>
     </form>
   </div>
 </div>
 
 
-<!-- Add this code inside your head tag -->
+//script Validation
+
+
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<!-- Your existing HTML code -->
 
 <script>
-    const alertProductName = document.getElementById("alertProductName");
-    const alertDescription = document.getElementById("alertDescription");
+  const alertProductName = document.getElementById("alertProductName");
+  const alertDescription = document.getElementById("alertDescription");
 
-    function editProduct() {
-        const productName = document.getElementById("productName").value;
-        const about = document.getElementById("about").value;
-        const newImagesInput = document.getElementById("newImages");
-        const existingImagesCount = document.querySelectorAll('.existing-image').length;
-        const allowedExtensions = /(\.jpeg|\.jpg)$/i;
+  function editProduct() {
+    const productName = document.getElementById("productName").value;
+    const about = document.getElementById("about").value;
+    const newImagesInput = document.getElementById("newImages");
+    const existingImagesCount = document.querySelectorAll('.existing-image').length;
+    const allowedExtensions = /(\.jpeg|\.jpg)$/i;
 
-        alertProductName.innerText = "";
-        alertDescription.innerText = "";
+    alertProductName.innerText = "";
+    alertDescription.innerText = "";
 
-        if (productName.trim() === "") {
-            alertProductName.innerText = "Product title can't be empty.";
-            return false;
-        } else if (about.trim() === "") {
-            alertDescription.innerText = "Product description can't be empty.";
-            return false;
-        }
-
-        // Validate new image files
-        if (newImagesInput.files.length > 0) {
-            if (newImagesInput.files.length + existingImagesCount > 5) {
-                alert("You can upload a maximum of 5 images.");
-                return false;
-            }
-
-            for (let i = 0; i < newImagesInput.files.length; i++) {
-                const fileName = newImagesInput.files[i].name;
-                if (!allowedExtensions.test(fileName)) {
-                    alert("Please select only JPEG files.");
-                    return false;
-                }
-            }
-        }
-
-        return true; 
+    if (productName.trim() === "") {
+      alertProductName.innerText = "Product title can't be empty.";
+      return false;
+    } else if (about.trim() === "") {
+      alertDescription.innerText = "Product description can't be empty.";
+      return false;
     }
 
-    // Optional: Add event listener to trigger validation when file input changes
-    document.getElementById("newImages").addEventListener('change', function () {
-        editProduct();
-    });
+    // Validate new image files
+    if (newImagesInput.files.length > 0) {
+      if (newImagesInput.files.length + existingImagesCount > 5) {
+        alert("You can upload a maximum of 5 images.");
+        return false;
+      }
+
+      for (let i = 0; i < newImagesInput.files.length; i++) {
+        const fileName = newImagesInput.files[i].name;
+        if (!allowedExtensions.test(fileName)) {
+          alert("Please select only JPEG files.");
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
+
+
 </script>
 
-
+<!-- Your existing code for adding product form -->

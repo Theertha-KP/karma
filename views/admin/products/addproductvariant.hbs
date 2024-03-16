@@ -1,0 +1,116 @@
+<div class="bg-info-subtle bg-opacity-10 d-flex justify-content-center">
+    <div style="margin-top: 4%;" class="p-5 bg-light bg-opacity-50 shadow-sm col-md-6">
+        <div>
+            <h3 class="h3" style="color: black;">Add Variant</h3>
+        </div>
+        <form onsubmit="return addVariant()" method="post" action="/admin/addproductvariant"
+           >
+
+            <div class="row mb-3 col-12">
+                <input class="id" name="id" value="{{id}}" hidden>
+                <div class="col-3 ">
+                    <label class="pe-3" style="color: black;">Color</label>
+                    <input class="form-control shadow-none" placeholder="Color" name="color">
+                </div>
+                <div class="col-3 ">
+                    <label for="price" class="form-label pe-3" style="color: black;">Price</label>
+                    <input type="number" class="form-control shadow-none" id="price" name="price"
+                        placeholder="Price" min="0">
+                    <p id="alertPrice" class="text-danger mt-1"></p>
+                </div>
+                <div class="col-3 ">
+                    <label for="cost" class="form-label pe-3" style="color: black;">Cost</label>
+                    <input type="number" class="form-control shadow-none" id="cost" name="cost"
+                        placeholder="Cost" min='0'>
+                    <p id="alertCost" class="text-danger mt-1"></p>
+                </div>
+
+            </div>
+            <div class="row mb-4">
+
+                <div class="col-md-4 mb-3">
+                    <label for="islisted" class="form-label" style="color: black;">Is Listed</label>
+                    <select class="form-select shadow-none" aria-label="Is Listed" id="islisted" name="isListed">
+                        <option selected disabled>Select</option>
+                        <option value="true">True</option>
+                        <option value="false">False</option>
+                    </select>
+                    <p id="alertIsListed" class="text-danger mt-1"></p>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label for="quantity" class="form-label" style="color: black;">Quantity</label>
+                    <input type="number" class="form-control shadow-none" id="quantity" name="quantity"
+                        placeholder="Quantity" min='0'>
+                    <p id="alertQuantity" class="text-danger mt-1"></p>
+                </div>
+                 <div class="col-3 ">
+                    <label class="pe-3" style="color: black;">Size</label>
+                    <input type="number" class="form-control shadow-none" placeholder="Size" name="size" min="0">
+                </div>
+            </div>
+          
+            <button type="submit" class="btn btn-primary">Add Product Variant</button>
+        </form>
+    </div>
+</div>
+
+
+//script Validation
+
+
+<!-- Add this code inside your head tag -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- Your existing HTML code -->
+
+<script>
+    function addVariant() {
+        const color = document.querySelector('input[name="color"]').value;
+        const price = document.getElementById("price").value;
+        const cost = document.getElementById("cost").value;
+        
+        const isListed = document.getElementById("islisted").value;
+        const quantity = document.getElementById("quantity").value;
+        
+        // Reset previous error messages
+        document.querySelectorAll('.text-danger').forEach(el => el.textContent = '');
+
+        if (!color.trim()) {
+            document.getElementById("alertColor").textContent = "Color cannot be empty.";
+            return false;
+        }
+
+        if (!price.trim()) {
+            document.getElementById("alertPrice").textContent = "Price cannot be empty.";
+            return false;
+        }
+
+        if (!cost.trim()) {
+            document.getElementById("alertCost").textContent = "Cost cannot be empty.";
+            return false;
+        }
+
+        
+
+        if (!isListed.trim()) {
+            document.getElementById("alertIsListed").textContent = "Please select an option for 'Is Listed'.";
+            return false;
+        }
+
+        if (!quantity.trim()) {
+            document.getElementById("alertQuantity").textContent = "Quantity cannot be empty.";
+            return false;
+        }
+
+        
+
+       console.log("hlo goodmorning")
+
+        return true;
+    }
+
+   
+</script>
+
+<!-- Your existing code for adding product form -->

@@ -1,9 +1,7 @@
-<div class="bg-info-subtle bg-opacity-10 d-flex justify-content-center vh-100">
+<div class="bg-info-subtle  bg-opacity-10 d-flex justify-content-center vh-100%" style="margin-left: 150px;">
   <div style="margin-top: 5%" class="p-5 bg-light bg-opacity-50 shadow-sm col-md-8 mb-5">
     <div class="d-flex justify-content-between">
-      <button type="button" class="btn btn-primary disabled">
-        Total products
-      </button>
+      <button type="button" class="btn btn-primary disabled">Total products</button>
       <a href="/admin/addproduct">
         <button type="button" class="btn btn-success">Add products</button>
       </a>
@@ -17,34 +15,43 @@
             <th scope="col">P.NAME</th>
             <th scope="col">DESCRIPTION</th>
             <th scope="col">CATEGORY</th>
-            <th scope="col">PRICE</th>
-            <th scope="col">IMAGE</th>
+            <th scope="col">IMAGES</th>
+            <th scope="col">VARIENT</th>
             <th scope="col">ACTIONS</th>
           </tr>
         </thead>
         <tbody>
           {{#each products as |product i|}}
           <tr>
-           
             <th scope="row">{{inc @index}}</th>
-            <td class="bigtext">{{product.productName}}</td>
-            <td class="bigtext">{{product.description}}</td>
-            <td class="bigtext">{{product.categoryId.categoryName}}</td>
-            <td>{{product.price}}</td>
-            <td><img src="/multer/products/{{product.image.[0]}}" alt="" style="height:50px"></td>
+            <td class="bigtext truncate-text">{{product.productName}}</td>
+            <td class="bigtext truncate-text">{{product.description}}</td>
+            <td class="bigtext truncate-text">{{product.categoryId.categoryName}}</td>
+            <td>
+              {{#if product.image.[0]}}
+              <img src="/multer/products/{{product.image.[0]}}" alt="Product Image"
+                style="max-width: 70px; max-height: 70px;">
+              {{else}}
+              <!-- Placeholder image or message if no image is available -->
+              No Image Available
+              {{/if}}
+            </td>
+            <td>
+
+              <a class="btn btn-primary" href="/admin/addproductvariant/{{product._id}}" style="width: fit-content;">Add
+                Varient
+              </a>
+            </td>
             <td>
               {{#if product.isListed}}
-              <a href="/admin/listproduct/{{product._id}}"><button class="btn btn-sm btn-warning "
+              <a href="/admin/listproduct/{{product._id}}"><button class="btn btn-md btn-warning"
                   onclick="return confirm('Are you sure you want to list product?')">Unlist</button></a>
               {{else}}
-              <a href="/admin/listproduct/{{product._id}}"><button class="btn btn-sm btn-warning "
+              <a href="/admin/listproduct/{{product._id}}"><button class="btn btn-md btn-warning"
                   onclick="return confirm('Are you sure you want to Unlist product?')">List</button></a>
               {{/if}}
-
-              {{!-- <a class="btn btn-danger " href="/admin/deleteproduct/{{product._id}}"
-                onclick="return confirm('Are you sure you want to delete it?')">Delete</a> --}}
-
-              <a class="btn btn-primary" href="/admin/editproduct/{{product._id}}">Edit</a>
+              <br>
+              <a href="/admin/editproduct/{{product._id}}"><button class="btn btn-md btn-warning">Edit</button></a>
             </td>
           </tr>
           {{/each}}
@@ -53,25 +60,14 @@
     </div>
   </div>
 </div>
-{{!-- 
-<style> 
+<style>
   .truncate-text {
-    
+    max-width: 150px;
     white-space: nowrap;
+    /* Prevent text from wrapping */
     overflow: hidden;
+    /* Hide overflowing text */
     text-overflow: ellipsis;
-}
+    /* Add ellipsis (...) to indicate truncated text */
+  }
 </style>
-<script>
-  console.log('lll')
-  document.addEventListener('DOMContentLoaded', function () {
-    console.log('iiii')
-    var cells = document.querySelectorAll('bigtext');
-console.log(cells)
-    cells.forEach(function (cell) {
-      var originalText = cell.textContent;
-      var truncatedText = originalText.length > 20 ? originalText.substring(0, 20) + '...' : originalText;
-      cell.textContent = truncatedText;
-    });
-});
-</script> --}}

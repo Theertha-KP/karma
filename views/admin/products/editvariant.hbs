@@ -1,0 +1,104 @@
+<div class="bg-info-subtle   bg-opacity-10  d-flex justify-content-center ">
+    <div style="margin-top: 4%;" class="p-5 bg-light  bg-opacity-50 shadow-sm  col-md-6   ">
+        <div>
+            <h3 class="h3" style="color: black;">Edit product</h3>
+        </div>
+        <form onsubmit="return editProductVariant()" method="post" action="/admin/editproduct/{{product._id}}"
+            enctype="multipart/form-data">
+
+            <div class="row mb-3 ">
+                <div class="col-3">
+                    <input type="number" class="form-control shadow-none" id="price" name="price" placeholder="price"
+                        value="{{product.price}}" min="0">
+                    <p id="alertprice" class="text-danger "></p>
+                </div>
+                <div class="col-3">
+                    <input type="text" class="form-control shadow-none" id="cost" name="cost" placeholder="cost"
+                        value="{{product.cost}}">
+                    <p id="alertcost" class="text-danger "></p>
+                </div>
+                <div class="col-4 d-flex align-items-center ">
+                    <label for="" class="pe-3  " style="color: black;">Color:</label>
+                    <input class="form-control   shadow-none " name="color" id="color" value="{{product.color}}">
+                    <p id="alertcolor" class="text-danger "></p>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3 ">
+                    <input class="form-control shadow-none " name="quantity" placeholder="Size" value="{{product.size}}"
+                        id="size">
+                    <p id="alertsize" class="text-danger "></p>
+                </div>
+                <div class="col-md-4 mb-3 ">
+                    <select class="form-select shadow-none " aria-label="Default select example"
+                        value="{{product.isListed}}" name="islisted">
+                        <option selected>islisted</option>
+                        <option value="true">true</option>
+                        <option value="false">false</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 mb-3 ">
+                    <input class="form-control shadow-none " id="quantity" name="quantity" placeholder="Quantity"
+                        value="{{product.quantity}}">
+                    <p id="alertquantity" class="text-danger "></p>
+                </div>
+            </div>
+
+
+            <button type="submit" class="btn btn-primary">Edit Varient</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- Add this code inside your head tag -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- Your existing HTML code -->
+
+<script>
+    const alertcolor = document.getElementById("alertcolor");
+    const alertquantity = document.getElementById("alertquantity");
+    const alertprice = document.getElementById("alertprice");
+    const alertcost = document.getElementById("alertcost");
+    const alertsize = document.getElementById("alertquantity");
+
+
+    function editProductVariant() {
+        const color = document.getElementById("color").value;
+        const quantity = document.getElementById("quantity").value;
+        const price = document.getElementById("price").value;
+        const cost = document.getElementById("cost").value;
+        const size = document.getElementById("size").value;
+
+        alertcolor.innerText = "";
+        alertquantity.innerText = "";
+        alertprice.innerText = "";
+        alertcost.innerText = "";
+        alertsize.innerText = "";
+
+        if (color.trim() === "") {
+            alertcolor.innerText = "Color can't be empty.";
+            return false;
+        } else if (price.trim() === "") {
+            alertprice.innerText = "Price can't be empty.";
+            return false;
+        } else if (cost.trim() === "") {
+            alertcost.innerText = "Cost  can't be empty.";
+            return false;
+        } else if (size.trim() === "") {
+           alertsize.innerText = " size can't be empty.";
+            return false;
+        } else if (quantity.trim() === "") {
+            alertquantity.innerText = "quantity can't be empty.";
+            return false;
+        }
+
+
+
+        return true;
+    }
+
+
+</script>

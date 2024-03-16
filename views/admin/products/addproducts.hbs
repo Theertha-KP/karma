@@ -1,35 +1,22 @@
 <div class="bg-info-subtle   bg-opacity-10  d-flex justify-content-center ">
   <div style="margin-top: 4%;" class="p-5 bg-light  bg-opacity-50 shadow-sm  col-md-6   ">
     <div>
-      <h3 class="h3" style="color: black;"  >Add product</h3>
+      <h3 class="h3" style="color: black;">Add product</h3>
     </div>
-    <form  onsubmit="return addProduct()" method="post" action="/admin/addproduct" enctype="multipart/form-data">
+    <form onsubmit="return addProduct()" method="post" action="/admin/addproduct" enctype="multipart/form-data">
       <div class="row mb-3">
         <div class="col-sm-10">
-          <input type="text" id="productName" class="form-control shadow-none" name="productname" placeholder="product Name">
+          <input type="text" id="productName" class="form-control shadow-none" name="productname"
+            placeholder="product Name">
           <p id="alertProductName" class="text-danger "></p>
         </div>
       </div>
-      <div class="row mb-3 col-12">
-        <div class="col-3">
-          <input type="number" class="form-control shadow-none" name="price" placeholder="price"  min="0">
-          
-        </div>
-        <div class="col-3">
-          <input type="number" class="form-control shadow-none" name="cost" placeholder="cost" min='0'>
-          
-        </div>
-       <div class="col-3 d-flex align-items-center ">
-          <label  class="pe-3  " style="color: black;">Color</label>
-          <input  class="form-control shadow-none  "  placeholder="color" name="color"
-            >
-        </div>
-      </div>
+
       <div class="row mb-4">
         <div class=" row mb-3 col-sm-10 ms-1  ">
           <textarea class="form-control shadow-none " id="about" name="description" rows="3"
             placeholder="product description"></textarea>
-            <p id="alertDescription" class="text-danger "></p>
+          <p id="alertDescription" class="text-danger "></p>
         </div>
         <div class="col-md-4 mb-3 ">
           <select class="form-select shadow-none " aria-label="Default select example" id="islisted" value="isListed"
@@ -41,36 +28,37 @@
         </div>
 
         <div class="col-md-3 mb-3 ">
-          <input type="number"  class="form-control shadow-none " name="quantity" placeholder="Quantity" min='0'>
-
+          <input type="text" class="form-control shadow-none " name="brand" id="brand" placeholder="Brand">
+          <p id="alertBrand" class="text-danger "></p>
         </div>
         <div class="col-md-6 mb-3 ">
           <!-- <input class="form-control shadow-none "  name="category" placeholder="category"> -->
-          <select class="form-select shadow-none " aria-label="Default select example"  name="category" value="category">
-           
-              {{#each category}}
-              <option value={{this._id}}>
-                {{this.categoryName}}
-              </option>
-              {{/each}}
-            </select>
-
-
-
-
+          <select class="form-select shadow-none " aria-label="Default select example" name="category" value="category">
+            <option value="" selected>Select Category</option>
+            {{#each category}}
+            <option value={{this._id}}>
+              {{this.categoryName}}
+            </option>
+            {{/each}}
           </select>
-        </div>
 
-      </div>
-      <div class="col-10">
-        <div class="input-group mb-3 col-12">
-          <input type="file"class="form-control shadow-none" multiple required name="files" />
-          <label class="input-group-text shadow-none " for="inputGroupFile02"
-            >Upload</label
-          >
+        </div>
+        <div class="col-10">
+          <div class="col-md-6 mb-3">
+            <label for="imageInput" class="form-label" style="color: black;">Select Images</label>
+            <input type="file" name="files" id="imageInput" multiple required
+              accept="image/*" class="form-control">
+            <p id="alertImage" class="text-danger mt-1"></p>
+          </div>
+          <div id="selectedImages" class="col-md-6 mb-3">
+            <!-- Images will be displayed here -->
+          </div>
         </div>
       </div>
-      <button type="submit" class="btn btn-primary">Add product</button>
+
+      <button type="submit" class="btn btn-primary">Add product
+        details
+      </button>
     </form>
   </div>
 </div>
@@ -79,54 +67,79 @@
 //script Validation
 
 
-<!-- Add this code inside your head tag -->
+
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
-<!-- Your existing HTML code -->
 
 <script>
-    const alertProductName = document.getElementById("alertProductName");
-    const alertDescription = document.getElementById("alertDescription");
-
-    function addProduct() {
-        const productName = document.getElementById("productName").value;
-        const about = document.getElementById("about").value;
-        const fileInput = document.querySelector('input[type="file"]');
+  const alertProductName = document.getElementById("alertProductName");
+  const alertDescription = document.getElementById("alertDescription");
+  const alertBrand = document.getElementById("alertBrand");
+  function addProduct() {
+    const productName = document.getElementById("productName").value;
+    const about = document.getElementById("about").value;
+    const brand = document.getElementById("brand").value;
+    const fileInput = document.querySelector('input[type="file"]');
         const allowedExtensions = /(\.jpeg|\.jpg)$/i;
 
-        alertProductName.innerText = "";
-        alertDescription.innerText = "";
 
-        if (productName.trim() === "") {
-            alertProductName.innerText = "Product title can't be empty.";
-            return false;
-        } else if (about.trim() === "") {
-            alertDescription.innerText = "Product description can't be empty.";
-            return false;
-        }
+    alertProductName.innerText = "";
+    alertDescription.innerText = "";
+    alertBrand.innerText = ""
 
-        // Validate file type
-        if (fileInput.files.length > 0) {
-            for (let i = 0; i < fileInput.files.length; i++) {
-                const fileName = fileInput.files[i].name;
-                if (!allowedExtensions.test(fileName)) {
-                    alert("Please select only JPEG files.");
-                    return false;
-                }
-            }
-        } else {
-            alert("Please select at least one image file.");
-            return false;
-        }
-
-        return true; 
+    if (productName.trim() === "") {
+      alertProductName.innerText = "Product title can't be empty.";
+      return false;
+    } else if (about.trim() === "") {
+      alertDescription.innerText = "Product description can't be empty.";
+      return false;
+    } else if (brand.trim() === "") {
+      alertBrand.innerText = "Product brand can't be empty.";
+      return false;
     }
+     for (let i = 0; i < fileInput.files.length; i++) {
+            const fileName = fileInput.files[i].name;
+            if (!allowedExtensions.test(fileName)) {
+                document.getElementById("alertImage").textContent = "Please select only JPEG files.";
+                return false;
+            }
+        }
+        return true
+  }
 
-    // Optional: Add event listener to trigger validation when file input changes
-   document.querySelector('input[type="file"]').addEventListener('change', function () {
-        addProduct();
+
+  document.querySelector('input[type="file"]').addEventListener('change', function () {
+    addProduct();
+  });
+
+ //image show
+    document.addEventListener('DOMContentLoaded', () => {
+        const imageInput = document.getElementById('imageInput');
+        const selectedImagesDiv = document.getElementById('selectedImages');
+
+        imageInput.addEventListener('change', (event) => {
+            selectedImagesDiv.innerHTML = '';
+
+            const files = event.target.files; // Get selected files
+            console.log(files)
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = file.name;
+                    img.style.maxWidth = '100%';
+                    selectedImagesDiv.appendChild(img);
+                };
+
+                reader.readAsDataURL(file);
+            }
+        });
     });
+
+
 </script>
 
 <!-- Your existing code for adding product form -->
-

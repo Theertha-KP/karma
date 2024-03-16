@@ -5,36 +5,21 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  price: {
-    type: Number,
-    required: true,
-  },
-  cost: {
-    type: Number,
-    required: true,
-  },
-  color: {
-    type: String,
-    
-  },
-  quantity:{
-    type:Number,
-    required: true
-  },
-  image: {
-    type: Array,
-    required: true,
-  },
-  description: {
+  brand: {
     type: String,
     required: true,
   },
+
   createdDate: {
     type: String,
   },
   isProductBlocked: {
     type: Boolean,
-   
+
+  },
+  description: {
+    type: String,
+    required: true,
   },
   categoryId: {
     type: Schema.ObjectId,
@@ -45,11 +30,15 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     required: true,
   },
-  isListed:{
+  isListed: {
     type: Boolean,
     required: true
+  },
+  image: {
+    type: Array,
+    required: true,
   }
- 
+
 });
 
 const productModel = new mongoose.model("products", productSchema);

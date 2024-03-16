@@ -2,56 +2,67 @@ var express = require('express');
 var user_route = express.Router();
 user_route.use('/node_modules', express.static('./node_modules'));
 const userController=require('../controllers/userController')
+const otpController=require('../controllers/otpController')
+const productController=require('../controllers/productController')
+const cartController=require('../controllers/cartController')
+const addressController=require("../controllers/addressController")
+const orderController=require('../controllers/orderController')
+const searchController=require('../controllers/searchController')
+const couponController=require('../controllers/couponController')
 const userMiddleware=require('../middleware/usermiddleware')
 const validation=require('../middleware/validation');
 const { checkSchema } = require('express-validator');
+//home
 user_route.get('/',userController.home);
+//login
 user_route.get('/login',userController.loadLoginPage);
 user_route.post('/login',userController.verifyUser);
+//signup
 user_route.get('/registration',userController.loadSignupPage);
-user_route.post('/registration',checkSchema(validation.userValidate()),userController.signUpValidation,userController.insertUser,userController.otpGenerator);
-user_route.get('/otp',userController.verifyOtpLoad)
-user_route.post('/verifyotp',userController.verifyOtp)
-user_route.get('/resendotp',userController.resendOTP)
-user_route.get('/shop',userController.productlist)
-user_route.get('/singleproduct/:id',userController.singleproduct)
-user_route.get('/cart',userMiddleware.checkUser,userController.cart)
-user_route.get('/addtocart/:id',userMiddleware.checkUser,userController.addToCart)
-
-user_route.get('/checkproduct/:id',userMiddleware.checkUser,userController.checkproduct)
-user_route.get('/cartDelete',userMiddleware.checkUser,userController.cartDelete)
-user_route.patch('/changecount/:id/:count',userMiddleware.checkUser,userController.changeCount)
-//order
-user_route.get('/checkout',userMiddleware.checkUser,userController.checkoutPage)
-user_route.get('/orderstatus',userMiddleware.checkUser,userController.orderPage)
-user_route.post('/cashondelivery',userMiddleware.checkUser,userController.cashOnDelivery)
-user_route.get('/orders',userMiddleware.checkUser,userController.orders)
-
-user_route.get('/manageaddress',userMiddleware.checkUser,userController.addressload)
-user_route.get('/addresspage',userMiddleware.checkUser,userController.newaddress)
-user_route.post('/addresssave',userMiddleware.checkUser,userController.addAddress)
-user_route.get('/deleteaddress/:id',userMiddleware.checkUser,userController.deleteAddress)
-//
-user_route.get('/editaddress/:id',userMiddleware.checkUser,userController.editAddress)
-user_route.post('/updateaddress/:address_id/:user_id',userMiddleware.checkUser,userController.updateAddress)
-
+//verification using otp
+user_route.post('/registration',checkSchema(validation.userValidate()),userController.signUpValidation,userController.insertUser,otpController.otpGenerator);
+user_route.get('/otp',otpController.verifyOtpLoad)
+user_route.post('/verifyotp',otpController.verifyOtp)
+user_route.get('/resendotp',otpController.resendOTP)
+//product
+user_route.get('/shop',productController.productlist)
+user_route.get('/singleproduct/:id',productController.singleproduct)
+//cart
+user_route.get('/cart',cartController.cart)
+user_route.get('/addtocart/:id',userMiddleware.checkUser,cartController.addToCart)
+user_route.get('/checkproduct/:id',userMiddleware.checkUser,cartController.checkproduct)
+user_route.get('/cartDelete',userMiddleware.checkUser,cartController.cartDelete)
+user_route.patch('/changecount/:id/:count',userMiddleware.checkUser,cartController.changeCount)
+//address
+user_route.get('/manageaddress',userMiddleware.checkUser,addressController.addressload)
+user_route.get('/addresspage',userMiddleware.checkUser,addressController.newaddress)
+user_route.post('/addresssave',userMiddleware.checkUser,addressController.addAddress)
+user_route.get('/deleteaddress/:id',userMiddleware.checkUser,addressController.deleteAddress)
+user_route.get('/editaddress/:id',userMiddleware.checkUser,addressController.editAddress)
+user_route.post('/updateaddress/:address_id/:user_id',userMiddleware.checkUser,addressController.updateAddress)
+//profile
 user_route.get('/userprofile',userMiddleware.checkUser,userController.userprofile)
 user_route.post('/saveuser',checkSchema(validation.userProfileValidate()),userMiddleware.checkUser,userController.updateUser)
+//order
+user_route.get('/orderstatus',userMiddleware.checkUser,orderController.orderPage)
+user_route.post('/cashondelivery',userMiddleware.checkUser,orderController.cashOnDelivery)
+user_route.get('/orders',userMiddleware.checkUser,orderController.orders)
+//logout
 user_route.get('/logout',userController.logout)
-
 //forgetpassword
-user_route.get('/forgetpassword',userController.forgetpw)
-user_route.post('/verifyemail',userController.emailVerify)
-user_route.get('/otppage/:id',userController.otpPage)
-user_route.post('/otpverification',userController.otpVerification)
-user_route.get('/newpassword/:id',userController.newpassword)
-user_route.post('/savepassword',userController.saveNewPassword)
-user_route.post('/resendnewotp',userController.resendNewotp)
-
+user_route.get('/forgetpassword',otpController.forgetpw)
+user_route.post('/verifyemail',otpController.emailVerify)
+user_route.get('/otppage',otpController.otpPage)
+user_route.post('/otpverification/:userId',otpController.otpVerification)
+user_route.get('/newpassword/:id',otpController.newpassword)
+user_route.post('/savepassword',otpController.saveNewPassword)
+user_route.post('/resendnewotp',otpController.resendNewotp)
 //search
-user_route.post('/search',userController.searchItem)
+user_route.post('/search',searchController.searchItem)
 //coupons
-user_route.get('/coupons',userMiddleware.checkUser,userController.couponList)
-user_route.get('/applycoupon/:id',userMiddleware.checkUser,userController.applyCoupon)
+user_route.get('/coupons',userMiddleware.checkUser,couponController.couponList)
+user_route.get('/applycoupon/:id',userMiddleware.checkUser,couponController.applyCoupon)
+
+
 
 module.exports=user_route;

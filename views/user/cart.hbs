@@ -215,29 +215,33 @@
 
 
     function quantityChange(id, count) {
-        axios.patch(`/changecount/${id}/${count}`).then((res) => {
-            // Update the count on the page without refreshing
-            if(res.data.success==true){
+    axios.patch(`/changecount/${id}/${count}`)
+    .then((res) => {
+        // Update the count on the page without refreshing
+        if (res.data.success == true) {
             const countOnScreen = document.getElementById(`product-${id}`);
-           
             countOnScreen.innerText = parseInt(countOnScreen.innerText) + count;
-//increasing price
+
+            // Increase price
             const productPrice = parseFloat(document.getElementById("productPrice").innerText.replace('₹', ''));
-            console.log(productPrice)
             const totalElement = document.getElementById("totalamount");
             let currentTotal = parseFloat(totalElement.innerText.replace('₹', ''));
             currentTotal += (count * productPrice);
-            console.log(currentTotal)
-             
-             totalElement.innerText = `₹${currentTotal.toFixed(2)}`
-             const check = document.getElementById('checkpage');
-            check.href = `/checkout?total=${currentTotal.toFixed(2)}`;
+            totalElement.innerText = `₹${currentTotal.toFixed(2)}`;
 
+            // Update checkout link
+            const check = document.getElementById('checkpage');
+            check.href = `/checkout?total=${currentTotal.toFixed(2)}`;
+        } else {
+            // Display flash message if quantity limit exceeded
+            alert("Quantity limit exceeded. You can't add more than 5 items.");
         }
-        }).catch((error) => {
-            console.error("Error changing quantity:", error);
-        });
-    }
+    })
+    .catch((error) => {
+        console.error("Error changing quantity:", error);
+    });
+}
+
 
     function apply() {
 

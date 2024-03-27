@@ -4,6 +4,7 @@ const Address = require('../models/addressModel')
 const { ObjectId } = require('mongodb')
 const productVarient = require('../models/productVariantModel')
 const Razorpay = require('razorpay');
+
 const checkoutPage = async (req, res, next) => {
     try {
 
@@ -88,10 +89,7 @@ const cashOnDelivery = async (req, res, next) => {
     try {
         console.log('hiiorder');
         const user = req.session.userData._id;
-        const { 
-            address,
-            payment,
-            orderDate,product_id,price,quantity} = req.body;
+       
         console.log(req.body);
 
         let userOrder = await Order.findOne({ user });
@@ -99,17 +97,14 @@ const cashOnDelivery = async (req, res, next) => {
         if (!userOrder) {
             console.log("user not found");
             const newOrder = await new Order({
-                user,
-                address,
-                payment,
-                orderDate,
-
+                user:user,
+                address:req.body.addressId,
+                payment:req.body.payment,
+                totalAmount:req.body.totalAmount,
                 items: {
                     type: [{
-                        product_id,
-                        quantity,
-                        price,
-                        orderStatus,
+                        product_id:req.body.productid
+                        
                     }]
                 }
             })
@@ -117,10 +112,10 @@ const cashOnDelivery = async (req, res, next) => {
         } else {
             console.log("user found");
             userOrder.user=user
-            userOrder.address = address;
-            userOrder.payment = payment;
-            userOrder.items.price = price;
-            userOrder.items.product_id=product_id;
+            userOrder.address =req.body.addressId,
+            userOrder.payment = req.body.payment,
+            userOrder.totalAmount = req.body.totalAmount,
+            userOrder.items.product_id=req.body.productid
            
             await userOrder.save();
             console.log("data updated");

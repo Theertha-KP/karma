@@ -129,7 +129,7 @@
                                         </div>
 
                                     </div>
-                                   <input id="cartdata" value="{{cartData}} "hidden >
+                                   <input id="cartdata" value="{{cartData.[0].productDetails._id}}"hidden >
                                     <div class="pricebar d-flex justify-content-between">
                                         <div class="details">
                                             <p>Delivery Charge</p>
@@ -253,12 +253,13 @@
         
         const selectedAddressId = document.querySelector('input[name="address"]:checked').value;
         const total = document.getElementById('total').innerText
-        
+        const id=document.getElementById('cartdata').value
         
         axios.post('/cashondelivery', {
             addressId: selectedAddressId,
             payment: 'COD',
             totalAmount: total,
+            productid:id
             
         })
             .then(response => {

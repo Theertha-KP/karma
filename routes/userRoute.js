@@ -26,7 +26,7 @@ user_route.post('/verifyotp',otpController.verifyOtp)
 user_route.get('/resendotp',otpController.resendOTP)
 //product
 user_route.get('/shop',productController.productlist)
-user_route.get('/singleproduct/:id',productController.singleproduct)
+user_route.get('/singleproduct/:id/:color/:size',productController.singleproduct)
 //cart
 user_route.get('/cart',cartController.cart)
 user_route.post('/addtocart/:id',userMiddleware.checkUser,cartController.addToCart)

@@ -2,12 +2,15 @@
 const Product = require("../models/productModel");
 const ProductVariant = require("../models/productVariantModel")
 const Category = require("../models/categoryModel");
+
 const multer = require("../middleware/multer")
 const { ObjectId } = require('mongodb')
 
 //listing product
 const productlist = async (req, res, next) => {
     try {
+        const categoryDoc = await Category.find({});
+        console.log(categoryDoc);
         // const productDoc = await ProductVariant.find({ isListed: false }).populate("product_id");
         const productDocs = await ProductVariant.aggregate([
             {
@@ -35,7 +38,7 @@ const productlist = async (req, res, next) => {
             }
         ]);
         console.log(productDocs)
-        res.render("user/productlist", { products: productDocs, user: req.session.userData });
+        res.render("user/productlist", { products: productDocs, user: req.session.userData, category: categoryDoc });
     } catch (error) {
         console.log("error at loading add products page");
         console.log(error.message);
@@ -46,11 +49,17 @@ const productlist = async (req, res, next) => {
 const singleproduct = async (req, res, next) => {
     try {
         const _id = new ObjectId(req.params.id);
-        console.log(_id);
+        const color = req.params.color
+        const size = req.params.size
+        console.log(_id, color, size);
 
         const mergedDoc = await ProductVariant.aggregate([
             {
-                $match: { _id: _id }
+                $match: {
+                    product_id: _id,
+                    color: color,
+                    size: Number(size)
+                }
             },
             {
                 $lookup: {
@@ -63,69 +72,87 @@ const singleproduct = async (req, res, next) => {
             {
                 $unwind: "$productDetails"
             },
-            {
-                $lookup: {
-                    from: "productvarients",
-                    localField: "productDetails._id",
-                    foreignField: "product_id",
-                    as: "varientDetails"
-                }
-            },
 
-            {
-                $group: {
-                    _id: "$_id",
-                    productDetails: { $first: "$productDetails" },
-                    varientDetails: { $first: "$varientDetails" }
-                }
-            }, {
-                $unwind: "$varientDetails"
-            }
+
+
+
 
         ]);
 
         console.log(mergedDoc);
 
-        const product = await ProductVariant.aggregate([
+        const product = await Product.aggregate([
             {
                 $match: { _id: _id }
             },
             {
                 $lookup: {
-                    from: "products",
-                    localField: "product_id",
-                    foreignField: "_id",
-                    as: "productDetails"
-                }
-            },
-            {
-                $unwind: "$productDetails" // Unwind to destructure the productDetails array
-            },
-            {
-                $lookup: {
                     from: "productvarients",
-                    localField: "productDetails._id",
+                    localField: "_id",
                     foreignField: "product_id",
-                    as: "variantDetails"
+                    as: "varients"
                 }
             },
             {
-                $unwind: "$variantDetails" // Unwind to destructure the variantDetails array
+                $unwind: "$varients"
             },
             {
                 $project: {
-                    id:"$productDetails._id",
-                    colors: "$variantDetails.color",
-                    sizes: "$variantDetails.size"
+
+                    colors: "$varients.color",
+                    sizes: "$varients.size"
                 }
             },
             {
                 $group: {
-                  _id: {color:"$colors",_id:"$id"},
-                  sizes: { $push: "$sizes" }
+                    _id: { color: "$colors", _id: "$id" },
+                    sizes: { $push: "$sizes" }
                 }
-              }
-        ]);
+            }
+
+
+        ])
+
+        // const product = await ProductVariant.aggregate([
+        //     {
+        //         $match: {product_id: _id }
+        //     },
+        //     {
+        //         $lookup: {
+        //             from: "products",
+        //             localField: "product_id",
+        //             foreignField: "_id",
+        //             as: "productDetails"
+        //         }
+        //     },
+        //     {
+        //         $unwind: "$productDetails" // Unwind to destructure the productDetails array
+        //     },
+        //     {
+        //         $lookup: {
+        //             from: "productvarients",
+        //             localField: "productDetails._id",
+        //             foreignField: "product_id",
+        //             as: "variantDetails"
+        //         }
+        //     },
+        //     {
+        //         $unwind: "$variantDetails" // Unwind to destructure the variantDetails array
+        //     },
+        //     {
+        //         $project: {
+        //             id:"$productDetails._id",
+        //             colors: "$variantDetails.color",
+        //             sizes: "$variantDetails.size"
+        //         }
+        //     },
+        //     {
+        //         $group: {
+        //           _id: {color:"$colors",_id:"$id"},
+        //           sizes: { $push: "$sizes" }
+        //         }
+        //       }
+        // ]);
 
         console.log(product)
 
@@ -136,7 +163,7 @@ const singleproduct = async (req, res, next) => {
         // } else {
         //     var countExist = true
         // }
-        res.render("user/singleproduct", { Product: mergedDoc, product: product, user: req.session.userData });
+        res.render("user/singleproduct", { Product: mergedDoc, product: product, user: req.session.userData, selectColor: color });
     } catch (error) {
         console.log("error at loading add products page");
         console.log(error.message);
@@ -156,9 +183,9 @@ const loadAddproduct = async (req, res) => {
 const loadAddVarient = async (req, res) => {
     try {
         const id = new ObjectId(req.params.id)
-        const varient =
 
-            res.render("admin/products/addproductvariant", { admin: true, id });
+
+        res.render("admin/products/addproductvariant", { admin: true, id });
     } catch (error) {
         console.log("error at loading add products page");
         console.log(error.message);

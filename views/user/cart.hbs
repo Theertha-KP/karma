@@ -127,12 +127,12 @@
                                     </a>
                                     <div class="product__cart__item__text">
                                         <h6>{{this.mainproduct.productName}}</h6>
-                                        <h5 id="productPrice">{{this.mainproduct.brand}}</h5>
+                                        <h5 >{{this.mainproduct.brand}}</h5>
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                <h5>₹{{this.productDetails.price}}</h5>
+                                <h5 id="productPrice">₹{{this.productDetails.price}}</h5>
                             </td>
                             <td class="quantity__item">
                                 <div class="quantity d-flex justify-content-center align align-items-center">
@@ -232,6 +232,7 @@
                     countOnScreen.innerText = parseInt(countOnScreen.innerText) + count;
 
                     // Increase price
+                    console.log(document.getElementById("productPrice"))
                     const productPrice = parseFloat(document.getElementById("productPrice").innerText.replace('₹', ''));
                     console.log(productPrice)
                     const totalElement = document.getElementById("totalamount");

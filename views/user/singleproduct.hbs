@@ -90,7 +90,7 @@
 		{{#each Product}}
 
 		<div class="row s_product_inner">
-			{{#if (seq this._id this.varientDetails._id)}}
+			
 			<div class="col-lg-6">
 
 				<div class="s_Product_carousel">
@@ -112,9 +112,9 @@
 			<div class="col-lg-5 mb-30  offset-lg-1" style="height: 100px;">
 				<div class="s_product_text" style="line-height:0px;">
 					<h3>{{this.productDetails.productName}}</h3>
-					<h4>₹{{this.varientDetails.price}}</h2>
+					<h4>₹{{this.price}}</h2>
 
-						{{#if (eq this.varientDetails.quantity 0)}}
+						{{#if (eq this.quantity 0)}}
 						<h5>Availibility<span>:Out of Stock</span> </h5>
 						{{else}}
 						<h5>Availibility<span>:In Stock</span> </h5>
@@ -132,7 +132,7 @@
 						</div>
 				</div>
 			</div>
-			{{/if}}
+			
 
 		</div>
 
@@ -151,7 +151,7 @@
 
         <div class="dropdown-menu" aria-labelledby="colorDropdownButton">
             {{#each product}}
-            <a class="dropdown-item" href="#">{{this._id.color}}</a>
+            <a class="dropdown-item" href="/singleproduct/{{../Product.[0].productDetails._id}}/{{this._id.color}}/{{this.sizes.[0]}}">{{this._id.color}}</a>
             {{/each}}
         </div>
     </div>
@@ -161,8 +161,13 @@
             Size
         </button>
         <div class="dropdown-menu" aria-labelledby="sizeDropdownButton">
-            {{#each product.sizes}}
-            <a class="dropdown-item" href="#">{{this}}</a>
+            {{#each product}}
+			{{#if (eq ../selectColor this._id.color)}}
+			
+            {{#each this.sizes}}
+			<a class="dropdown-item"href="/singleproduct/{{../../Product.[0].productDetails._id}}/{{../../selectColor}}/{{this}}">{{this}}</a>
+			{{/each}}
+			{{/if}}
             {{/each}}
         </div>
     </div>
@@ -302,6 +307,7 @@
                 {{!-- window.location.href = '/cart'; --}}
             } else {
                 console.error('Failed to add product to cart:', response.data.msg);
+				window.location.href = '/login';
             }
         } catch (error) {
             console.error('An error occurred:', error);

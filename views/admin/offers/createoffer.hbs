@@ -14,85 +14,92 @@
                                 <div class="tab-content" id="pills-tabContent">
                                     <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
                                         <form class="theme-form theme-form-2 mega-form" method="post"
-                                            action="/admin/insertcoupon">
+                                            action="/admin/insertoffer">
 
 
                                             <div class="row">
                                                 <div class="mb-4 row align-items-center">
-                                                    <label class="form-label-title col-lg-2 col-md-3 mb-0">Coupon
+                                                    <label class="form-label-title col-lg-2 col-md-3 mb-0">Offer
                                                         Title</label>
                                                     <div class="col-md-9 col-lg-10">
                                                         <input class="form-control" name="name" type="text">
                                                     </div>
                                                 </div>
 
-                                                <div class="mb-4 row align-items-center">
-                                                    <label
-                                                        class="col-lg-2 col-md-3 col-form-label form-label-title">Coupon
-                                                        Code</label>
-                                                    <div class="col-md-6 col-lg-6">
-                                                        <input class="form-control" name="couponId" type="text">
-                                                    </div>
-                                                    {{!-- <div class="col-md-3">
-                                                        <a class="col-md-3" href="/generateid"
-                                                            style="background-color: darkcyan; border-radius: 3px;">Generate
-                                                            Id</a>
-                                                    </div> --}}
-                                                </div>
 
-                                                <div class="mb-4 row align-items-center">
-                                                    <label
-                                                        class="col-lg-2 col-md-3 col-form-label form-label-title">Expiry
-                                                        Date</label>
-                                                    <div class="col-md-9 col-lg-10">
-                                                        <input class="form-control" name="expiryDate" type="date">
-                                                    </div>
-                                                </div>
-                                                <div class="col-12 row justify-content-between">
-
-                                                    <div class="col-6 mb-4 row align-items-center">
-                                                        <label class=" col-5  col-form-label form-label-title"
-                                                            style="width: 35% !important;">Maximum
-                                                            User</label>
-                                                        <div class="col-7 ">
-                                                            <input class=" form-control" name="maxUser" type="number">
+                                                <div class="d-flex justify-content-between" style="width: 97%;">
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label
+                                                            class="col-lg-6 col-md-7 col-form-label form-label-title">Start
+                                                            Date</label>
+                                                        <div class="col-md-4 col-lg-6">
+                                                            <input class="form-control" name="startdate" type="date">
                                                         </div>
                                                     </div>
-                                                    <div class="col-6 mb-4 row align-items-center">
-                                                        <label class="col-5 col-form-label form-label-title">Minimum
-                                                            Amount of Purchase</label>
-                                                        <div class="col-6">
-                                                            <input class="form-control" name="minPurchase"
-                                                                type="number">
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label
+                                                            class="col-lg-6 col-md-7 col-form-label form-label-title">Expiry
+                                                            Date</label>
+                                                        <div class="col-md-4 col-lg-6">
+                                                            <input class="form-control" name="expirydate" type="date">
                                                         </div>
                                                     </div>
-                                                </div>
-
-
-
-                                                <div class=" col-12   d-flex justify-content-between">
-                                                    <div class="mb-4 row  col-6 justify-content-between">
-                                                        <label class="col-5 col-form-label form-label-title">Discount
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label
+                                                            class="col-lg-6 col-md-7 col-form-label form-label-title">Discount
                                                             Type</label>
-                                                        <div class="col-7 px-4">
-                                                            <select class="js-example-basic-single" name="state">
-                                                                <option disabled>--Select--</option>
+                                                        <div class="col-md-4 col-lg-6">
+                                                            <select class="js-example-basic-single" name="discounttype">
+                                                                <option>--Select--</option>
                                                                 <option>Percent</option>
                                                                 <option>Amount</option>
+                                                            </select>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+
+
+                                                <div class=" col-12  pt-3 d-flex justify-content-between">
+
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label class="col-5 col-form-label form-label-title">Discount
+                                                        </label>
+                                                        <div class="col-md-4 col-lg-6" style="padding-left: 41px;">
+                                                            <input class="form-control" name="discount" type="number"
+                                                                min="0">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label
+                                                            class="col-lg-6 col-md-7 col-form-label form-label-title">Offer
+                                                            Type</label>
+                                                        <div class="col-md-4 col-lg-6">
+                                                            <select class="js-example-basic-single" name="offertype"
+                                                                id="offerTypeSelect">
+                                                                <option value="">--Select--</option>
+                                                                <option value="product">Product</option>
+                                                                <option value="category">Category</option>
                                                             </select>
                                                         </div>
                                                     </div>
 
-                                                    <div
-                                                        class="mb-4 row align-items-center col-4 justify-content-between">
-                                                        <label class="col-5 col-form-label form-label-title">Discount
-                                                        </label>
-                                                        <div class="col-7">
-                                                            <input class="form-control" name="discount" type="number">
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label
+                                                            class="col-lg-6 col-md-7 col-form-label form-label-title">Applicables</label>
+                                                        <div class="col-md-4 col-lg-6">
+                                                            <select class="js-example-basic-single" name="applicables"
+                                                                id="applicablesSelect">
+                                                                <!-- Options will be dynamically populated based on selected offertype -->
+                                                                <option disabled>--Select--</option>
+                                                            </select>
                                                         </div>
                                                     </div>
+
                                                 </div>
-                                                <div class="mb-4 row align-items-center">
+                                                <div class="mb-4 row align-items-center" style="    margin-top: 26px;">
                                                     <label class="col-2 col-form-label form-label-title">
                                                         Description</label>
                                                     <div class="form-group col-10">
@@ -108,7 +115,7 @@
                                                 </div>
                                                 <div class="d-block mt-5">
                                                     <button type="submit" class="btn btn-info">Create
-                                                        Coupon</button>
+                                                        Offer</button>
                                                 </div>
 
                                             </div>
@@ -151,3 +158,48 @@
         </div>
     </div>
 </div>
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const offerTypeSelect = document.getElementById('offerTypeSelect');
+        const applicablesSelect = document.getElementById('applicablesSelect');
+
+        // Event listener to handle  offertype 
+        offerTypeSelect.addEventListener('change', () => {
+            const selectedOfferType = offerTypeSelect.value;
+            // Clear existing options
+            applicablesSelect.innerHTML = '<option disabled>--Select--</option>';
+
+            if (selectedOfferType === 'product') {
+                fetch('/admin/fetchProducts')
+                    .then(response => response.json())
+                    .then(products => {
+                        // Iterate over the retrieved products and populate the dropdown
+                        products.forEach(product => {
+                            const option = document.createElement('option');
+                            option.text = product.productName;
+                            option.value = product._id;
+                            applicablesSelect.add(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching products:', error));
+            } else if (selectedOfferType === 'category') {
+                fetch('/admin/fetchCategories')
+                    .then(response => response.json())
+                    .then(categories => {
+                        // Iterate over the retrieved categories and populate the dropdown
+                        categories.forEach(category => {
+                            const option = document.createElement('option');
+                            option.text = category.categoryName;
+                            option.value = category._id;
+                            applicablesSelect.add(option);
+                        });
+                    })
+                    .catch(error => console.error('Error fetching categories:', error));
+
+            }
+        });
+    });
+
+</script>

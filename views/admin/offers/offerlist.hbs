@@ -11,81 +11,50 @@
 
                         </div>
                         <div>
-                            {{#if order.length}}
+                          
                             <div class="table-responsive">
                                 <table class="table all-package order-table theme-table" id="table_id">
                                     <thead>
                                         <tr>
 
-                                            <th>Order Id</th>
-                                            <th>Date</th>
-                                            <th>Payment method</th>
-                                            <th>Amount</th>
-                                            <th>Status</th>
-                                            <th>Option</th>
+                                            <th>Offer Name</th>
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                            <th>Discount</th>
+                                            <th>Offer Type</th>
+                                           
                                         </tr>
                                     </thead>
-                                    {{#each order }}
-
+                                  
+                                    {{#each order}}
                                     <tbody>
                                         <tr data-bs-toggle="offcanvas" href="#order-details">
 
 
-                                            <td>{{this._id}} </td>
+                                            <td>{{this.offerTitle}} </td>
 
-                                            <td>{{this.orderDate}}</td>
+                                            <td>{{this.startDate}}</td>
 
-
+                                            <td>{{this.endDate}}</td>
 
                                             <td class="order-success">
-                                                <span>{{this.payment}}</span>
+                                                <span>{{this.discount}}</span>
                                             </td>
 
-                                            <td>{{this.totalAmount}}</td>
-                                            <td>{{this.items.orderStatus}}</td>
+                                            <td>{{this.offertype}}</td>
+                                            
 
-                                            <td>
-
-
-                                                <div class="d-flex col-md-8 justify-content-between">
-                                                    <div class="dropdown">
-                                                        <button class="btn btn-primary dropdown-toggle col-md-8 "
-                                                            type="button" id="dropdownMenuButton{{@index}}"
-                                                            style="height: 30px;" data-toggle="dropdown"
-                                                            aria-haspopup="true" aria-expanded="false">
-                                                            Change Status
-                                                        </button>
-                                                        <div class="dropdown-menu"
-                                                            aria-labelledby="dropdownMenuButton{{@index}}">
-                                                            <button class="dropdown-item" type="button"
-                                                                onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Shipped')">Shipped</button>
-                                                            <button class="dropdown-item" type="button"
-                                                                onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Out for delivery')">Out
-                                                                for
-                                                                delivery
-                                                            </button>
-                                                            <button class="dropdown-item" type="button"
-                                                                onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Delivered')">Delivered
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                    <button class="btn btn-sm btn-outline-danger  border"
-                                                        style="border-color:red!important" type="button"
-                                                        onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Cancelled')">
-                                                        Cancel
-                                                    </button>
-
-                                                </div>
-                                            </td>
+                                            
                                         </tr>
 
 
 
                                     </tbody>
-                                    {{/each}}
+                                   {{/each}}
+                                    
                                 </table>
                             </div>
-                            {{/if}}
+                          
                         </div>
                     </div>
                 </div>

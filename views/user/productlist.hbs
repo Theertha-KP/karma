@@ -102,38 +102,28 @@
     {{/each}}
 
 </div> --}}
-<div class="container">
-    <div class="row">
-        <div class="col-xl-3 col-lg-4 col-md-5">
-            <div class="sidebar-categories">
-                <div class="head">Browse Categories</div>
-                <ul class="main-categories">
-                    <li class="main-nav-list"><a data-toggle="collapse" href="#fruitsVegetable" aria-expanded="false"
-                            aria-controls="fruitsVegetable"><span class="lnr lnr-arrow-right"></span>Fruits and
-                            Vegetables<span class="number">(53)</span></a>
-                        <ul class="collapse" id="fruitsVegetable" data-toggle="collapse" aria-expanded="false"
-                            aria-controls="fruitsVegetable">
-                            <li class="main-nav-list child"><a href="#">Frozen Fish<span class="number">(13)</span></a>
-                            </li>
-                            <li class="main-nav-list child"><a href="#">Dried Fish<span class="number">(09)</span></a>
-                            </li>
-                            <li class="main-nav-list child"><a href="#">Fresh Fish<span class="number">(17)</span></a>
-                            </li>
-                            <li class="main-nav-list child"><a href="#">Meat Alternatives<span
-                                        class="number">(01)</span></a></li>
-                            <li class="main-nav-list child"><a href="#">Meat<span class="number">(11)</span></a></li>
-                        </ul>
-                    </li>
-
-
-                </ul>
-            </div>
-            <div class="sidebar-filter mt-50">
-                <div class="top-filter-head">Product Filters</div>
-               
-            </div>
+<div >
+    <div class="d-flex justify-content-between">
+        <!-- Render category filters -->
+        <div class="sidebar-filter " style="width: 270px; margin-left: 31px; margin-top:0">
+            <div class="top-filter-head w-100%">Category Filters</div>
+            <ul class="category-filters">
+                {{#each category}}
+                <li><a href="#" class="category-filter" data-category="{{this.categoryName}}">{{this.categoryName}}</a>
+                </li>
+                {{/each}}
+            </ul>
         </div>
-        <div class="col-xl-9 col-lg-8 col-md-7">
+
+        {{!-- <!-- Update rendering of products based on selected category -->
+        <div class="row">
+            {{#each products}}
+            <div class="col-lg-4 col-md-6 single-product" data-category="{{this.category}}">
+                <!-- Product details here -->
+            </div>
+            {{/each}}
+        </div> --}}
+        <div class="col-xl-9 col-lg-8 col-md-7" style="margin-right:30px;">
             <!-- Start Filter Bar -->
             <div class="filter-bar d-flex flex-wrap align-items-center">
                 <div class="sorting">
@@ -163,13 +153,13 @@
             <!-- End Filter Bar -->
             <!-- Start Best Seller -->
             <section class="lattest-product-area pb-40 category-list">
-                <div class="row">
+                <div id="productContainer" class="row">
                     <!-- single product -->
                     {{#each products }}
                     <div class="col-lg-4 col-md-6">
                         <div class="single-product">
-                            <a href="/singleproduct/{{this._id}}" >
-                                <img class="img-fluid" src="/multer/products/{{this.product.image.[0]}}"  alt="">
+                            <a href="/singleproduct/{{this.product._id}}/{{this.color}}/{{this.size}}">
+                                <img class="img-fluid" src="/multer/products/{{this.product.image.[0]}}" alt="">
                                 <div class="product-details">
                                     <h6>{{this.product.productName}}</h6>
                                     <h6>{{this.product.description}}</h6>
@@ -297,3 +287,33 @@
     </div>
 </footer>
 <!-- End footer Area -->
+
+<script>
+    // JavaScript code for handling category filters
+document.addEventListener('DOMContentLoaded', () => {
+    const categoryFilters = document.querySelectorAll('.category-filter');
+    categoryFilters.forEach(filter => {
+        filter.addEventListener('click', () => {
+            const selectedCategory = filter.getAttribute('data-category');
+            filterProductsByCategory(selectedCategory);
+        });
+    });
+});
+
+function filterProductsByCategory(category) {
+    const products = document.querySelectorAll('.single-product');
+    products.forEach(product => {
+        const productCategory = product.getAttribute('data-category');
+        if (productCategory === category || category === 'All') {
+            product.style.display = 'block'; // Show product
+        } else {
+            product.style.display = 'none'; // Hide product
+        }
+    });
+}
+
+
+
+
+
+</script>

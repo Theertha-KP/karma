@@ -71,7 +71,7 @@ const cart = async function (req, res, next) {
         }, 0)
         console.log(total);
         // console.log(cartData.length);
-        res.render('user/cart', { cartData, total })
+        res.render('user/cart', { cartData, total ,user:req.session.userData._id})
     }
     catch (error) {
        

@@ -6,6 +6,7 @@ const session = require("express-session");
 const cookie = require("cookie-parser");
 const dbConnect = require('./config/db');
 const flash = require('express-flash');
+
 //var hbs  = require('express-handlebars');
 dbConnect()
 var hbs=require('hbs')
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 
+
 //setting view engine
 app.set("views", path.join(__dirname, "views"));
 app.set('view engine', 'hbs');
@@ -30,8 +32,13 @@ hbs.registerHelper('inc', (value) => {
   return parseInt(value) + 1;
 })
 hbs.registerHelper('eq', (a,b) => {
-  console.log(a,b);
-  return a===b
+ 
+  return a==b
+})
+
+hbs.registerHelper('seq', (a,b) => {
+ 
+  return String(a)==String(b)
 })
 hbs.registerHelper('datehelper', (date) => {
   
@@ -63,10 +70,17 @@ app.use(
   //   })
   // )
 app.use(flash())
+app.use((req, res, next) => {
+  res.locals.success_msg = req.flash('success_msg');
+  res.locals.error_msg = req.flash('error_msg');
+  res.locals.info_msg = req.flash('info_msg');
+  next();
+});
 
   //requiring routes
   const user_route = require("./routes/userRoute");
   const admin_route = require("./routes/adminRoute");
+const { log } = require("console");
   app.use("/", user_route);
   app.use("/admin", admin_route);
 

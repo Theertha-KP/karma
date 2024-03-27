@@ -29,7 +29,7 @@ user_route.get('/shop',productController.productlist)
 user_route.get('/singleproduct/:id',productController.singleproduct)
 //cart
 user_route.get('/cart',cartController.cart)
-user_route.get('/addtocart/:id',userMiddleware.checkUser,cartController.addToCart)
+user_route.post('/addtocart/:id',userMiddleware.checkUser,cartController.addToCart)
 user_route.get('/checkproduct/:id',userMiddleware.checkUser,cartController.checkproduct)
 user_route.get('/cartDelete',userMiddleware.checkUser,cartController.cartDelete)
 user_route.patch('/changecount/:id/:count',userMiddleware.checkUser,cartController.changeCount)
@@ -44,8 +44,10 @@ user_route.post('/updateaddress/:address_id/:user_id',userMiddleware.checkUser,a
 user_route.get('/userprofile',userMiddleware.checkUser,userController.userprofile)
 user_route.post('/saveuser',checkSchema(validation.userProfileValidate()),userMiddleware.checkUser,userController.updateUser)
 //order
+user_route.get('/checkout',userMiddleware.checkUser,orderController.checkoutPage)
 user_route.get('/orderstatus',userMiddleware.checkUser,orderController.orderPage)
 user_route.post('/cashondelivery',userMiddleware.checkUser,orderController.cashOnDelivery)
+user_route.post('/razorpay',userMiddleware.checkUser,orderController.razorpay)
 user_route.get('/orders',userMiddleware.checkUser,orderController.orders)
 //logout
 user_route.get('/logout',userController.logout)

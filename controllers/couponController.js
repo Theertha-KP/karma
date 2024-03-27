@@ -1,79 +1,97 @@
 const Coupons = require('../models/couponModel')
+const Cart = require('../models/cartModel')
 const { ObjectId } = require('mongodb')
 const couponList = async (req, res, next) => {
     try {
         const coupons = await Coupons.find({})
         console.log(coupons);
-        res.render('user/coupon', {admin: true , coupons: coupons })
+        res.render('user/coupon', { coupons: coupons })
 
     } catch (error) {
         console.log(error.message);
 
     }
 }
+
+
+
 const applyCoupon = async (req, res, next) => {
     try {
         console.log('applycoupon');
-        const coupon_id = req.params.id
-        console.log(coupon_id);
-        const user = new ObjectId(req.session.userData._id)
-        const cartData = await Cart.findOne({ user }).populate('product.product_id');
-        console.log(cartData);
+        const coupon_id = req.params.id;
+        console.log(coupon_id + "coupon id");
+        const user = new ObjectId(req.session.userData._id);
+        const cartData = await Cart.findOne({ user: user }).populate('product.product_id');
+        console.log(cartData + "cartdata");
         const cart = cartData.product;
         let totalAmount = 0, date = new Date();
-
+        console.log(cart);
+        console.log('iiiiiiiiii');
         totalAmount += cartData?.product.reduce((acc, item) => {
             console.log("item");
             console.log(item);
             const totalItem = item.product_id.price * item.count;
             console.log(totalItem);
-            return acc + totalItem
-        }, 0)
+            return acc + totalItem;
+        }, 0);
         console.log('totalAmount,', totalAmount);
 
-
-
-        const couponFound = await Coupons.findOne({ couponId: coupon_id })
+        const couponFound = await Coupons.findOne({ couponId: coupon_id });
         console.log('coponFound', couponFound);
 
+        if (!couponFound) {
+            res.json({ success: false, message: 'Invalid coupon' });
+            return; // Exit the function early
+        }
+
+        // Fetch discount type from couponFound object or somewhere else
+        let discountType = couponFound.discountType;
 
         //checks if the coupon is already used by the user  
-        const usedUser = couponFound.claimedUser.includes(user)
+        const usedUser = couponFound.claimedUser.includes(user);
         console.log(usedUser);
         if (usedUser) {
-            res.json({ success: false, message: "Coupon is already used by the user" })
+            res.json({ success: false, message: "Coupon is already used by the user" });
+            return; // Exit the function early
+        } 
+        
+        if (couponFound?.expiryDate < date) {
+            res.json({ success: false, message: 'Coupon Expired' });
+            return; // Exit the function early
+        } 
+        
+        if (totalAmount < couponFound.minimumPurchase) {
+            res.json({ success: false, message: 'Less amount to apply' });
+            return; // Exit the function early
         }
-        else if (couponFound?.expiryDate < date) {
-            res.json({ success: false, message: 'Coupon Expired' })
-        }
-        // else if(usedUser){
-        //     res.json({message:'User already used the coupon'})
-        // }
-        else if (couponFound) {
-            if (totalAmount < couponFound.minimumPurchase) {
-                res.json({ success: false, message: 'Less amount to apply' })
+
+        // At this point, all checks are passed, apply the coupon
+        await Cart.findOneAndUpdate({ user }, { $set: { isCouponApplied: coupon_id } });
+        
+        if (discountType === "Percent") {
+            totalAmount = totalAmount - (totalAmount * couponFound.discount) / 100;
+            console.log(totalAmount);
+            if (totalAmount >= 0) {
+                res.json({ success: true, message: 'Coupon applied', discount: couponFound.discount, totalAmount });
+            } else {
+                res.json({ success: false, message: 'Error applying coupon' });
             }
-            else {
-                await Cart.findOneAndUpdate({ user }, { $set: { isCouponApplied: coupon_id } })
-                totalAmount = totalAmount - (totalAmount * couponFound.discount) / 100
-                console.log(totalAmount);
-                res.json({ success: true, message: 'Coupon applied', discount: couponFound.discount, totalAmount })
-
-                // await Coupon.updateOne({couponName:coupon},{$set:{usedUser:user}})
+        } else if (discountType === "Amount") {
+            totalAmount = totalAmount - couponFound.discount;
+            if (totalAmount >= 0) {
+                res.json({ success: true, message: 'Coupon applied', discount: couponFound.discount, totalAmount });
+            } else {
+                res.json({ success: false, message: 'Error applying coupon' });
             }
         }
-        else {
-            res.json({ success: false, message: 'Invalid coupon' })
-        }
-
-
-
-
     } catch (error) {
         console.log(error.message);
-
+        res.json({ success: false, message: 'An error occurred while applying the coupon' });
     }
 }
+
+
+
 //remove coupon
 const removeCoupon = async (req, res) => {
     try {

@@ -2,16 +2,40 @@
 const Product = require("../models/productModel");
 const ProductVariant = require("../models/productVariantModel")
 const Category = require("../models/categoryModel");
-const multer=require("../middleware/multer")
+const multer = require("../middleware/multer")
 const { ObjectId } = require('mongodb')
 
 //listing product
 const productlist = async (req, res, next) => {
     try {
-
-        const productDoc = await Product.find({ isListed: false }).populate("categoryId");
-        
-        res.render("user/productlist", { products: productDoc });
+        // const productDoc = await ProductVariant.find({ isListed: false }).populate("product_id");
+        const productDocs = await ProductVariant.aggregate([
+            {
+                $match: { isListed: false }
+            },
+            {
+                $group: {
+                    _id: "$product_id",
+                    variant: { $first: "$$ROOT" }
+                }
+            },
+            {
+                $replaceRoot: { newRoot: "$variant" }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "product_id",
+                    foreignField: "_id",
+                    as: "product"
+                }
+            },
+            {
+                $unwind: "$product"
+            }
+        ]);
+        console.log(productDocs)
+        res.render("user/productlist", { products: productDocs, user: req.session.userData });
     } catch (error) {
         console.log("error at loading add products page");
         console.log(error.message);
@@ -23,30 +47,96 @@ const singleproduct = async (req, res, next) => {
     try {
         const _id = new ObjectId(req.params.id);
         console.log(_id);
-        const varient= await ProductVariant.find({product_id:_id}).populate("product_id")
-        console.log(varient);
-        // const productDoc = await Product.aggregate([
-        //     { 
-        //         $match:{_id: _id }  
-        //       },
-        //     {
-        //         $lookup: {
-        //             from: "productvarients",
-        //             localField: "_id",
-        //             foreignField: " product_id",
-        //             as: "varientDetails"
-        //         }
-        //     },
-            
-        // ])
+
+        const mergedDoc = await ProductVariant.aggregate([
+            {
+                $match: { _id: _id }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "product_id",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+            {
+                $unwind: "$productDetails"
+            },
+            {
+                $lookup: {
+                    from: "productvarients",
+                    localField: "productDetails._id",
+                    foreignField: "product_id",
+                    as: "varientDetails"
+                }
+            },
+
+            {
+                $group: {
+                    _id: "$_id",
+                    productDetails: { $first: "$productDetails" },
+                    varientDetails: { $first: "$varientDetails" }
+                }
+            }, {
+                $unwind: "$varientDetails"
+            }
+
+        ]);
+
+        console.log(mergedDoc);
+
+        const product = await ProductVariant.aggregate([
+            {
+                $match: { _id: _id }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "product_id",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+            {
+                $unwind: "$productDetails" // Unwind to destructure the productDetails array
+            },
+            {
+                $lookup: {
+                    from: "productvarients",
+                    localField: "productDetails._id",
+                    foreignField: "product_id",
+                    as: "variantDetails"
+                }
+            },
+            {
+                $unwind: "$variantDetails" // Unwind to destructure the variantDetails array
+            },
+            {
+                $project: {
+                    id:"$productDetails._id",
+                    colors: "$variantDetails.color",
+                    sizes: "$variantDetails.size"
+                }
+            },
+            {
+                $group: {
+                  _id: {color:"$colors",_id:"$id"},
+                  sizes: { $push: "$sizes" }
+                }
+              }
+        ]);
+
+        console.log(product)
+
         console.log('iiii')
-       
-        
+
+        // if (varient.quantity === 0) {
         //     var countExist = false
         // } else {
         //     var countExist = true
         // }
-        res.render("user/singleproduct", { product: varient});
+        res.render("user/singleproduct", { Product: mergedDoc, product: product, user: req.session.userData });
     } catch (error) {
         console.log("error at loading add products page");
         console.log(error.message);
@@ -81,7 +171,7 @@ const insertProductDb = async (req, res) => {
         console.log(req.files.filename);
         const imagesPaths = req.files.map((i) => i.filename);
         console.log(imagesPaths);
-     
+
         console.log("files..........");
         const date = new Date();
         const createdDate = `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
@@ -90,7 +180,7 @@ const insertProductDb = async (req, res) => {
             brand: req.body.brand,
             description: req.body.description,
             categoryId: req.body.category,
-            brand:req.body.brand,
+            brand: req.body.brand,
             isListed: req.body.islisted,
             isCategoryBlocked: false,
             createdDate: "",
@@ -183,7 +273,7 @@ const editVarient = async (req, res) => {
     try {
         const UpdateProductId = new ObjectId(req.params.id)
         console.log(UpdateProductId);
-        
+
         const productData = await Product.updateOne(
             { _id: UpdateProductId },
             {
@@ -196,7 +286,7 @@ const editVarient = async (req, res) => {
                     isListed: req.body.islisted,
                     quantity: req.body.quantity,
                 }
-               
+
             }
 
         );
@@ -211,7 +301,7 @@ const editVarient = async (req, res) => {
 const editVarientPage = async (req, res) => {
     try {
         const _id = new ObjectId(req.params.id)
-       
+
         const productData = await ProductVariant.findOne({ _id: _id });
         console.log(productData);
         res.render("admin/products/editvariant", { admin: true, product: productData });
@@ -307,12 +397,12 @@ const listVariant = async (req, res, next) => {
         const prdtData = await ProductVariant.findOne({ _id: id })
         if (prdtData.isListed == true) {
             await ProductVariant.updateOne({ _id: id }, { $set: { isListed: false } })
-           res.redirect('/admin/productvarient')
+            res.redirect('/admin/productvarient')
         }
         else {
 
             await ProductVariant.updateOne({ _id: id }, { $set: { isListed: true } })
-           res.redirect('/admin/productvarient')
+            res.redirect('/admin/productvarient')
         }
         console.log("Product list changed");
     } catch (error) {

@@ -26,6 +26,7 @@ const productSchema = new mongoose.Schema({
     required: true,
     ref: "categories",
   },
+  
   isCategoryBlocked: {
     type: Boolean,
     required: true,

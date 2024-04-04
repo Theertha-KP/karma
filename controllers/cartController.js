@@ -6,7 +6,7 @@ const { ObjectId } = require('mongodb')
 
 const cart = async function (req, res, next) {
     try {
-  
+
         if (!req.session.userData || !req.session.userData._id) {
             // If user is not logged in, redirect to login page
             return res.redirect('/login');
@@ -51,30 +51,137 @@ const cart = async function (req, res, next) {
                     foreignField: "_id",
                     as: "mainproduct"
                 }
-            }
-            , {
-                $project: {
-                    _id: 1,
-                    user: 1,
-                    product: 1,
-                    productDetails: 1,
-                    mainproduct:1,
-                    total: { $multiply: ['$product.count', '$productDetails.price'] }
+            },
+            {
+                $unwind: "$mainproduct"
+            },
+            {
+                $lookup: {
+                    from: "offers",
+                    let: { productId: "$productDetails.product_id", categoryId: "$mainproduct.categoryId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [{
+                                        $or: [
+                                            { $in: ["$$productId", "$applicables"] },
+                                            { $in: ["$$categoryId", "$applicables"] },
+                                        ]
+                                    },
+                                    { $gte: ["$endDate", new Date()] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $sort: { discount: -1 }
+                        },
+                        {
+                            $group: {
+                                _id: "$offerType",
+                                highestDiscountOffer: { $first: "$$ROOT" }
+                            }
+                        },
+                        {
+                            $replaceRoot: { newRoot: "$highestDiscountOffer" }
+                        }
+                    ],
+                    as: "offers"
                 }
-            },{
-                $unwind:"$mainproduct"
-            }
+            },
+            {
+                $project: {
+                    "product": 1,
+                    "productDetails": 1,
+                    "mainproduct": 1,
+                    offers: 1,
+                    "price": {
+                        $ifNull: [
+                            {
+                                $subtract: [
+                                    "$productDetails.cost",
+                                    {
+                                        $max: {
+                                            $map: {
+                                                input: "$offers", // Iterate over the offers array
+                                                as: "offer",
+                                                in: {
+                                                    $cond: {
+                                                        if: { $eq: ["$$offer.discountType", "Percent"] }, // Check if offer type is "percentage"
+                                                        then: {
+                                                            $multiply: [
+                                                                "$$offer.discount", // Percentage value
+                                                                { $divide: ["$productDetails.cost", 100] } // Convert percentage to a decimal
+                                                            ]
+                                                        },
+                                                        else: "$$offer.discount" // Use the discount amount as is
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "$productDetails.cost"
+                        ]
+                    },
+                    "totalPrice": {
+                        $ifNull: [
+                            {
+                                $subtract: [
+                                    { $multiply: ["$product.count", "$productDetails.cost"] },
+                                    {
+                                        $multiply: [
+                                            {
+                                                $max: {
+                                                    $map: {
+                                                        input: "$offers", // Iterate over the offers array
+                                                        as: "offer",
+                                                        in: {
+                                                            $cond: {
+                                                                if: { $eq: ["$$offer.discountType", "Percent"] }, // Check if offer type is "percentage"
+                                                                then: {
+                                                                    $multiply: [
+                                                                        "$$offer.discount", // Percentage value
+                                                                        { $divide: ["$productDetails.cost", 100] } // Convert percentage to a decimal
+                                                                    ]
+                                                                },
+                                                                else: "$$offer.discount" // Use the discount amount as is
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "$product.count"
+                                        ]
+                                    }
+                                ]
+                            },
+                            { $multiply: ["$product.count", "$productDetails.cost"] }// If totalPrice is null, set it to zero
+                        ]
+                    }
+                }
+
+            },
+
+            // // , 
+            // {
+            //     $unwind: "$mainproduct"
+            // }
+
         ]).exec()
+
         console.log(cartData);
         const total = cartData.reduce((acc, val) => {
-            return acc + val.total
+            return acc + val.totalPrice
         }, 0)
         console.log(total);
         // console.log(cartData.length);
-        res.render('user/cart', { cartData, total ,user:req.session.userData._id})
+        res.render('user/cart', { cartData, total, user: req.session.userData._id })
     }
     catch (error) {
-       
+
         // req.flash('fmessage', 'Internal server error');
         return res.json({ success: false, message: 'Internal server error' });
     }
@@ -83,17 +190,17 @@ const cart = async function (req, res, next) {
 //check product in cart
 const checkproduct = async (req, res) => {
     try {
-            const user = new ObjectId(req.session.userData._id)
-            const productId = new ObjectId(req.params.id)
+        const user = new ObjectId(req.session.userData._id)
+        const productId = new ObjectId(req.params.id)
 
-            const cart = await Cart.findOne({ user: user, product: { $elemMatch: { product_id: productId } } })
-            console.log(cart);
-            if (cart) {
-                res.status(200).json({ success: true })
-            } else {
-                res.status(200).json({ success: false, msg: 'product not found' })
-            }
-       
+        const cart = await Cart.findOne({ user: user, product: { $elemMatch: { product_id: productId } } })
+        console.log(cart);
+        if (cart) {
+            res.status(200).json({ success: true })
+        } else {
+            res.status(200).json({ success: false, msg: 'product not found' })
+        }
+
     } catch (error) {
         console.log(error);
     }
@@ -103,8 +210,8 @@ const checkproduct = async (req, res) => {
 //add to cart
 const addToCart = async (req, res) => {
     try {
-      // Check if the user is logged in
-    
+        // Check if the user is logged in
+
         const user = req.session.userData._id;
         const productId = new ObjectId(req.params.id);
         let userFound = await Cart.findOne({ user });
@@ -152,25 +259,25 @@ const changeCount = async (req, res) => {
             },
             { $unwind: "$productDetails" },
         ]).exec();
-        
+
         // Check if the quantity is within limits
         const newCount = cart[0].product.count + count;
         if (newCount > cart[0].productDetails.quantity && count > 0) {
-            
+
             return res.json({ success: false, message: "Quantity exceeds available stock." });
         } else if (newCount > 5) {
-           
+
             return res.json({ success: false, message: "Maximum quantity limit exceeded." });
         } else if (newCount < 1) {
-           
+
             return res.json({ success: false, message: "Quantity cannot be less than 1." });
         }
-        
+
         // Update the count if it's within limits
         const response = await Cart.updateOne({ user: user }, {
             $inc: { 'product.$[elem].count': count }
         }, { arrayFilters: [{ "elem.product_id": productId }] });
-        
+
         // Send success response to the client
         res.json({ success: true });
         console.log(response);

@@ -1,0 +1,248 @@
+<!-- Create Coupon Table start -->
+<div class="page-body">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="title-header option-title">
+                                    <h5>Edit Coupon</h5>
+                                </div>
+
+                                <div class="tab-content" id="pills-tabContent">
+                                    <div class="tab-pane fade show active" id="pills-home" role="tabpanel">
+                                        {{#each offer}}
+                                        <form class="theme-form theme-form-2 mega-form" method="post"
+                                            action="/admin/editoffer">
+
+
+                                            <div class="row">
+                                                <div class="mb-4 row align-items-center">
+                                                    <label class="form-label-title col-lg-2 col-md-3 mb-0">Offer
+                                                        Title</label>
+                                                    <div class="col-md-9 col-lg-10">
+                                                        <input class="form-control" name="name" type="text"
+                                                            value="{{this.offerTitle}}">
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="d-flex justify-content-between" style="width: 97%;">
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label
+                                                            class="col-lg-6 col-md-7 col-form-label form-label-title">Start
+                                                            Date</label>
+                                                        <div class="col-md-4 col-lg-6">
+                                                            <input class="form-control" name="startdate" type="date"
+                                                                value="{{datehelper this.startDate}}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label
+                                                            class="col-lg-6 col-md-7 col-form-label form-label-title">Expiry
+                                                            Date</label>
+                                                        <div class="col-md-4 col-lg-6">
+                                                            <input class="form-control" name="expirydate" type="date"
+                                                                value="{{datehelper this.endDate}}">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label class="col-5 col-form-label form-label-title">Discount
+                                                            Type</label>
+                                                        <div class="col-7 px-4">
+                                                            <select class="js-example-basic-single" name="state">
+                                                                <option disabled>--Select--</option>
+                                                                <option {{#if (eq discountType "Percent"
+                                                                    )}}selected{{/if}}>Percent</option>
+                                                                <option {{#if (eq discountType "Amount"
+                                                                    )}}selected{{/if}}>Amount</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+
+
+                                                <div class=" col-12  pt-3 d-flex justify-content-between">
+
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label class="col-5 col-form-label form-label-title">Discount
+                                                        </label>
+                                                        <div class="col-md-4 col-lg-6" style="padding-left: 41px;">
+                                                            <input class="form-control" name="discount" type="number"
+                                                                value="{{this.discount}}" min="0">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label
+                                                            class="col-lg-6 col-md-7 col-form-label form-label-title">Offer
+                                                            Type</label>
+                                                        <div class="col-md-4 col-lg-6">
+                                                            <select class="js-example-basic-single" name="offertype"
+                                                                id="offerTypeSelect">
+                                                                <option value="">--Select--</option>
+                                                                <option {{#if (eq offerType "Product"
+                                                                    )}}selected{{/if}}>Product</option>
+                                                                <option {{#if (eq offerType "category"
+                                                                    )}}selected{{/if}}>Category</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-lg-4 row align-items-center">
+                                                        <label
+                                                            class="col-lg-6 col-md-7 col-form-label form-label-title">Applicables</label>
+                                                        <div class="col-md-4 col-lg-6">
+                                                            <select class="js-example-basic-single" name="applicables"
+                                                                id="applicablesSelect">
+                                                                <!-- Options will be dynamically populated based on selected offer type -->
+                                                                <option disabled selected>--Select--</option>
+                                                            </select>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                                <div class="mb-4 row align-items-center" style="    margin-top: 26px;">
+                                                    <label class="col-2 col-form-label form-label-title">
+                                                        Description</label>
+                                                    <div class="form-group col-10">
+                                                        <div class="dropzone-wrapper">
+                                                            <div class="dropzone-desc">
+                                                                <textarea class="form-control shadow-none"
+                                                                    name="description" placeholder="description">
+                                                                    </textarea>
+                                                            </div>
+                                                            <input type="file" class="dropzone"
+                                                                value="{{this.description}}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-block mt-5">
+                                                    <button type="submit" class="btn btn-info">Update
+                                                        Offer</button>
+                                                </div>
+
+                                            </div>
+                                        </form>
+                                        {{/each}}
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Create Coupon Table End -->
+
+
+</div>
+</div>
+<!-- page-wrapper end-->
+
+<!-- Modal start -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog  modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-body">
+                <h5 class="modal-title" id="staticBackdropLabel">Logging Out</h5>
+                <p>Are you sure you want to log out?</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                <div class="button-box">
+                    <button type="button" class="btn btn--no" data-bs-dismiss="modal">No</button>
+                    <button type="button" class="btn  btn--yes btn-primary">Yes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+   document.addEventListener('DOMContentLoaded', () => {
+    const offerTypeSelect = document.getElementById('offerTypeSelect');
+    const applicablesSelect = document.getElementById('applicablesSelect');
+
+    // Event listener to handle offer type changes
+    offerTypeSelect.addEventListener('change', () => {
+        const selectedOfferType = offerTypeSelect.value;
+        // Clear existing options
+        applicablesSelect.innerHTML = '<option disabled selected>--Select--</option>';
+
+        // Fetch and populate applicables based on offer type
+        if (selectedOfferType === 'Product') {
+            fetch('/admin/fetchProducts')
+                .then(response => response.json())
+                .then(products => {
+                    // Iterate over the retrieved products and populate the dropdown
+                    products.forEach(product => {
+                        const option = document.createElement('option');
+                        option.text = product.productName;
+                        option.value = product._id;
+                        applicablesSelect.add(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching products:', error));
+        } else if (selectedOfferType === 'Category') {
+            fetch('/admin/fetchCategories')
+                .then(response => response.json())
+                .then(categories => {
+                    // Iterate over the retrieved categories and populate the dropdown
+                    categories.forEach(category => {
+                        const option = document.createElement('option');
+                        option.text = category.categoryName;
+                        option.value = category._id;
+                        applicablesSelect.add(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching categories:', error));
+        }
+    });
+
+    // Fetch and populate applicables on page load
+    const selectedOfferType = offerTypeSelect.value;
+    if (selectedOfferType === 'product') {
+        // Fetch products
+        fetch('/admin/fetchProducts')
+            .then(response => response.json())
+            .then(products => {
+                // Iterate over the retrieved products and populate the dropdown
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.text = product.productName;
+                    option.value = product._id;
+                    applicablesSelect.add(option);
+                });
+            })
+            .catch(error => console.error('Error fetching products:', error));
+    } else if (selectedOfferType === 'category') {
+        // Fetch categories
+        fetch('/admin/fetchCategories')
+            .then(response => response.json())
+            .then(categories => {
+                // Iterate over the retrieved categories and populate the dropdown
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.text = category.categoryName;
+                    option.value = category._id;
+                    applicablesSelect.add(option);
+                });
+            })
+            .catch(error => console.error('Error fetching categories:', error));
+    }
+});
+
+
+
+</script>

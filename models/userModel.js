@@ -54,7 +54,21 @@ address:{
 },
 wishlist:[{
    type:mongoose.Schema.Types.ObjectId,ref:"products"
-}]
+}],
+wallet :{
+  type : Number,
+  default :0
+},
+walletApplied :{
+  type:Boolean,
+  default :false
+},
+walletHistory:[{
+  transactionType: String,
+  method: String,
+  amount: Number,
+  date: Date,
+}]  
 })
 
 const userModal = mongoose.model("user", userSchema,);

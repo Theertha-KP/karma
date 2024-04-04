@@ -1,119 +1,98 @@
 <!-- Order section Start -->
-            <div class="page-body">
-                <!-- Table Start -->
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <div class="card card-table">
-                                <div class="card-body">
-                                    <div class="title-header option-title">
-                                        <h5>Order List</h5>
-
-                                    </div>
-                                    <div>
-                                        {{#if order.length}}
-                                        <div class="table-responsive">
-                                            <table class="table all-package order-table theme-table" id="table_id">
-                                                <thead>
-                                                    <tr>
-
-                                                        <th>Order Id</th>
-                                                        <th>Date</th>
-                                                        <th>Payment method</th>
-                                                        <th>Amount</th>
-                                                        <th>Status</th>
-                                                        <th>Option</th>
-                                                    </tr>
-                                                </thead>
-                                                {{#each order }}
-
-                                                <tbody>
-                                                    <tr data-bs-toggle="offcanvas" href="#order-details">
-
-
-                                                        <td>{{this._id}} </td>
-
-                                                        <td>{{this.orderDate}}</td>
-
-
-
-                                                        <td class="order-success">
-                                                            <span>{{this.payment}}</span>
-                                                        </td>
-
-                                                        <td>{{this.totalAmount}}</td>
-                                                        <td>{{this.items.orderStatus}}</td>
-
-                                                        <td>
-
-
-                                                            <div class="d-flex col-md-8 justify-content-between">
-                                                                <div class="dropdown">
-                                                                    <button
-                                                                        class="btn btn-primary dropdown-toggle col-md-8 "
-                                                                        type="button" id="dropdownMenuButton{{@index}}"
-                                                                        style="height: 30px;" data-toggle="dropdown"
-                                                                        aria-haspopup="true" aria-expanded="false">
-                                                                        Change Status
-                                                                    </button>
-                                                                    <div class="dropdown-menu"
-                                                                        aria-labelledby="dropdownMenuButton{{@index}}">
-                                                                        <button class="dropdown-item" type="button"
-                                                                            onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Shipped')">Shipped</button>
-                                                                        <button class="dropdown-item" type="button"
-                                                                            onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Out for delivery')">Out
-                                                                            for
-                                                                            delivery
-                                                                        </button>
-                                                                        <button class="dropdown-item" type="button"
-                                                                            onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Delivered')">Delivered
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                                <button class="btn btn-sm btn-outline-danger  border"
-                                                                    style="border-color:red!important" type="button"
-                                                                    onclick=" statusChange('{{this._id}}','{{this.items.product_id}}','Cancelled')">
-                                                                    Cancel
-                                                                </button>
-
+<div class="page-body">
+    <!-- Table Start -->
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="card card-table">
+                    <div class="card-body">
+                        <div class="title-header option-title">
+                            <h5>Order List</h5>
+                        </div>
+                        <div>
+                            {{#if order.length}}
+                            <div class="table-responsive">
+                                <table class="table all-package order-table theme-table" id="table_id">
+                                    <thead>
+                                        <tr>
+                                            <th>Order Id</th>
+                                            <th>Date</th>
+                                            <th>Payment method</th>
+                                            <th>Amount</th>
+                                            <th>Status</th>
+                                            <th>Option</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#each order }}
+                                        <tr data-bs-toggle="offcanvas" href="#order-details">
+                                            <td>{{this._id}}</td>
+                                            <td>{{this.orderDate}}</td>
+                                            <td class="order-success">
+                                                <span>{{this.payment}}</span>
+                                            </td>
+                                            <td>{{this.totalAmount}}</td>
+                                            <td>{{this.items.orderStatus}}</td>
+                                            <td style="display: flex; flex-direction: column;">
+                                                {{!-- <div class="d-flex col-md-8 justify-content-between">
+                                                    <div class="dropdown">
+                                                        <button class="btn btn-primary dropdown-toggle col-md-8"
+                                                            type="button" id="dropdownMenuButton{{@index}}"
+                                                            style="height: 30px;" data-toggle="dropdown"
+                                                            aria-haspopup="true" aria-expanded="false">
+                                                            Change Status
+                                                        </button>
+                                                        <div class="dropdown-menu"
+                                                            aria-labelledby="dropdownMenuButton{{@index}}"> --}}
+                                                            <div>
+                                                                <button class="dropdown-item" type="button"
+                                                                    onclick="statusChange('{{this._id}}','{{this.items.product_id}}','Order Confirmed')">Order
+                                                                    Confirmed</button>
+                                                                <button class="dropdown-item" type="button"
+                                                                    onclick="statusChange('{{this._id}}','{{this.items.product_id}}','Shipped')">Shipped</button>
+                                                                <button class="dropdown-item" type="button"
+                                                                    onclick="statusChange('{{this._id}}','{{this.items.product_id}}','Out for delivery')">Out
+                                                                    for delivery</button>
+                                                                <button class="dropdown-item" type="button"
+                                                                    onclick="statusChange('{{this._id}}','{{this.items.product_id}}','Delivered')">Delivered</button>
                                                             </div>
-                                                        </td>
-                                                    </tr>
-
-
-
-                                                </tbody>
-                                                {{/each}}
-                                            </table>
-                                        </div>
-                                        {{/if}}
-                                    </div>
-                                </div>
+                                                            {{!--
+                                                        </div>
+                                                    </div> --}}
+                                                    <button class="btn btn-sm btn-outline-danger border"
+                                                        style="border-color:red!important" type="button"
+                                                        onclick="statusChange('{{this._id}}','{{this.items.product_id}}','Cancelled')">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
                             </div>
+                            {{/if}}
                         </div>
                     </div>
                 </div>
-                <!-- Table End -->
-
-                <!-- footer start-->
-
             </div>
-            <!-- Order section End -->
         </div>
-        <!-- Page Body End-->
     </div>
-   
+    <!-- Table End -->
+</div>
+<!-- Order section End -->
+</div>
+<!-- Page Body End-->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
 
 <script>
-
-
     function statusChange(id, productId, status) {
-        console.log(id)
-        console.log(productId)
-        console.log(status)
         axios.patch(`/admin/changestatus/${id}/${productId}/${status}`).then(() => {
-            location.reload()
-        })
-
+            setTimeout(() => {
+                location.reload();
+            }, 100); // Adjust the delay time as needed
+        });
     }
+
 </script>

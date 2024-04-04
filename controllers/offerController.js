@@ -76,11 +76,27 @@ const offerList=async(req,res,next)=>{
     }
   }
 
+  const editOffer=async(req,res,next)=>{
+    try{
+      const id=new ObjectId(req.params.id)
+      console.log(id)
+      const offer= await Offer.find({_id:id})
+      console.log(offer);
+      res.render("admin/offers/editoffer", {admin: true , offer: offer })
+
+    }catch (error) {
+      console.error("Error updating offer:", error);
+      // Handle the error or add more detailed logging.
+
+  }
+  }
+
   module.exports = { 
     offerList,
     createOffer,
     insertOffer,
     fetchCategory,
-    fetchProduct
+    fetchProduct,
+    editOffer
   
   };

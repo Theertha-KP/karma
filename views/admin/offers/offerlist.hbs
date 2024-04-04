@@ -11,7 +11,7 @@
 
                         </div>
                         <div>
-                          
+
                             <div class="table-responsive">
                                 <table class="table all-package order-table theme-table" id="table_id">
                                     <thead>
@@ -22,39 +22,55 @@
                                             <th>End Date</th>
                                             <th>Discount</th>
                                             <th>Offer Type</th>
-                                           
+                                             <th>Option</th>
+
                                         </tr>
                                     </thead>
-                                  
-                                    {{#each order}}
+
+                                    {{#each offer}}
                                     <tbody>
                                         <tr data-bs-toggle="offcanvas" href="#order-details">
 
 
                                             <td>{{this.offerTitle}} </td>
 
-                                            <td>{{this.startDate}}</td>
+                                            <td>{{datehelper this.startDate}}</td>
 
-                                            <td>{{this.endDate}}</td>
+                                            <td>{{datehelper this.endDate}}</td>
 
                                             <td class="order-success">
                                                 <span>{{this.discount}}</span>
                                             </td>
 
-                                            <td>{{this.offertype}}</td>
-                                            
+                                            <td>{{this.offerType}}</td>
+                                            <td>
+                                                <ul>
+                                                    <li>
+                                                        <a href="/admin/editoffer/{{this._id}}">
+                                                            <i class="ri-pencil-line"></i>
+                                                        </a>
+                                                    </li>
 
-                                            
+                                                    <li>
+                                                        <a href="/admin/deleteoffer/{{this._id}}"
+                                                            onclick="return confirm('Are you sure you want to delete it?')">
+                                                            <i class="ri-delete-bin-line"></i>
+                                                        </a>
+                                                    </li>
+                                                </ul>
+                                            </td>
+
+
                                         </tr>
 
 
 
                                     </tbody>
-                                   {{/each}}
-                                    
+                                    {{/each}}
+
                                 </table>
                             </div>
-                          
+
                         </div>
                     </div>
                 </div>

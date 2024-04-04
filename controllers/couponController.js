@@ -17,25 +17,159 @@ const couponList = async (req, res, next) => {
 
 const applyCoupon = async (req, res, next) => {
     try {
+
+        const user = new ObjectId(req.session.userData._id);
+        const cartData = await Cart.aggregate([
+            {
+                $match: {
+                    user: user
+                }
+            },
+            {
+                $unwind: "$product"
+            },
+            {
+                $lookup: {
+                    from: "productvarients",
+                    localField: "product.product_id",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+            {
+                $unwind: "$productDetails"
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productDetails.product_id",
+                    foreignField: "_id",
+                    as: "mainproduct"
+                }
+            },
+            {
+                $unwind: "$mainproduct"
+            },
+            {
+                $lookup: {
+                    from: "offers",
+                    let: { productId: "$productDetails.product_id", categoryId: "$mainproduct.categoryId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [{
+                                        $or: [
+                                            { $in: ["$$productId", "$applicables"] },
+                                            { $in: ["$$categoryId", "$applicables"] },
+                                        ]
+                                    },
+                                    { $gte: ["$endDate", new Date()] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $sort: { discount: -1 }
+                        },
+                        {
+                            $group: {
+                                _id: "$offerType",
+                                highestDiscountOffer: { $first: "$$ROOT" }
+                            }
+                        },
+                        {
+                            $replaceRoot: { newRoot: "$highestDiscountOffer" }
+                        }
+                    ],
+                    as: "offers"
+                }
+            },
+            {
+                $project: {
+                    "product": 1,
+                    "productDetails": 1,
+                    "mainproduct": 1,
+                    offers: 1,
+                    "price": {
+                        $ifNull: [
+                            {
+                                $subtract: [
+                                    "$productDetails.cost",
+                                    {
+                                        $max: {
+                                            $map: {
+                                                input: "$offers", // Iterate over the offers array
+                                                as: "offer",
+                                                in: {
+                                                    $cond: {
+                                                        if: { $eq: ["$$offer.discountType", "Percent"] }, // Check if offer type is "percentage"
+                                                        then: {
+                                                            $multiply: [
+                                                                "$$offer.discount", // Percentage value
+                                                                { $divide: ["$productDetails.cost", 100] } // Convert percentage to a decimal
+                                                            ]
+                                                        },
+                                                        else: "$$offer.discount" // Use the discount amount as is
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "$productDetails.cost"
+                        ]
+                    },
+                    "totalPrice": {
+                        $ifNull: [
+                            {
+                                $subtract: [
+                                    { $multiply: ["$product.count", "$productDetails.cost"] },
+                                    {
+                                        $multiply: [
+                                            {
+                                                $max: {
+                                                    $map: {
+                                                        input: "$offers", // Iterate over the offers array
+                                                        as: "offer",
+                                                        in: {
+                                                            $cond: {
+                                                                if: { $eq: ["$$offer.discountType", "Percent"] }, // Check if offer type is "percentage"
+                                                                then: {
+                                                                    $multiply: [
+                                                                        "$$offer.discount", // Percentage value
+                                                                        { $divide: ["$productDetails.cost", 100] } // Convert percentage to a decimal
+                                                                    ]
+                                                                },
+                                                                else: "$$offer.discount" // Use the discount amount as is
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "$product.count"
+                                        ]
+                                    }
+                                ]
+                            },
+                            { $multiply: ["$product.count", "$productDetails.cost"] }// If totalPrice is null, set it to zero
+                        ]
+                    }
+                }
+
+            },
+        ]).exec()
+
+        console.log(cartData);
+        let totalAmount = cartData.reduce((acc, val) => {
+            return acc + val.totalPrice
+        }, 0)
+        console.log(totalAmount);
         console.log('applycoupon');
         const coupon_id = req.params.id;
         console.log(coupon_id + "coupon id");
-        const user = new ObjectId(req.session.userData._id);
-        const cartData = await Cart.findOne({ user: user }).populate('product.product_id');
-        console.log(cartData + "cartdata");
-        const cart = cartData.product;
-        let totalAmount = 0, date = new Date();
-        console.log(cart);
-        console.log('iiiiiiiiii');
-        totalAmount += cartData?.product.reduce((acc, item) => {
-            console.log("item");
-            console.log(item);
-            const totalItem = item.product_id.price * item.count;
-            console.log(totalItem);
-            return acc + totalItem;
-        }, 0);
-        console.log('totalAmount,', totalAmount);
-
+        let date = new Date()
         const couponFound = await Coupons.findOne({ couponId: coupon_id });
         console.log('coponFound', couponFound);
 
@@ -47,39 +181,39 @@ const applyCoupon = async (req, res, next) => {
         // Fetch discount type from couponFound object or somewhere else
         let discountType = couponFound.discountType;
 
-        //checks if the coupon is already used by the user  
+        // //checks if the coupon is already used by the user  
         const usedUser = couponFound.claimedUser.includes(user);
         console.log(usedUser);
         if (usedUser) {
             res.json({ success: false, message: "Coupon is already used by the user" });
             return; // Exit the function early
-        } 
-        
+        }
+
         if (couponFound?.expiryDate < date) {
             res.json({ success: false, message: 'Coupon Expired' });
             return; // Exit the function early
-        } 
-        
+        }
+
         if (totalAmount < couponFound.minimumPurchase) {
             res.json({ success: false, message: 'Less amount to apply' });
             return; // Exit the function early
         }
 
-        // At this point, all checks are passed, apply the coupon
+        // // At this point, all checks are passed, apply the coupon
         await Cart.findOneAndUpdate({ user }, { $set: { isCouponApplied: coupon_id } });
-        
+
         if (discountType === "Percent") {
             totalAmount = totalAmount - (totalAmount * couponFound.discount) / 100;
             console.log(totalAmount);
             if (totalAmount >= 0) {
-                res.json({ success: true, message: 'Coupon applied', discount: couponFound.discount, totalAmount });
+                res.json({ success: true, message: 'Coupon applied', discount: couponFound.discount, totalAmount,couponId:couponFound._id });
             } else {
                 res.json({ success: false, message: 'Error applying coupon' });
             }
         } else if (discountType === "Amount") {
             totalAmount = totalAmount - couponFound.discount;
             if (totalAmount >= 0) {
-                res.json({ success: true, message: 'Coupon applied', discount: couponFound.discount, totalAmount });
+                res.json({ success: true, message: 'Coupon applied', discount: couponFound.discount, totalAmount,couponId:couponFound._id });
             } else {
                 res.json({ success: false, message: 'Error applying coupon' });
             }
@@ -96,10 +230,157 @@ const applyCoupon = async (req, res, next) => {
 const removeCoupon = async (req, res) => {
     try {
         console.log("coupon remove");
-        const user = req.session.userId;
+        const user = new ObjectId(req.session.userData._id)
         console.log(user);
         await Cart.updateOne({ user }, { $set: { isCouponApplied: "" } })
-        res.json({ success: true })
+        // res.json({ success: true })
+        const cartData = await Cart.aggregate([
+            {
+                $match: {
+                    user: user
+                }
+            },
+            {
+                $unwind: "$product"
+            },
+            {
+                $lookup: {
+                    from: "productvarients",
+                    localField: "product.product_id",
+                    foreignField: "_id",
+                    as: "productDetails"
+                }
+            },
+            {
+                $unwind: "$productDetails"
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productDetails.product_id",
+                    foreignField: "_id",
+                    as: "mainproduct"
+                }
+            },
+            {
+                $unwind: "$mainproduct"
+            },
+            {
+                $lookup: {
+                    from: "offers",
+                    let: { productId: "$productDetails.product_id", categoryId: "$mainproduct.categoryId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [{
+                                        $or: [
+                                            { $in: ["$$productId", "$applicables"] },
+                                            { $in: ["$$categoryId", "$applicables"] },
+                                        ]
+                                    },
+                                    { $gte: ["$endDate", new Date()] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $sort: { discount: -1 }
+                        },
+                        {
+                            $group: {
+                                _id: "$offerType",
+                                highestDiscountOffer: { $first: "$$ROOT" }
+                            }
+                        },
+                        {
+                            $replaceRoot: { newRoot: "$highestDiscountOffer" }
+                        }
+                    ],
+                    as: "offers"
+                }
+            },
+            {
+                $project: {
+                    "product": 1,
+                    "productDetails": 1,
+                    "mainproduct": 1,
+                    offers: 1,
+                    "price": {
+                        $ifNull: [
+                            {
+                                $subtract: [
+                                    "$productDetails.cost",
+                                    {
+                                        $max: {
+                                            $map: {
+                                                input: "$offers", // Iterate over the offers array
+                                                as: "offer",
+                                                in: {
+                                                    $cond: {
+                                                        if: { $eq: ["$$offer.discountType", "Percent"] }, // Check if offer type is "percentage"
+                                                        then: {
+                                                            $multiply: [
+                                                                "$$offer.discount", // Percentage value
+                                                                { $divide: ["$productDetails.cost", 100] } // Convert percentage to a decimal
+                                                            ]
+                                                        },
+                                                        else: "$$offer.discount" // Use the discount amount as is
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "$productDetails.cost"
+                        ]
+                    },
+                    "totalPrice": {
+                        $ifNull: [
+                            {
+                                $subtract: [
+                                    { $multiply: ["$product.count", "$productDetails.cost"] },
+                                    {
+                                        $multiply: [
+                                            {
+                                                $max: {
+                                                    $map: {
+                                                        input: "$offers",
+                                                        as: "offer",
+                                                        in: {
+                                                            $cond: {
+                                                                if: { $eq: ["$$offer.discountType", "Percent"] },
+                                                                then: {
+                                                                    $multiply: [
+                                                                        "$$offer.discount",
+                                                                        { $divide: ["$productDetails.cost", 100] } 
+                                                                    ]
+                                                                },
+                                                                else: "$$offer.discount"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "$product.count"
+                                        ]
+                                    }
+                                ]
+                            },
+                            { $multiply: ["$product.count", "$productDetails.cost"] }// If totalPrice is null, set it to zero
+                        ]
+                    }
+                }
+
+            },
+        ]).exec()
+        console.log(cartData);
+        let totalAmount = cartData.reduce((acc, val) => {
+            return acc + val.totalPrice
+        }, 0)
+
+        res.json({success:true,data:totalAmount})
         // res.rediect('/cart')
     } catch (error) {
         console.log(error.message);
@@ -113,7 +394,7 @@ const couponDashboard = async (req, res) => {
         const couponData = await Coupons.find({});
 
         console.log(couponData);
-        res.render('admin/coupons/couponDashboard', {admin: true , coupon: couponData })
+        res.render('admin/coupons/couponDashboard', { admin: true, coupon: couponData })
     } catch (error) {
         console.log(error);
 
@@ -121,7 +402,7 @@ const couponDashboard = async (req, res) => {
 }
 const addCoupon = async (req, res) => {
     try {
-        res.render('admin/coupons/addcoupon',{admin: true })
+        res.render('admin/coupons/addcoupon', { admin: true })
     } catch (error) {
         console.log(error);
 
@@ -154,7 +435,7 @@ const editCoupon = async (req, res, next) => {
         const couponId = new ObjectId(req.params.id)
         const couponData = await Coupons.find({ _id: couponId });
         console.log(couponData);
-        res.render("admin/coupons/editcoupon", {admin: true , coupon: couponData })
+        res.render("admin/coupons/editcoupon", { admin: true, coupon: couponData })
     } catch (error) {
         console.log(error);
 

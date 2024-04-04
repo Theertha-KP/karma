@@ -164,7 +164,7 @@
                                     <h6>{{this.product.productName}}</h6>
                                     <h6>{{this.product.description}}</h6>
                                     <div class="price">
-                                        <h6>₹ {{this.price}}</h6>
+                                         <h6 id="product-price-{{this._id}}">₹ {{this.price}}</h6>
                                         <h6 class="l-through">₹ {{this.cost}}</h6>
                                     </div>
                                     <div class="prd-bottom">
@@ -311,6 +311,49 @@ function filterProductsByCategory(category) {
         }
     });
 }
+
+{{!-- document.addEventListener('DOMContentLoaded', () => {
+    // Assuming 'productDocs' contains product details along with offers
+    productDocs.forEach(product => {
+        const productOffers = product.offers; // Assuming 'offers' contains both category and product offers
+        let maxDiscountedPrice = product.price; // Initialize with original price
+
+        // Check for category offers
+        productOffers.forEach(offer => {
+            if (offer.discountType === "Category") {
+                // Apply category offer if applicable
+                const discountedPrice = calculateDiscountedPrice(product.price, offer);
+                maxDiscountedPrice = Math.min(maxDiscountedPrice, discountedPrice);
+            }
+        });
+
+        // Check for product offers
+        productOffers.forEach(offer => {
+            if (offer.discountType === "Product") {
+                // Apply product offer if applicable
+                const discountedPrice = calculateDiscountedPrice(product.price, offer);
+                maxDiscountedPrice = Math.min(maxDiscountedPrice, discountedPrice);
+            }
+        });
+
+        // Update the displayed price
+        const productPriceElement = document.getElementById(`product-price-${product._id}`);
+        if (productPriceElement) {
+            productPriceElement.textContent = `₹ ${maxDiscountedPrice}`;
+        }
+    });
+});
+
+function calculateDiscountedPrice(originalPrice, offer) {
+    if (offer.discountType === "Category") {
+        // Calculate discounted price based on category offer
+        return originalPrice - (originalPrice * offer.discount / 100);
+    } else if (offer.discountType === "Product") {
+        // Calculate discounted price based on product offer
+        return originalPrice - offer.discount;
+    }
+    return originalPrice; // Default to original price if no applicable offer
+} --}}
 
 
 

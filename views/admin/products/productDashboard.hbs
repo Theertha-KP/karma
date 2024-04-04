@@ -1,5 +1,5 @@
-<div class="bg-info-subtle  bg-opacity-10 d-flex justify-content-center vh-100%" style="margin-left: 150px;">
-  <div style="margin-top: 5%" class="p-5 bg-light bg-opacity-50 shadow-sm col-md-8 mb-5">
+<div class="bg-info-subtle  d-flex justify-content-center vh-100%" style="margin-left: 150px;">
+  <div style="margin-top: 5%" class="p-5 col-md-8 mb-5">
     <div class="d-flex justify-content-between">
       <button type="button" class="btn btn-primary disabled">Total products</button>
       <a href="/admin/addproduct">
@@ -42,17 +42,31 @@
                 Varient
               </a>
             </td>
-            <td>
+            <td class="column justify-content-between align-items-center">
               {{#if product.isListed}}
-              <a href="/admin/listproduct/{{product._id}}"><button class="btn btn-md btn-warning"
-                  onclick="return confirm('Are you sure you want to list product?')">Unlist</button></a>
+              <a href="/admin/listproduct/{{product._id}}">
+                <button class="btn btn-md btn-primary custom-btn"
+                  style="line-height: 15px;    margin-bottom: 5px">List</button>
+              </a>
               {{else}}
-              <a href="/admin/listproduct/{{product._id}}"><button class="btn btn-md btn-warning"
-                  onclick="return confirm('Are you sure you want to Unlist product?')">List</button></a>
+              <a href="/admin/listproduct/{{product._id}}">
+                <button class="btn btn-md btn-secondary custom-btn"
+                  style="width: 72px;line-height: 15px;    margin-bottom: 5px">Unlist</button>
+              </a>
               {{/if}}
-              <br>
-              <a href="/admin/editproduct/{{product._id}}"><button class="btn btn-md btn-warning">Edit</button></a>
+
+              <a href="/admin/editproduct/{{product._id}}">
+                <button class="btn btn-md btn-info custom-btn" style="line-height: 15px;">Edit</button>
+              </a>
             </td>
+            <td>
+              <a href="/admin/deleteproduct/{{product._id}}" >
+                <button class="btn btn-md btn-secondary custom-btn">Delete</button>
+              </a>
+            </td>
+
+
+
           </tr>
           {{/each}}
         </tbody>
@@ -69,5 +83,11 @@
     /* Hide overflowing text */
     text-overflow: ellipsis;
     /* Add ellipsis (...) to indicate truncated text */
+  }
+
+  ,
+  .custom-btn {
+    width: 100px;
+    /* Adjust the width as needed */
   }
 </style>

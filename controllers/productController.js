@@ -2,16 +2,17 @@
 const Product = require("../models/productModel");
 const ProductVariant = require("../models/productVariantModel")
 const Category = require("../models/categoryModel");
-
+const Offer=require('../models/offerModel')
 const multer = require("../middleware/multer")
 const { ObjectId } = require('mongodb')
 
 //listing product
 const productlist = async (req, res, next) => {
     try {
+        // all categories
         const categoryDoc = await Category.find({});
-        console.log(categoryDoc);
-        // const productDoc = await ProductVariant.find({ isListed: false }).populate("product_id");
+        
+        //product variants with their respective products and offers
         const productDocs = await ProductVariant.aggregate([
             {
                 $match: { isListed: false }
@@ -35,13 +36,71 @@ const productlist = async (req, res, next) => {
             },
             {
                 $unwind: "$product"
+            },
+            {
+                $lookup: {
+                    from: "offers",
+                    let: { productId: "$product_id", categoryId: "$product.categoryId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [{
+                                        $or:[
+                                            { $in: ["$$productId", "$applicables"] },
+                                            { $in: ["$$categoryId", "$applicables"] },
+                                        ]
+                                    },
+                                        { $gte: ["$endDate", new Date()] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $sort: { discount: -1 } 
+                        },
+                        {
+                            $group: {
+                                _id: "$offerType",
+                                highestDiscountOffer: { $first: "$$ROOT" }
+                            }
+                        },
+                        {
+                            $replaceRoot: { newRoot: "$highestDiscountOffer" }
+                        }
+                    ],
+                    as: "offers"
+                }
             }
+            
+
         ]);
-        console.log(productDocs)
+
+
+        
+        for (const productDoc of productDocs) {
+            let updatedPrice = productDoc.cost; 
+
+            // Check if any offers available
+            if (productDoc.offers.length > 0) {
+                const highestDiscountOffer = productDoc.offers[0]; // Get the highest discount offer
+                if (highestDiscountOffer.discountType === "Percent") {
+                    updatedPrice -= updatedPrice * highestDiscountOffer.discount / 100; // Apply discount percentage
+                } else {
+                    updatedPrice -= highestDiscountOffer.discount; // Apply fixed discount
+                }
+            }
+
+            // Update product price
+            productDoc.price = updatedPrice;
+        }
+
+        console.log(productDocs);
         res.render("user/productlist", { products: productDocs, user: req.session.userData, category: categoryDoc });
     } catch (error) {
-        console.log("error at loading add products page");
-        console.log(error.message);
+        console.log("Error at loading add products page:", error.message);
+       
+        next(error); // Pass error to the error handling middleware
     }
 }
 
@@ -53,7 +112,7 @@ const singleproduct = async (req, res, next) => {
         const size = req.params.size
         console.log(_id, color, size);
 
-        const mergedDoc = await ProductVariant.aggregate([
+        const mergedDocs = await ProductVariant.aggregate([
             {
                 $match: {
                     product_id: _id,
@@ -72,14 +131,66 @@ const singleproduct = async (req, res, next) => {
             {
                 $unwind: "$productDetails"
             },
+            {
+                $lookup: {
+                    from: "offers",
+                    let: { productId: "$product_id", categoryId: "$productDetails.categoryId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [{
+                                        $or:[
+                                            { $in: ["$$productId", "$applicables"] },
+                                            { $in: ["$$categoryId", "$applicables"] },
+                                        ]
+                                    },
+                                        { $gte: ["$endDate", new Date()] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $sort: { discount: -1 } 
+                        },
+                        {
+                            $group: {
+                                _id: "$offerType",
+                                highestDiscountOffer: { $first: "$$ROOT" }
+                            }
+                        },
+                        {
+                            $replaceRoot: { newRoot: "$highestDiscountOffer" }
+                        }
+                    ],
+                    as: "offers"
+                }
+            }
+
 
 
 
 
 
         ]);
+        for (const mergedDoc of mergedDocs) {
+            let updatedPrice = mergedDoc.cost; 
 
-        console.log(mergedDoc);
+            // Check if any offers available
+            if (mergedDoc.offers.length > 0) {
+                const highestDiscountOffer = mergedDoc.offers[0]; // Get the highest discount offer
+                if (highestDiscountOffer.discountType === "Percent") {
+                    updatedPrice -= updatedPrice * highestDiscountOffer.discount / 100; // Apply discount percentage
+                } else {
+                    updatedPrice -= highestDiscountOffer.discount; // Apply fixed discount
+                }
+            }
+
+            // Update product price
+            mergedDoc.price = updatedPrice;
+        }
+
+        console.log(mergedDocs);
 
         const product = await Product.aggregate([
             {
@@ -110,60 +221,10 @@ const singleproduct = async (req, res, next) => {
                 }
             }
 
-
         ])
-
-        // const product = await ProductVariant.aggregate([
-        //     {
-        //         $match: {product_id: _id }
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: "products",
-        //             localField: "product_id",
-        //             foreignField: "_id",
-        //             as: "productDetails"
-        //         }
-        //     },
-        //     {
-        //         $unwind: "$productDetails" // Unwind to destructure the productDetails array
-        //     },
-        //     {
-        //         $lookup: {
-        //             from: "productvarients",
-        //             localField: "productDetails._id",
-        //             foreignField: "product_id",
-        //             as: "variantDetails"
-        //         }
-        //     },
-        //     {
-        //         $unwind: "$variantDetails" // Unwind to destructure the variantDetails array
-        //     },
-        //     {
-        //         $project: {
-        //             id:"$productDetails._id",
-        //             colors: "$variantDetails.color",
-        //             sizes: "$variantDetails.size"
-        //         }
-        //     },
-        //     {
-        //         $group: {
-        //           _id: {color:"$colors",_id:"$id"},
-        //           sizes: { $push: "$sizes" }
-        //         }
-        //       }
-        // ]);
-
         console.log(product)
-
         console.log('iiii')
-
-        // if (varient.quantity === 0) {
-        //     var countExist = false
-        // } else {
-        //     var countExist = true
-        // }
-        res.render("user/singleproduct", { Product: mergedDoc, product: product, user: req.session.userData, selectColor: color });
+        res.render("user/singleproduct", { Product: mergedDocs, product: product, user: req.session.userData, selectColor: color });
     } catch (error) {
         console.log("error at loading add products page");
         console.log(error.message);
@@ -183,8 +244,6 @@ const loadAddproduct = async (req, res) => {
 const loadAddVarient = async (req, res) => {
     try {
         const id = new ObjectId(req.params.id)
-
-
         res.render("admin/products/addproductvariant", { admin: true, id });
     } catch (error) {
         console.log("error at loading add products page");
@@ -202,6 +261,7 @@ const insertProductDb = async (req, res) => {
         console.log("files..........");
         const date = new Date();
         const createdDate = `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
+
         const product = new Product({
             productName: req.body.productname,
             brand: req.body.brand,
@@ -225,26 +285,27 @@ const insertProductDb = async (req, res) => {
 
 const insertProductVarientDb = async (req, res) => {
     try {
-
         console.log("this is insertvarientDb");
 
         const date = new Date();
         const createdDate = `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
         console.log(req.body);
+        const id = new ObjectId(req.body.id)
+        
+
         const Variants = new ProductVariant({
-            price: req.body.price,
             cost: req.body.cost,
+            price:req.body.cost,
             color: req.body.color,
             size: req.body.size,
             product_id: req.body.id,
             isListed: req.body.isListed,
             quantity: req.body.quantity,
-            createdDate: "",
-
+            createdDate: createdDate,
         });
         const productVariantData = await Variants.save();
         console.log(productVariantData);
-        console.log(`${productVariantData.price} is succesfully added..`);
+        console.log(`${productVariantData.price} is successfully added..`);
         res.redirect('/admin/productvarient')
     } catch (error) {
         console.log(`error at inserting product variant`);
@@ -385,6 +446,7 @@ const editUpdateDb = async (req, res) => {
         console.log(error.message);
     }
 };
+
 const deleteProductImg = async (req, res) => {
     try {
         const _id = new ObjectId(req.query.id);

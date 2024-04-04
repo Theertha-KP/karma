@@ -60,7 +60,65 @@ const adminlogout = async (req, res) => {
 }
 
 
+//salesREPORT
+const salesReport = async (req, res) => {
+  try {
+   let startDate = req.body.startDate
+   let startDateISO = new Date(startDate)
+   let endDate = req.body.endDate
+   let endDateISO = new Date(endDate)
+   console.log(startDate,startDateISO);
 
+ 
+ const sales = await Order.aggregate([
+   {
+       $match: {
+           "orders.orderStatus": 4,
+           "orders.orderDate": {
+               $gte: startDate,
+               $lte: endDate
+           }
+       }
+   },
+   {
+       $unwind: "$orders"
+   },
+//    {
+//        $lookup: {
+//            from: "users", // Replace with the actual name of the user collection
+//            localField: "user",
+//            foreignField: "_id",
+//            as: "userDetails"
+//        }
+//    },
+//    {
+//        $addFields: {
+//            paymentMethod: "$orders.payment",
+//            userName: { $arrayElemAt: ["$userDetails.username", 0] },
+//            amount: { $multiply: ["$orders.price", "$orders.count"] },
+//            date: "$orders.orderDate",
+//            // category: "$orders.category"
+//        }
+//    },
+//    {
+//        $project: {
+//            _id: "$_id", // Use the main document's _id as orderId
+//            paymentMethod: 1,
+//            userName: 1,
+//            amount: 1,
+//            date: 1,
+//            // category: 1
+//        }
+//    }
+ ]);    
+ console.log(sales);
+
+       res.render('admin/salesReport', { sales, startDate, endDate })
+   } catch (error) {
+       next(error)
+      }
+
+};
 
 
 
@@ -68,5 +126,6 @@ module.exports = {
   adminPageLoad,
   verifyAdmin,
   adminDashboard,
-  adminlogout
+  adminlogout,
+  salesReport
 };

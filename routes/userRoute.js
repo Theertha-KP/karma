@@ -45,10 +45,13 @@ user_route.get('/userprofile',userMiddleware.checkUser,userController.userprofil
 user_route.post('/saveuser',checkSchema(validation.userProfileValidate()),userMiddleware.checkUser,userController.updateUser)
 //order
 user_route.get('/checkout',userMiddleware.checkUser,orderController.checkoutPage)
-user_route.get('/orderstatus',userMiddleware.checkUser,orderController.orderPage)
 user_route.post('/cashondelivery',userMiddleware.checkUser,orderController.cashOnDelivery)
-user_route.post('/razorpay',userMiddleware.checkUser,orderController.razorpay)
+user_route.get('/orderstatus',userMiddleware.checkUser,orderController.orderPage)
 user_route.get('/orders',userMiddleware.checkUser,orderController.orders)
+user_route.get('/fetchProductDetails/:orderId',userMiddleware.checkUser,orderController.fetchProducts)
+user_route.post('/razorpay',userMiddleware.checkUser,orderController.razorpay)
+user_route.post('/cancelOrder',userMiddleware.checkUser,orderController.cancelOrder)
+user_route.post('/verifyRazorpay',userMiddleware.checkUser,orderController.verifyRazorpay)
 //logout
 user_route.get('/logout',userController.logout)
 //forgetpassword
@@ -64,7 +67,10 @@ user_route.post('/search',searchController.searchItem)
 //coupons
 user_route.get('/coupons',userMiddleware.checkUser,couponController.couponList)
 user_route.get('/applycoupon/:id',userMiddleware.checkUser,couponController.applyCoupon)
-
+user_route.get('/removecoupon',userMiddleware.checkUser,couponController.removeCoupon)
+//wallet
+user_route.get('/walletbalance',userMiddleware.checkUser,userController.walletBalance)
+user_route.post('/walletapply',userMiddleware.checkUser,userController.walletApply)
 
 
 module.exports=user_route;

@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const bcrypt = require('bcrypt')
 const saltRounds = 10;
 const { ObjectId } = require('mongodb')
+const Order = require('../models/orderModel')
 
 //user load home page
 const home = async (req, res) => {
@@ -140,7 +141,7 @@ const logout = async (req, res) => {
 
 const userprofile = async (req, res, next) => {
     try {
-        res.render("user/userprofile", { user: req.session.userData })
+        res.render("user/userprofile", { userDoc: req.session.userData })
     } catch (error) {
         console.log("error at loading add products page");
         console.log(error.message);
@@ -215,6 +216,50 @@ const unblockUser = async (req, res) => {
         console.log(error.message);
     }
 };
+const walletBalance=async(req,res,next)=>{
+    try {
+        const userId = new ObjectId(req.session.userData._id);
+        const user = await User.findById({_id:userId});
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+        
+        res.json({ balance: user.wallet });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+
+}
+const walletApply=async(req,res,next)=>{
+    try {
+        const userId = new ObjectId(req.session.userData._id);
+
+        const { amount } = req.body;
+        const user = await User.findById(userId);
+        if (!user) {
+            res.status(404).json({ error: 'User not found' });
+            return;
+        }
+        user.wallet += amount;
+        user.walletHistory.push({
+            transactionType: 'Credit',
+            method: 'Added Funds',
+            amount: amount,
+            date: new Date()
+        });
+        await user.save();
+        res.json({ message: 'Funds added successfully', balance: user.wallet });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
+
+   
 
 
 
@@ -231,5 +276,7 @@ module.exports = {
     loadUserDashboard,
     blockUser,
     unblockUser,
+    walletBalance,
+    walletApply
 
 }

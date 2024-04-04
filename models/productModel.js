@@ -38,7 +38,11 @@ const productSchema = new mongoose.Schema({
   image: {
     type: Array,
     required: true,
-  }
+  },
+  isDeleted:{
+    type: Boolean,
+    default:false
+  },
 
 });
 

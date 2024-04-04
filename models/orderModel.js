@@ -43,6 +43,9 @@ orderSchema = new mongoose.Schema({
             }
         }],
         required: true
+    },
+    paymentStatus:{
+        type:String
     }
 })
 

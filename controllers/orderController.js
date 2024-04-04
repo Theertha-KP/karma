@@ -1,17 +1,27 @@
 const Order = require('../models/orderModel')
 const Cart = require('../models/cartModel')
 const Address = require('../models/addressModel')
+const Coupons = require('../models/couponModel')
 const { ObjectId } = require('mongodb')
 const productVarient = require('../models/productVariantModel')
 const Razorpay = require('razorpay');
+const User = require("../models/userModel");
+const { listenerCount } = require('../models/userModel')
+const { response } = require('express')
+
+
+let instance = new Razorpay({
+    key_id: process.env.key_id,
+    key_secret: process.env.key_secret
+});
 
 const checkoutPage = async (req, res, next) => {
     try {
 
         console.log('addressdata');
         const userdata = new ObjectId(req.session.userData._id)
-        const total = req.query.total
-        console.log(total);
+
+
         const addressData = await Address.aggregate([
             {
                 $match: {
@@ -23,10 +33,6 @@ const checkoutPage = async (req, res, next) => {
             }
         ])
         console.log(addressData);
-        console.log('addressdatakkk');
-        const cart =await Cart.find({user:userdata})
-        console.log(cart.length);
-        //getting cart product count
         const cartData = await Cart.aggregate([
             {
                 $match: {
@@ -46,24 +52,158 @@ const checkoutPage = async (req, res, next) => {
             },
             {
                 $unwind: "$productDetails"
-            }, {
-                $project: {
-                    _id: 1,
-                    user: 1,
-                    product: 1,
-                    productDetails: 1,
-                    total: { $multiply: ['$product.count', '$productDetails.price'] }
+            },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productDetails.product_id",
+                    foreignField: "_id",
+                    as: "mainproduct"
                 }
-            }
+            },
+            {
+                $unwind: "$mainproduct"
+            },
+            {
+                $lookup: {
+                    from: "offers",
+                    let: { productId: "$productDetails.product_id", categoryId: "$mainproduct.categoryId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [{
+                                        $or: [
+                                            { $in: ["$$productId", "$applicables"] },
+                                            { $in: ["$$categoryId", "$applicables"] },
+                                        ]
+                                    },
+                                    { $gte: ["$endDate", new Date()] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $sort: { discount: -1 }
+                        },
+                        {
+                            $group: {
+                                _id: "$offerType",
+                                highestDiscountOffer: { $first: "$$ROOT" }
+                            }
+                        },
+                        {
+                            $replaceRoot: { newRoot: "$highestDiscountOffer" }
+                        }
+                    ],
+                    as: "offers"
+                }
+            },
+            {
+                $project: {
+                    "product": 1,
+                    "productDetails": 1,
+                    "mainproduct": 1,
+                    offers: 1,
+                    "price": {
+                        $ifNull: [
+                            {
+                                $subtract: [
+                                    "$productDetails.cost",
+                                    {
+                                        $max: {
+                                            $map: {
+                                                input: "$offers",
+                                                as: "offer",
+                                                in: {
+                                                    $cond: {
+                                                        if: { $eq: ["$$offer.discountType", "Percent"] }, // Check if offer type is "percentage"
+                                                        then: {
+                                                            $multiply: [
+                                                                "$$offer.discount", // Percentage value
+                                                                { $divide: ["$productDetails.cost", 100] }
+                                                            ]
+                                                        },
+                                                        else: "$$offer.discount" // Use the discount amount as is
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "$productDetails.cost"
+                        ]
+                    },
+                    "totalPrice": {
+                        $ifNull: [
+                            {
+                                $subtract: [
+                                    { $multiply: ["$product.count", "$productDetails.cost"] },
+                                    {
+                                        $multiply: [
+                                            {
+                                                $max: {
+                                                    $map: {
+                                                        input: "$offers",
+                                                        as: "offer",
+                                                        in: {
+                                                            $cond: {
+                                                                if: { $eq: ["$$offer.discountType", "Percent"] },
+                                                                then: {
+                                                                    $multiply: [
+                                                                        "$$offer.discount",
+                                                                        { $divide: ["$productDetails.cost", 100] }
+                                                                    ]
+                                                                },
+                                                                else: "$$offer.discount"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "$product.count"
+                                        ]
+                                    }
+                                ]
+                            },
+                            { $multiply: ["$product.count", "$productDetails.cost"] }// If totalPrice is null, set it to zero
+                        ]
+                    }
+                }
+
+            },
+
         ]).exec()
+
         console.log(cartData);
-        
+        let total = cartData.reduce((acc, val) => {
+            return acc + val.totalPrice
+        }, 0)
+        let totalAmount = total
+        if (req.query.couponid) {
+            const couponFound = await Coupons.findOne({ _id: new ObjectId(req.query.couponid) })
+            console.log(couponFound)
+            let discountType = couponFound.discountType;
+
+            if (discountType === "Percent") {
+                totalAmount = totalAmount - (totalAmount * couponFound.discount) / 100;
+
+
+            } else if (discountType === "Amount") {
+                totalAmount = totalAmount - couponFound.discount;
+
+
+            }
+        }
+        console.log(cartData);
+
         const cartCount = cartData.length
-        if(cart.length>0){
-            
-        res.render("user/checkout", { address: addressData, user: req.session.userData, total, cartCount, cartData })
-        }else{
-        res.redirect("/cart")
+        if (cartData.length > 0) {
+
+            res.render("user/checkout", { address: addressData, user: req.session.userData, total: totalAmount, cartCount, cartData })
+        } else {
+            res.redirect("/cart")
         }
 
     } catch (error) {
@@ -75,7 +215,7 @@ const checkoutPage = async (req, res, next) => {
 //orderpage
 const orderPage = async (req, res, next) => {
     try {
-      
+
         res.render('user/orderstatus')
 
     } catch (error) {
@@ -89,68 +229,72 @@ const cashOnDelivery = async (req, res, next) => {
     try {
         console.log('hiiorder');
         const user = req.session.userData._id;
-       
+
         console.log(req.body);
+        console.log(req.body.productIds);
+        console.log(req.body.count);
+        console.log(req.body.totalPrice);
 
-        let userOrder = await Order.findOne({ user });
+        // Split  into arrays
+        const countArray = req.body.count.split(',').filter(value => value !== '');
+        const totalPriceArray = req.body.totalPrice.split(',').filter(value => value !== '');
+        // items array
+        const items = req.body.productIds.map((productId, index) => ({
+            product_id: productId,
+            count: countArray[index] || 0,
+            price: totalPriceArray[index] || 0,
+            orderStatus: 1
+        }));
 
-        if (!userOrder) {
-            console.log("user not found");
-            const newOrder = await new Order({
-                user:user,
-                address:req.body.addressId,
-                payment:req.body.payment,
-                totalAmount:req.body.totalAmount,
-                items: {
-                    type: [{
-                        product_id:req.body.productid
-                        
-                    }]
-                }
-            })
-            await newOrder.save();
-        } else {
-            console.log("user found");
-            userOrder.user=user
-            userOrder.address =req.body.addressId,
-            userOrder.payment = req.body.payment,
-            userOrder.totalAmount = req.body.totalAmount,
-            userOrder.items.product_id=req.body.productid
-           
-            await userOrder.save();
-            console.log("data updated");
-        }
+        console.log(items);
 
-        res.json({success:true});
-       
-        await Cart.deleteOne({user:user});
+        const newOrder = await new Order({
+            user: user,
+            address: req.body.addressId,
+            payment: req.body.payment,
+            totalAmount: req.body.totalAmount,
+            items: items,
+            paymentStatus: "COD"
+        });
+
+        await newOrder.save();
+        console.log(newOrder);
+
+        res.json({ success: true });
+        await Cart.deleteOne({ user: user });
+
+
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, message: 'Internal server error' });
     }
 };
 
+
+
 const orders = async (req, res, next) => {
     try {
         const user = new ObjectId(req.session.userData._id)
         // const address = req.session.addressId
-        
+
         const orderData = await Order.aggregate([
             { $match: { user: user } },
-            // { $unwind: "$items" },
-            // {
-            //     $lookup: {
-            //         from: "productvarients",
-            //         localField: "items.product_id",
-            //         foreignField: "_id",
-            //         as: "productdetails"
-            //     }
-            // }
+            { $unwind: "$items" },
+
+            {
+                $lookup: {
+                    from: "productvarients",
+                    localField: "items.product_id",
+                    foreignField: "_id",
+                    as: "productdetails"
+                }
+            },
+            { $unwind: "$productdetails" },
         ])
 
 
 
-        console.log(orderData+"lllll");
+       
         res.render('user/orderpage', { orderData, user: req.session.userData })
 
     } catch (error) {
@@ -160,8 +304,8 @@ const orders = async (req, res, next) => {
 const orderList = async (req, res, next) => {
     try {
         const order = await Order.aggregate([{ $unwind: "$items" }])
-        console.log(order);
-        res.render('admin/order/orderlist', {admin: true , order })
+       
+        res.render('admin/order/orderlist', { admin: true, order })
     } catch (error) {
         console.log(error);
 
@@ -183,27 +327,158 @@ const status = async (req, res, next) => {
     }
 }
 
-const razorpay=async(req,res,next)=>{
-    const totalAmount = req.body.totalAmount; // Total amount in paise
-    var instance = new Razorpay({
-        key_id: process.env.key_id,
-        key_secret: process.env.key_secret
-      });
+const razorpay = async (req, res, next) => {
+    console.log("logging razorpay");
+    const totalAmount = req.body.totalAmount;
+    console.log(totalAmount);
+    const user = req.session.userData._id;
+    console.log(req.body.count);
+    console.log(req.body.totalPrice)
+
+    // Split  into arrays
+    const countArray = req.body.count.split(',').filter(value => value !== '');
+    const totalPriceArray = req.body.totalPrice.split(',').filter(value => value !== '');
+    // items array
+    const items = req.body.productIds.map((productId, index) => ({
+        product_id: productId,
+        count: countArray[index] || 0,
+        price: totalPriceArray[index] || 0,
+        orderStatus: "order confirmed"
+    }));
+
+    console.log(items);
+
+    const newOrder = await new Order({
+        user: user,
+        address: req.body.addressId,
+        payment: req.body.payment,
+        totalAmount: req.body.totalAmount,
+        items: items,
+        paymentStatus: "Pending"
+    });
+
+    await newOrder.save();
+
+
+
     const options = {
-        amount: totalAmount,
-        currency: 'INR'
+        amount: totalAmount * 100,
+        currency: 'INR',
+        receipt: newOrder._id
     };
-    razorpay.Order.create(options, function(err, order) {
+
+    instance.orders.create(options, function (err, order) {
         if (err) {
             console.error('Error creating Razorpay order:', err);
             res.status(500).json({ error: 'An error occurred while creating the order.' });
         } else {
+            console.log(order);
             res.json(order);
         }
     });
+};
+const fetchProducts = async (req, res, next) => {
+    try {
+        const orderId = req.params.orderId;
+        const orderProducts = await Order.aggregate([
+            { $match: { _id: new ObjectId(orderId) } },
+            { $unwind: "$items" },
+            {
+                $lookup: {
+                    from: "productvarients",
+                    localField: "items.product_id",
+                    foreignField: "_id",
+                    as: "productdetails"
+                }
+            },
+            { $unwind: "$productdetails" },
+            {
+                $lookup: {
+                    from: "products",
+                    localField: "productDetails.product_id",
+                    foreignField: "_id",
+                    as: "mainproduct"
+                }
+            },
+            {
+                $unwind: "$mainproduct"
+            }
+        ]);
+        console.log(orderProducts)
+        res.json(orderProducts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+const verifyRazorpay = async (req, res, next) => {
+    try {
+        const user = new ObjectId(req.session.userData._id)
+        console.log(req.body)
+        const crypto = require("crypto");
+        const hmac = crypto.createHmac('sha256', process.env.key_secret);
+        hmac.update(req.body.response.razorpay_order_id + "|" + req.body.response.razorpay_payment_id);
+        let generatedSignature = hmac.digest('hex');
+
+        console.log(generatedSignature);
+        console.log(req.body.response.razorpay_signature);
+        let isSignatureValid = generatedSignature == req.body.response.razorpay_signature;
+        // generated_signature = hmac_sha256(response.razorpay_order_id + "|" + response.razorpay_payment_id, process.env.key_id);
+
+        if (isSignatureValid) {
+
+            const order_id = new ObjectId(req.body.receipt)
+            console.log(order_id);
+            const order = await Order.updateOne({ _id: order_id },
+                {
+                    $set: {
+                        paymentStatus: "paid"
+                    }
+                }
+            )
+            await Cart.deleteOne({ user: user });
+            res.json({ success: true })
+
+        } else {
+            res.json({ success: false })
+        }
+
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+const cancelOrder = async (req, res, next) => {
+    try {
+        const user = new ObjectId(req.session.userData._id)
+        console.log(req.body);
+        const orderId = new ObjectId(req.body.orderId)
+        
+        const order=await Order.findOneAndUpdate({ _id: orderId },
+            {
+                $set: {
+                    'items.$[].orderStatus': 'Cancelled'
+                }
+            }
+        )
+       console.log(order.totalAmount);
+        res.json({ success: true, message: 'Order cancelled successfully.' });
+       if(order.payment=="online"){
+          await User.updateOne({_id:user},{
+            $inc:{
+               wallet:order.totalAmount
+            }
+         })
+       }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+
 
 }
-
 
 
 module.exports = {
@@ -213,5 +488,8 @@ module.exports = {
     orders,
     orderList,
     status,
-    razorpay
+    razorpay,
+    fetchProducts,
+    cancelOrder,
+    verifyRazorpay
 }

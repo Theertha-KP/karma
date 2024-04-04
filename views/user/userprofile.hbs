@@ -55,7 +55,19 @@
                                 Logout</a></div>
                     </div>
                 </div>
+                
                 <div class="col-md-7 p-3 right">
+                     <div class="col-md-7 p-3 right">
+                <div style="height: 20px;"></div>
+                <div class="card ">
+                    <h5 class="card-header">Wallet Balance</h5>
+                    <div class="card-body border mt-2">
+                        <p>Your current wallet balance: <span id="walletBalance">Loading...</span></p>
+                        <input type="number" id="amountInput" placeholder="Enter amount to add" min="0">
+                        <button id="addFundsBtn" class="btn btn-primary">Add Funds</button>
+                    </div>
+                </div>
+            </div>
                     <div style="height: 30px; "></div>
                     {{#if message}}
                     <p style="color: red;">{{message}}</p>
@@ -189,6 +201,8 @@
     }
 </style>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 
 <script>
@@ -229,6 +243,44 @@
 
         // Rest of your form validation logic and submission code
         this.submit();
+    });
+
+     document.addEventListener('DOMContentLoaded', async function() {
+        // Fetch and display wallet balance
+        const userId = 'your_user_id'; // Replace with actual user ID
+        const walletBalanceSpan = document.getElementById('walletBalance');
+        try {
+            const response = await fetch('/walletbalance');
+            const data = await response.json();
+            walletBalanceSpan.textContent = data.balance;
+        } catch (error) {
+            console.error('Error:', error);
+            walletBalanceSpan.textContent = 'Error';
+        }
+        
+        // Handle add funds button click
+        document.getElementById('addFundsBtn').addEventListener('click', async function() {
+            const amount = parseInt(document.getElementById('amountInput').value);
+            if (!amount || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+            try {
+                const response = await fetch('walletapply', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ amount })
+                });
+                const data = await response.json();
+                walletBalanceSpan.textContent = data.balance;
+                alert(data.message);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to add funds');
+            }
+        });
     });
 
 </script>

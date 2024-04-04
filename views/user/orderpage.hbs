@@ -44,7 +44,8 @@
                                 href="/manageaddress"> Manage Address</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-ticket me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/coupons"> My coupons</a></div>
+                                href="/coupons"></a>
+                            My coupons</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-box-open me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
                                 href="/orders"></a>
@@ -63,7 +64,6 @@
                         <h5 class="card-header">Manage Orders</h5>
                         <div class="card-body border mt-2">
 
-                            
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
@@ -72,95 +72,127 @@
                                         <th scope="col">Amount</th>
                                         <th scope="col">Payment</th>
                                         <th scope="col">Status</th>
+                                        <th scope="col">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {{#each orderData}}
                                     <tr>
                                         <th scope="row">{{inc @index}}</th>
-                                        <td>{{this.productdetails.[0].productName}}</td>
+                                        <td>
+                                            <!-- Add this button where you want to display it -->
+                                            <button class="view-products-btn"
+                                                onclick="viewOrderProducts('{{this._id}}')"
+                                                style="border-radius: 5px; border-color: rgb(191, 127, 8);"
+                                                data-bs-toggle="modal" data-bs-target="#productModal">
+                                                View Products
+                                            </button>
+                                        </td>
                                         <td>{{this.payment}}</td>
                                         <td>{{this.totalAmount}}</td>
-                                        <td>{{this.items.orderStatus}}</td>
+                                        <td class="status">{{this.items.orderStatus}}</td>
+                                        <td>
+                                            <!-- Add Cancel button -->
+                                            <button class="cancel-btn" onclick="cancelOrder('{{this._id}}')"
+                                                style="border-radius: 5px; border-color: rgb(191, 127, 8);">
+                                                Cancel
+                                            </button>
+                                        </td>
                                     </tr>
-                                     {{/each}}
-
+                                    {{/each}}
                                 </tbody>
                             </table>
-                           
+
                         </div>
-
-
                     </div>
-
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Product Details Modal -->
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalLabel">Product Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="productDetails"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </section>
-<style>
-    .left-top {
-        background-color: white;
-        height: 90px;
-        width: 90%;
-        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .08);
+
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+
+<!-- SweetAlert JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+<!-- Your custom script -->
+<script>
+    function viewOrderProducts(orderId) {
+        fetch(`/fetchProductDetails/${orderId}`)
+            .then(response => response.json())
+            .then(data => {
+                // Populate the modal with product details
+                const productDetailsDiv = document.getElementById('productDetails');
+                productDetailsDiv.innerHTML = ''; // Clear previous content
+                data.forEach(product => {
+                    const productHTML = `
+                        <div>
+                            <p>Product Name: ${product.mainproduct.productName}</p>
+                            <p>Price: ${product.price}</p>
+                            <p>Total Price: ${product.totalprice}</p>
+                            <!-- Add more product details here -->
+                        </div>
+                    `;
+                    productDetailsDiv.insertAdjacentHTML('beforeend', productHTML);
+                });
+            })
+            .catch(error => console.error('Error:', error));
     }
 
-    .left-sidebar {
-        background-color: white;
-
-        width: 90%;
-        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .08);
+    function cancelOrder(orderId) {
+        // Show confirmation dialog using SweetAlert
+        Swal.fire({
+            title: 'Are you sure?',
+            text: 'You are about to cancel this order!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // User confirmed, send cancellation request
+                axios.post('/cancelOrder', { orderId })
+                    .then(response => {
+                        if (response.data.success) {
+                            // Show success message
+                            Swal.fire('Cancelled!', 'Your order has been cancelled.', 'success');
+                            {{!-- const orderRow = document.querySelector(`tr[data-order-id="${orderId}"]`);
+                            orderRow.querySelector('.status').textContent = 'Cancelled'; --}}
+                            window.location.reload();
+                        } else {
+                            // Show error message
+                            Swal.fire('Error!', 'Failed to cancel order.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Show error message
+                        Swal.fire('Error!', 'Failed to cancel order.', 'error');
+                    });
+            }
+        });
     }
 
-    .right {
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .08);
 
-    }
-
-    .profile {
-        background-color: #F1F3F6;
-        min-height: 100vh;
-    }
-
-    .profile .form-control {
-        height: 50px;
-
-    }
-
-    a {
-        text-decoration: none;
-        color: black;
-    }
-
-    a:hover {
-        text-decoration: none;
-    }
-
-    .left-top .dp {
-        /* background-color: green; */
-        width: 60px;
-        height: 60px;
-        border-radius: 30px;
-        display: flex;
-    }
-
-    .nameContainer {
-        line-height: 9px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-    }
-
-    .address {
-        background-color: white;
-        border-radius: 10px;
-
-    }
-
-    .whole {
-        background-color: #F1F3F6;
-    }
-</style>
+</script>

@@ -47,8 +47,10 @@ admin_route.post('/updatecoupon/:id',adminmiddle.checkAdmin,couponController.upd
 admin_route.get('/deletecoupon/:id',adminmiddle.checkAdmin,couponController.deleteCoupon)
 admin_route.get('/offer',adminmiddle.checkAdmin,offerController.offerList)
 admin_route.get('/createoffer',adminmiddle.checkAdmin,offerController.createOffer)
+admin_route.get('/editoffer/:id',adminmiddle.checkAdmin,offerController.editOffer)
 admin_route.get('/fetchCategories',adminmiddle.checkAdmin,offerController.fetchCategory)
 admin_route.get('/fetchProducts',adminmiddle.checkAdmin,offerController.fetchProduct)
 admin_route.post('/insertoffer',adminmiddle.checkAdmin,offerController.insertOffer)
+admin_route.get('/salesreport',adminmiddle.checkAdmin,adminController.salesReport)
 admin_route.get('/adminlogout',adminController.adminlogout)
 module.exports = admin_route;

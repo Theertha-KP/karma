@@ -3,7 +3,7 @@ var Schema = mongoose.Schema
 const productVarientSchema = new mongoose.Schema({
     price: {
         type: Number,
-        required: true,
+        
     },
     cost: {
         type: Number,
@@ -25,6 +25,7 @@ const productVarientSchema = new mongoose.Schema({
         type: Boolean,
         required: true
       },
+     
     
     product_id: {
         type: mongoose.Schema.Types.ObjectId,

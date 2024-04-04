@@ -127,7 +127,7 @@
                                     </a>
                                     <div class="product__cart__item__text">
                                         <h6>{{this.mainproduct.productName}}</h6>
-                                        <h5 >{{this.mainproduct.brand}}</h5>
+                                        <h5>{{this.mainproduct.brand}}</h5>
                                     </div>
                                 </div>
                             </td>
@@ -168,11 +168,17 @@
                                 <div class="cupon_text d-flex align-items-center">
                                     <input id="coupon" type="text" name="couponid" placeholder="Coupon Code">
                                     <a class="primary-btn" href="/coupons">View Coupon</a>
-                                    <div class="  col-3 justify-content-between height-3 p-4">
+                                    <div class=" column col-3 justify-content-between height-3 p-4">
 
                                         <button class="btn btn-outline-warning" onclick="apply()" type="button">
                                             Apply
                                         </button>
+
+                                        <!-- Add the "Remove" button inside the coupon_text div -->
+                                        <button class="btn btn-outline-warning" onclick="removeCoupon()" type="button">
+                                            Remove
+                                        </button>
+
 
                                     </div>
 
@@ -203,7 +209,7 @@
                             <td>
                                 <div class="checkout_btn_inner d-flex align-items-center">
                                     <a class="gray_btn" href="/shop">Continue Shopping</a>
-                                    <a class="primary-btn" id="checkpage" href="/checkout/?total={{total}}">Proceed </a>
+                                    <a class="primary-btn" id="checkpage" href="/checkout">Proceed </a>
                                 </div>
                             </td>
                         </tr>
@@ -244,7 +250,7 @@
 
                     // Update checkout link
                     const check = document.getElementById('checkpage');
-                    check.href = `/checkout?total=${currentTotal.toFixed(2)}`;
+                   // check.href = `/checkout?total=${currentTotal.toFixed(2)}`;
 
                 } else {
                     const Toast = Swal.mixin({
@@ -280,13 +286,13 @@
         axios.get(`/applycoupon/${id}`)
             .then((response) => {
                 if (response.data.success) {
-                    console.log(response + "response");
+                    console.log(response);
                     const updatedTotal = response.data.totalAmount;
                     console.log(updatedTotal)
                     const totalAmountElement = document.getElementById("totalamount");
                     totalAmountElement.innerText = updatedTotal;
                     const check = document.getElementById('checkpage');
-                    check.href = `/checkout?total=${updatedTotal}`;
+                    check.href = `/checkout?couponid=${response.data.couponId}`;
                     // Show success message using SweetAlert
                     Swal.fire({
                         icon: 'success',
@@ -364,7 +370,43 @@
                 );
             });
     }
-
+    function removeCoupon() {
+         const couponInput = document.getElementById("coupon")
+        axios.get(`/removecoupon`)
+            .then((response) => {
+                if (response.data.success) {
+                    // Update UI as needed, such as removing the displayed coupon
+                    const totalAmountElement = document.getElementById("totalamount");
+                    totalAmountElement.innerText = response.data.data;
+                    const check = document.getElementById('checkpage');
+                    couponInput.value=""
+                    check.href = `/checkout`;
+                    // Show success message using SweetAlert
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Coupon removed successfully.',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    // Show error message using SweetAlert if an error occurs
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.data.message,
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error("Error removing coupon:", error);
+                // Show error message using SweetAlert
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while removing the coupon. Please try again later.',
+                });
+            });
+    }
 
 
 </script>

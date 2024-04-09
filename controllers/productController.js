@@ -38,6 +38,9 @@ const productlist = async (req, res, next) => {
                 $unwind: "$product"
             },
             {
+                $match: { "product.isDeleted": false } 
+            },
+            {
                 $lookup: {
                     from: "offers",
                     let: { productId: "$product_id", categoryId: "$product.categoryId" },
@@ -131,6 +134,7 @@ const singleproduct = async (req, res, next) => {
             {
                 $unwind: "$productDetails"
             },
+            
             {
                 $lookup: {
                     from: "offers",
@@ -285,17 +289,25 @@ const insertProductDb = async (req, res) => {
 
 const insertProductVarientDb = async (req, res) => {
     try {
-        console.log("this is insertvarientDb");
-
+       
         const date = new Date();
         const createdDate = `${date.getDate()}-${date.getMonth()}-${date.getFullYear()}`;
-        console.log(req.body);
-        const id = new ObjectId(req.body.id)
-        
+        const id = new ObjectId(req.body.id);
+        const existingVariant = await ProductVariant.findOne({
+            color: req.body.color,
+            size: req.body.size,
+            product_id: req.body.id
+        });
+
+        if (existingVariant) {
+            console.log("Variant already exists.");
+            
+            return res.redirect('/admin/productvarient');
+        }
 
         const Variants = new ProductVariant({
             cost: req.body.cost,
-            price:req.body.cost,
+            price: req.body.price,
             color: req.body.color,
             size: req.body.size,
             product_id: req.body.id,
@@ -303,19 +315,20 @@ const insertProductVarientDb = async (req, res) => {
             quantity: req.body.quantity,
             createdDate: createdDate,
         });
+
         const productVariantData = await Variants.save();
         console.log(productVariantData);
         console.log(`${productVariantData.price} is successfully added..`);
-        res.redirect('/admin/productvarient')
+        res.redirect('/admin/productvarient');
     } catch (error) {
-        console.log(`error at inserting product variant`);
-        console.log(error.message);
+        res.status(500).send("Error occurred while inserting product variant.");
     }
 };
 
+
 const loadProductsDashboard = async (req, res) => {
     try {
-        const productDoc = await Product.find({}).populate("categoryId");
+        const productDoc = await Product.find({isDeleted:false}).populate("categoryId");
         res.render("admin/products/productdashboard", { admin: true, products: productDoc });
     } catch (error) {
         console.log("error at loading add products page");
@@ -337,7 +350,11 @@ const deleteProduct = async (req, res) => {
     try {
         const productForDeletion = req.params.id;
         console.log(Product.findOne({ _id: productForDeletion }));
-        await Product.deleteOne({ _id: productForDeletion });
+        await Product.updateOne({ _id: productForDeletion },{
+            $set:{
+                isDeleted:true
+            }
+        });
         console.log("product has been deleted");
         res.redirect("/admin/productdashboard");
     } catch (error) {

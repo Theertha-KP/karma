@@ -48,7 +48,8 @@ user_route.get('/checkout',userMiddleware.checkUser,orderController.checkoutPage
 user_route.post('/cashondelivery',userMiddleware.checkUser,orderController.cashOnDelivery)
 user_route.get('/orderstatus',userMiddleware.checkUser,orderController.orderPage)
 user_route.get('/orders',userMiddleware.checkUser,orderController.orders)
-user_route.get('/fetchProductDetails/:orderId',userMiddleware.checkUser,orderController.fetchProducts)
+// user_route.get('/fetchProductDetails/:orderId',userMiddleware.checkUser,orderController.fetchProducts)
+user_route.get('/orderedproducts/:orderId',userMiddleware.checkUser, orderController.orderedProducts);
 user_route.post('/razorpay',userMiddleware.checkUser,orderController.razorpay)
 user_route.post('/cancelOrder',userMiddleware.checkUser,orderController.cancelOrder)
 user_route.post('/verifyRazorpay',userMiddleware.checkUser,orderController.verifyRazorpay)

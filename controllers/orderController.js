@@ -380,6 +380,7 @@ const razorpay = async (req, res, next) => {
 const fetchProducts = async (req, res, next) => {
     try {
         const orderId = req.params.orderId;
+        console.log("haiordeer")
         const orderProducts = await Order.aggregate([
             { $match: { _id: new ObjectId(orderId) } },
             { $unwind: "$items" },
@@ -395,8 +396,8 @@ const fetchProducts = async (req, res, next) => {
             {
                 $lookup: {
                     from: "products",
-                    localField: "productDetails.product_id",
-                    foreignField: "_id",
+                    localField: "_id",
+                    foreignField: "productDetails.product_id",
                     as: "mainproduct"
                 }
             },
@@ -405,12 +406,168 @@ const fetchProducts = async (req, res, next) => {
             }
         ]);
         console.log(orderProducts)
+       
         res.json(orderProducts);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+const orderedProducts = async (req, res, next) => {
+    try {
+        const orderId = req.params.orderId;
+        const user=await User.findOne({_id:new ObjectId(req.session.userData._id)})
+        const order = await Order.aggregate([
+            { $match: { _id: new ObjectId(orderId) } },
+            { $unwind: "$items" },
+            {
+                $lookup: {
+                    from: "productvarients",
+                    localField: "items.product_id",
+                    foreignField: "_id",
+                    as: "productdetails"
+                }
+            },
+            {
+                $unwind:"$productdetails"
+            },
+             {
+                $lookup: {
+                    from: "products",
+                    localField: "productdetails.product_id",
+                    foreignField: "_id",
+                    as: "mainproduct"
+                }
+            },
+            {
+                $unwind: "$mainproduct"
+            },
+            {
+                $lookup: {
+                    from: "offers",
+                    let: { productId: "$productdetails.product_id", categoryId: "$mainproduct.categoryId" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [{
+                                        $or: [
+                                            { $in: ["$$productId", "$applicables"] },
+                                            { $in: ["$$categoryId", "$applicables"] },
+                                        ]
+                                    },
+                                    { $gte: ["$endDate", new Date()] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $sort: { discount: -1 }
+                        },
+                        {
+                            $group: {
+                                _id: "$offerType",
+                                highestDiscountOffer: { $first: "$$ROOT" }
+                            }
+                        },
+                        {
+                            $replaceRoot: { newRoot: "$highestDiscountOffer" }
+                        }
+                    ],
+                    as: "offers"
+                }
+            },
+            {
+                $project: {
+                    "product": 1,
+                    "productdetails": 1,
+                    "mainproduct": 1,
+                    offers: 1,
+                    "price": {
+                        $ifNull: [
+                            {
+                                $subtract: [
+                                    "$productdetails.cost",
+                                    {
+                                        $max: {
+                                            $map: {
+                                                input: "$offers", // Iterate over the offers array
+                                                as: "offer",
+                                                in: {
+                                                    $cond: {
+                                                        if: { $eq: ["$$offer.discountType", "Percent"] }, // Check if offer type is "percentage"
+                                                        then: {
+                                                            $multiply: [
+                                                                "$$offer.discount", // Percentage value
+                                                                { $divide: ["$productdetails.cost", 100] } // Convert percentage to a decimal
+                                                            ]
+                                                        },
+                                                        else: "$$offer.discount" // Use the discount amount as is
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "$productdetails.cost"
+                        ]
+                    },
+                    "totalPrice": {
+                        $ifNull: [
+                            {
+                                $subtract: [
+                                    { $multiply: ["$product.count", "$productdetails.cost"] },
+                                    {
+                                        $multiply: [
+                                            {
+                                                $max: {
+                                                    $map: {
+                                                        input: "$offers", // Iterate over the offers array
+                                                        as: "offer",
+                                                        in: {
+                                                            $cond: {
+                                                                if: { $eq: ["$$offer.discountType", "Percent"] }, // Check if offer type is "percentage"
+                                                                then: {
+                                                                    $multiply: [
+                                                                        "$$offer.discount", // Percentage value
+                                                                        { $divide: ["$productdetails.cost", 100] } // Convert percentage to a decimal
+                                                                    ]
+                                                                },
+                                                                else: "$$offer.discount" // Use the discount amount as is
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "$product.count"
+                                        ]
+                                    }
+                                ]
+                            },
+                            { $multiply: ["$product.count", "$productdetails.cost"] }// If totalPrice is null, set it to zero
+                        ]
+                    }
+                }
+
+            },
+        ])
+        console.log(order);
+        const total = order.reduce((acc, val) => {
+            return acc + val.totalPrice
+        }, 0)
+        console.log(total);
+        if (!order) {
+            return res.status(404).send('Order not found');
+        }
+        res.render('user/orderedproducts', { order,user:user,total });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+    }
+};
+
 
 const verifyRazorpay = async (req, res, next) => {
     try {
@@ -491,5 +648,6 @@ module.exports = {
     razorpay,
     fetchProducts,
     cancelOrder,
+    orderedProducts,
     verifyRazorpay
 }

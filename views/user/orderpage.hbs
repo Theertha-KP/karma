@@ -35,7 +35,7 @@
                             {{/if}}
                         </div>
                     </div>
-                    <div class="left-sidebar m-auto mb-5 px-5 py-5 ">
+                     <div class="left-sidebar m-auto mb-5 px-5 py-5 ">
                         <div class=" pt-3"><i class="fa-solid fa-user me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
                                 href="/userprofile"> Profile Information</a></div>
@@ -44,16 +44,14 @@
                                 href="/manageaddress"> Manage Address</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-ticket me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/coupons"></a>
-                            My coupons</a></div>
+                                href="/coupons">  My coupons</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-box-open me-4"
-                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
-                                href="/orders"></a>
-                            My Orders</a></div>
+                                style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold" href="/orders">
+                                My Orders</a></div>
                         <div class=" pt-3"><i class="fa-solid fa-heart me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold"
                                 href="/wishlist"> My Wishlist</a></div>
-                        <div class=" pt-3"><i class="fa-solid fa-arrow-right-from-bracket me-1"
+                        <div class=" pt-3"><i class="fa-solid fa-arrow-right-from-bracket me-4"
                                 style="color: rgb(21, 22, 29); font-size: 19px;"></i><a class="fw-bold" href="/logout">
                                 Logout</a></div>
                     </div>
@@ -138,7 +136,7 @@
 <!-- Your custom script -->
 <script>
     function viewOrderProducts(orderId) {
-        fetch(`/fetchProductDetails/${orderId}`)
+        {{!-- fetch(`/fetchProductDetails/${orderId}`)
             .then(response => response.json())
             .then(data => {
                 // Populate the modal with product details
@@ -148,7 +146,7 @@
                     const productHTML = `
                         <div>
                             <p>Product Name: ${product.mainproduct.productName}</p>
-                            <p>Price: ${product.price}</p>
+                            <p>Price: ${product.[0].price}</p>
                             <p>Total Price: ${product.totalprice}</p>
                             <!-- Add more product details here -->
                         </div>
@@ -156,7 +154,9 @@
                     productDetailsDiv.insertAdjacentHTML('beforeend', productHTML);
                 });
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Error:', error)); --}}
+
+             window.location.href = `/orderedproducts/${orderId}`;
     }
 
     function cancelOrder(orderId) {

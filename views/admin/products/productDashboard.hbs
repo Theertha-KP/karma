@@ -91,3 +91,54 @@
     /* Adjust the width as needed */
   }
 </style>
+<script>
+  function loadProducts() {
+    $.ajax({
+      url: '/admin/productdashboard',
+      method: 'GET',
+      success: function(response) {
+        $('#productTable').html(response);
+      },
+      error: function(xhr, status, error) {
+        console.error('Error loading products:', error);
+      }
+    });
+  }
+
+  // Function to list/unlist a product
+  function listProduct(productId) {
+    $.ajax({
+      url: '/admin/listproduct/' + productId,
+      method: 'GET',
+      success: function(response) {
+        // Refresh product table after listing/unlisting
+        loadProducts();
+      },
+      error: function(xhr, status, error) {
+        console.error('Error listing/unlisting product:', error);
+      }
+    });
+  }
+
+  // Function to delete a product
+  function deleteProduct(productId) {
+    if (confirm('Are you sure you want to delete this product?')) {
+      $.ajax({
+        url: '/admin/deleteproduct/' + productId,
+        method: 'GET',
+        success: function(response) {
+          // Refresh product table after deletion
+          loadProducts();
+        },
+        error: function(xhr, status, error) {
+          console.error('Error deleting product:', error);
+        }
+      });
+    }
+  }
+
+  // Load products when the page loads
+  $(document).ready(function() {
+    loadProducts();
+  });
+</script>

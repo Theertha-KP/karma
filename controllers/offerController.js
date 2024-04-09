@@ -5,6 +5,7 @@ const ProductVariant = require("../models/productVariantModel")
 const { ObjectId } = require('mongodb')
 const offerList=async(req,res,next)=>{
     try{
+      
       const offer=await Offer.find({})
       res.render("admin/offers/offerlist",{offer:offer, admin: true })
     }catch (error) {

@@ -78,7 +78,9 @@ const productlist = async (req, res, next) => {
             
 
         ]);
+       
 
+        
 
         
         for (const productDoc of productDocs) {
@@ -106,6 +108,7 @@ const productlist = async (req, res, next) => {
         next(error); // Pass error to the error handling middleware
     }
 }
+
 
 //singleproduct
 const singleproduct = async (req, res, next) => {

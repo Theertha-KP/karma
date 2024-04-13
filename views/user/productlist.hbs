@@ -102,15 +102,16 @@
     {{/each}}
 
 </div> --}}
-<div >
+<div>
     <div class="d-flex justify-content-between">
         <!-- Render category filters -->
         <div class="sidebar-filter " style="width: 270px; margin-left: 31px; margin-top:0">
             <div class="top-filter-head w-100%">Category Filters</div>
             <ul class="category-filters">
+                <li><a href="#" class="category-filter" data-category="All">All Categories</a></li>
                 {{#each category}}
-                <li><a href="#" class="category-filter" data-category="{{this.categoryName}}">{{this.categoryName}}</a>
-                </li>
+                <li><a href="#" class="category-filter" data-category="{{this._id}}">{{this.categoryName}}</a></li>
+
                 {{/each}}
             </ul>
         </div>
@@ -156,7 +157,7 @@
                 <div id="productContainer" class="row">
                     <!-- single product -->
                     {{#each products }}
-                    <div class="col-lg-4 col-md-6">
+                    <div class="col-lg-4 col-md-6 single-product" data-category="{{this.product.categoryId}}">
                         <div class="single-product">
                             <a href="/singleproduct/{{this.product._id}}/{{this.color}}/{{this.size}}">
                                 <img class="img-fluid" src="/multer/products/{{this.product.image.[0]}}" alt="">
@@ -164,7 +165,7 @@
                                     <h6>{{this.product.productName}}</h6>
                                     <h6>{{this.product.description}}</h6>
                                     <div class="price">
-                                         <h6 id="product-price-{{this._id}}">₹ {{this.price}}</h6>
+                                        <h6 id="product-price-{{this._id}}">₹ {{this.price}}</h6>
                                         <h6 class="l-through">₹ {{this.cost}}</h6>
                                     </div>
                                     <div class="prd-bottom">
@@ -290,7 +291,62 @@
 
 <script>
     // JavaScript code for handling category filters
-document.addEventListener('DOMContentLoaded', () => {
+
+
+    {{!-- document.addEventListener('DOMContentLoaded', () => {
+        // Assuming 'productDocs' contains product details along with offers
+        productDocs.forEach(product => {
+            const productOffers = product.offers; // Assuming 'offers' contains both category and product offers
+            let maxDiscountedPrice = product.price; // Initialize with original price
+
+            // Check for category offers
+            productOffers.forEach(offer => {
+                if (offer.discountType === "Category") {
+                    // Apply category offer if applicable
+                    const discountedPrice = calculateDiscountedPrice(product.price, offer);
+                    maxDiscountedPrice = Math.min(maxDiscountedPrice, discountedPrice);
+                }
+            });
+
+            // Check for product offers
+            productOffers.forEach(offer => {
+                if (offer.discountType === "Product") {
+                    // Apply product offer if applicable
+                    const discountedPrice = calculateDiscountedPrice(product.price, offer);
+                    maxDiscountedPrice = Math.min(maxDiscountedPrice, discountedPrice);
+                }
+            });
+
+            // Update the displayed price
+            const productPriceElement = document.getElementById(`product-price-${product._id}`);
+            if (productPriceElement) {
+                productPriceElement.textContent = `₹ ${maxDiscountedPrice}`;
+            }
+        });
+    });
+
+    function calculateDiscountedPrice(originalPrice, offer) {
+        if (offer.discountType === "Category") {
+            // Calculate discounted price based on category offer
+            return originalPrice - (originalPrice * offer.discount / 100);
+        } else if (offer.discountType === "Product") {
+            // Calculate discounted price based on product offer
+            return originalPrice - offer.discount;
+        }
+        return originalPrice; // Default to original price if no applicable offer
+    } --}}
+
+    document.addEventListener('DOMContentLoaded', () => {
+    const categoryFilters = document.querySelectorAll('.category-filter');
+    categoryFilters.forEach(filter => {
+        filter.addEventListener('click', () => {
+            const categoryId = filter.getAttribute('data-category');
+            window.location.href = `/shop?categoryId=${categoryId}`;
+        });
+    });
+});
+
+   document.addEventListener('DOMContentLoaded', () => {
     const categoryFilters = document.querySelectorAll('.category-filter');
     categoryFilters.forEach(filter => {
         filter.addEventListener('click', () => {
@@ -311,49 +367,6 @@ function filterProductsByCategory(category) {
         }
     });
 }
-
-{{!-- document.addEventListener('DOMContentLoaded', () => {
-    // Assuming 'productDocs' contains product details along with offers
-    productDocs.forEach(product => {
-        const productOffers = product.offers; // Assuming 'offers' contains both category and product offers
-        let maxDiscountedPrice = product.price; // Initialize with original price
-
-        // Check for category offers
-        productOffers.forEach(offer => {
-            if (offer.discountType === "Category") {
-                // Apply category offer if applicable
-                const discountedPrice = calculateDiscountedPrice(product.price, offer);
-                maxDiscountedPrice = Math.min(maxDiscountedPrice, discountedPrice);
-            }
-        });
-
-        // Check for product offers
-        productOffers.forEach(offer => {
-            if (offer.discountType === "Product") {
-                // Apply product offer if applicable
-                const discountedPrice = calculateDiscountedPrice(product.price, offer);
-                maxDiscountedPrice = Math.min(maxDiscountedPrice, discountedPrice);
-            }
-        });
-
-        // Update the displayed price
-        const productPriceElement = document.getElementById(`product-price-${product._id}`);
-        if (productPriceElement) {
-            productPriceElement.textContent = `₹ ${maxDiscountedPrice}`;
-        }
-    });
-});
-
-function calculateDiscountedPrice(originalPrice, offer) {
-    if (offer.discountType === "Category") {
-        // Calculate discounted price based on category offer
-        return originalPrice - (originalPrice * offer.discount / 100);
-    } else if (offer.discountType === "Product") {
-        // Calculate discounted price based on product offer
-        return originalPrice - offer.discount;
-    }
-    return originalPrice; // Default to original price if no applicable offer
-} --}}
 
 
 
